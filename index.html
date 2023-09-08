@@ -32,6 +32,11 @@
             height: auto;
             font-size: 200%; /* Increase font size by 100% */
         }
+
+        /* Increase the size of Conveyor headers by 50% */
+        .conveyor-header {
+            font-size: 150%;
+        }
     </style>
 </head>
 <body>
@@ -73,7 +78,7 @@
                 return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
             }
 
-            statsDiv.innerHTML += '<div class="red">Conveyor 1:</div>';
+            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
             if (lapTimes1.length > 0) {
                 const averageTime1 = calculateAverageTime(lapTimes1);
                 statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime1)}</div>`;
@@ -94,7 +99,7 @@
                 statsDiv.innerHTML += 'Conveyor 1 stopped';
             }
 
-            statsDiv.innerHTML += '<div class="red">Conveyor 2:</div>';
+            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
             if (lapTimes2.length > 0) {
                 const averageTime2 = calculateAverageTime(lapTimes2);
                 statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime2)}</div>`;
