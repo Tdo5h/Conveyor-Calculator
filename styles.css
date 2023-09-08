@@ -1,0 +1,42 @@
+body {
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.bold { font-weight: bold; }
+.input-small { width: 6rem; }
+.red { color: red; }
+.green { color: green; }
+.blue { color: blue; }
+.purple { color: purple; }
+.orange { color: orange; }
+
+.content {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+#lapTime, #conveyor2, #gap, #gap2 {
+    margin: 20px;
+    font-size: 1.2rem;
+}
+
+#lapTime {
+    color: blue;
+    font-weight: bold;
+}
+
+#gap, #gap2 {
+    height: 20px;
+}
+
+#conveyor2 {
+    color: blue;
+    font-weight: bold;
+}
