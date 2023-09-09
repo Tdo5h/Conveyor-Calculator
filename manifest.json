@@ -1,0 +1,17 @@
+{
+    "name": "Conveyor Calculator",
+    "short_name": "Calculator",
+    "description": "Conveyor Calculator App",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "icons": [
+      {
+        "src": "icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ]
+  }
+  
