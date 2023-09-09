@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conveyor Calculator</title>
+    <link rel="icon" href="icon.png" type="image/png"> <!-- icon icon link -->
     <style>
         body {
             background-image: url('background.jpg');
@@ -104,9 +105,9 @@
                     const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
                     const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-                    statsDiv.innerHTML += `<div class="green">Avg All Belt Load = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 2x Belt Load = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="green">Avg 4x Belt Load = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="black">Avg 2x - Load Conveyor = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Avg 4x - Load Conveyor = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
                 }
             } else {
                 statsDiv.innerHTML += 'Conveyor 1 stopped';
@@ -138,9 +139,9 @@
                     const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
                     const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
-                    statsDiv.innerHTML += `<div class="green">Avg All Belt Load = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 2x Belt Load = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="green">Avg 4x Belt Load = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="black">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Avg 4x - Load Conveyor = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
                 }
             } else {
                 statsDiv.innerHTML += 'Conveyor 2 stopped';
