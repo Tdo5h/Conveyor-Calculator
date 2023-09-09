@@ -95,6 +95,19 @@
                 const runningTime = Math.floor((Date.now() - lapStart1) / 1000);
                 statsDiv.innerHTML += '<div class="orange bold">Conveyor 1 is running</div>';
                 statsDiv.innerHTML += `<div class="bold">Current lap time: ${formatTime(runningTime)}</div>`;
+                if (timeDifferenceRemaining > 0) {
+                    const averageTimeAll1 = calculateAverageTime(lapTimes1);
+                    const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
+                    const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
+
+                    const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
+                    const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
+                    const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
+
+                    statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (All): ${workToBeDone1_All.toFixed(1)} times (Lifts: ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (x2): ${workToBeDone1_X2.toFixed(1)} times (Lifts: ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (x4): ${workToBeDone1_X4.toFixed(1)} times (Lifts: ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
+                }
             } else {
                 statsDiv.innerHTML += 'Conveyor 1 stopped';
             }
@@ -116,36 +129,25 @@
                 const runningTime = Math.floor((Date.now() - lapStart2) / 1000);
                 statsDiv.innerHTML += '<div class="orange bold">Conveyor 2 is running</div>';
                 statsDiv.innerHTML += `<div class="bold">Current lap time: ${formatTime(runningTime)}</div>`;
+                if (timeDifferenceRemaining > 0) {
+                    const averageTimeAll2 = calculateAverageTime(lapTimes2);
+                    const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
+                    const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
+
+                    const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
+                    const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
+                    const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
+
+                    statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (All): ${workToBeDone2_All.toFixed(1)} times (Lifts: ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (x2): ${workToBeDone2_X2.toFixed(1)} times (Lifts: ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (x4): ${workToBeDone2_X4.toFixed(1)} times (Lifts: ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
+                }
             } else {
                 statsDiv.innerHTML += 'Conveyor 2 stopped';
             }
 
             if (timeDifferenceRemaining > 0) {
                 statsDiv.innerHTML += `<div class="blue bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
-
-                const averageTimeAll1 = calculateAverageTime(lapTimes1);
-                const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
-                const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
-
-                const averageTimeAll2 = calculateAverageTime(lapTimes2);
-                const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
-                const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
-
-                const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
-                const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-                const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
-
-                const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
-                const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-                const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
-
-                statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (All): ${workToBeDone1_All.toFixed(1)} times (Lifts: ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
-                statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (x2): ${workToBeDone1_X2.toFixed(1)} times (Lifts: ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
-                statsDiv.innerHTML += `<div class="green">Conveyor 1 Work (x4): ${workToBeDone1_X4.toFixed(1)} times (Lifts: ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
-
-                statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (All): ${workToBeDone2_All.toFixed(1)} times (Lifts: ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
-                statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (x2): ${workToBeDone2_X2.toFixed(1)} times (Lifts: ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
-                statsDiv.innerHTML += `<div class="green">Conveyor 2 Work (x4): ${workToBeDone2_X4.toFixed(1)} times (Lifts: ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
             }
         }
 
