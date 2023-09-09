@@ -82,8 +82,8 @@
             if (lapTimes1.length > 0) {
                 const averageTime1 = calculateAverageTime(lapTimes1);
                 statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime1)}</div>`;
-                statsDiv.innerHTML += `<div class="black">Average Lap Time x2: ${formatTime(calculateAverageTimeX2(lapTimes1))} (Last 2 Laps)</div>`;
-                statsDiv.innerHTML += `<div class="green">Average Lap Time x4: ${formatTime(calculateAverageTimeX4(lapTimes1))} (Last 4 Laps)</div>`;
+                statsDiv.innerHTML += `<div class="black">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes1))} </div>`;
+                statsDiv.innerHTML += `<div class="green">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes1))} </div>`;
             }
             statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
             lapTimes1.slice().reverse().forEach((lapData, idx) => {
@@ -116,8 +116,8 @@
             if (lapTimes2.length > 0) {
                 const averageTime2 = calculateAverageTime(lapTimes2);
                 statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime2)}</div>`;
-                statsDiv.innerHTML += `<div class="black">Average Lap Time x2: ${formatTime(calculateAverageTimeX2(lapTimes2))} (Last 2 Laps)</div>`;
-                statsDiv.innerHTML += `<div class="green">Average Lap Time x4: ${formatTime(calculateAverageTimeX4(lapTimes2))} (Last 4 Laps)</div>`;
+                statsDiv.innerHTML += `<div class="black">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes2))} </div>`;
+                statsDiv.innerHTML += `<div class="green">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes2))} </div>`;
             }
             statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
             lapTimes2.slice().reverse().forEach((lapData, idx) => {
