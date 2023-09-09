@@ -93,8 +93,8 @@
 
             if (running1) {
                 const runningTime = Math.floor((Date.now() - lapStart1) / 1000);
-                statsDiv.innerHTML += '<div class="orange bold">Conveyor 1 is running</div>';
-                statsDiv.innerHTML += `<div class="bold">Current lap time: ${formatTime(runningTime)}</div>`;
+                statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
+                statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime)}</div>`;
                 if (timeDifferenceRemaining > 0) {
                     const averageTimeAll1 = calculateAverageTime(lapTimes1);
                     const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
@@ -127,8 +127,8 @@
 
             if (running2) {
                 const runningTime = Math.floor((Date.now() - lapStart2) / 1000);
-                statsDiv.innerHTML += '<div class="orange bold">Conveyor 2 is running</div>';
-                statsDiv.innerHTML += `<div class="bold">Current lap time: ${formatTime(runningTime)}</div>`;
+                statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
+                statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime)}</div>`;
                 if (timeDifferenceRemaining > 0) {
                     const averageTimeAll2 = calculateAverageTime(lapTimes2);
                     const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
@@ -147,7 +147,7 @@
             }
 
             if (timeDifferenceRemaining > 0) {
-                statsDiv.innerHTML += `<div class="blue bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
+                statsDiv.innerHTML += `<div class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
             }
         }
 
