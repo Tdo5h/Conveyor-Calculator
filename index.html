@@ -161,8 +161,8 @@
                     const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
                     statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
                     statsDiv.innerHTML += `<div class="green">Avg 4x - Load Conveyor = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="black">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
                 }
             } else {
                 statsDiv.innerHTML += 'Conveyor 2 stopped';
