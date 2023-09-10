@@ -28,7 +28,7 @@
         body {
             background-image: url('background.jpg');
             background-size: cover;
-            background-repeat: no-repeat;
+            background-repeat: repeat;
             background-attachment: fixed;
             font-weight: bold;
         }
@@ -44,7 +44,7 @@
         .content {
             background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 5px;
         }
 
         #recordLap1, #recordLap2 {
@@ -61,11 +61,11 @@
 </head>
 <body>
     <div class="content">
-        <h1 style="font-size: 2rem;">Conveyor Calculator</h1>
+        <h1 style="font-size: 4rem;">Conveyor Calculator</h1>
         <button id="startConveyor1">Start Conveyor 1</button>
         <button id="startConveyor2">Start Conveyor 2</button>
-        <button id="recordLap1">Record Lap 1</button>
-        <button id="recordLap2">Record Lap 2</button>
+        <button id="recordLap1">Lap Conveyor 1</button>
+        <button id="recordLap2">Lap Conveyor 2</button>
         <input type="time" id="timeInput" class="input-small">
         <button id="setTime">Set Time</button>
     </div>
