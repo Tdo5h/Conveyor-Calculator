@@ -6,7 +6,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
-    
 
     <title>Conveyor Calculator</title>
     
@@ -20,16 +19,19 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-       body {
-        background-image: url('background.jpg');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        font-weight: bold;
-        margin: 0; /* Remove default body margin to make background cover the entire viewport */
-        padding: 0; /* Remove default body padding */
-        height: 100vh; /* Set the body height to 100% of the viewport height */
-    }
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-weight: bold;
+        }
 
         .bold { font-weight: bold; }
         .input-small { width: 6rem; }
