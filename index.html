@@ -214,14 +214,65 @@
             return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
         }
 
-        function toggleAMPM(time) {
-            return time.includes('am') ? time.replace('am', 'pm') : time.replace('pm', 'am');
-        }
+        document.getElementById('startConveyor1').addEventListener('click', () => {
+            if (!running1) {
+                lapStart1 = Date.now();
+                running1 = true;
+                startCountdown();
+                displayStats();
+            }
+        });
 
-        function setInitialTime() {
-            const timeInput = document.getElementById('timeInput');
-            timeInput.value = toggleAMPM('5:15 am');
-        }
+        document.getElementById('startConveyor2').addEventListener('click', () => {
+            if (!running2) {
+                lapStart2 = Date.now();
+                running2 = true;
+                startCountdown();
+                displayStats();
+            }
+        });
+
+        document.getElementById('recordLap1').addEventListener('click', () => {
+            if (running1) {
+                const lapTime = Date.now() - lapStart1;
+                const timeOfDay = getFormattedTime();
+                lapTimes1.push([lapTime, timeOfDay]);
+                lapStart1 = Date.now();
+                displayStats();
+            }
+        });
+
+        document.getElementById('recordLap2').addEventListener('click', () => {
+            if (running2) {
+                const lapTime = Date.now() - lapStart2;
+                const timeOfDay = getFormattedTime();
+                lapTimes2.push([lapTime, timeOfDay]);
+                lapStart2 = Date.now();
+                displayStats();
+            }
+        });
+
+        document.getElementById('setTime').addEventListener('click', () => {
+            const timeInput = document.getElementById('timeInput').value;
+            const timeParts = timeInput.split(':');
+            if (timeParts.length === 2) {
+                const hours = parseInt(timeParts[0]);
+                const minutes = parseInt(timeParts[1]);
+                if (!isNaN(hours) && !isNaN(minutes)) {
+                    const now = new Date();
+                    targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                    if (targetTime <= now) {
+                        targetTime.setDate(targetTime.getDate() + 1);
+                    }
+                    timeDifference = targetTime.getTime() - now.getTime();
+                    timeDifferenceRemaining = timeDifference / 1000;
+                    workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                    displayStats();
+                    startCountdown();
+                }
+            }
+        });
 
         // Function to simulate a click on the "Set Time" button
         function simulateSetTimeButtonClick() {
@@ -229,8 +280,7 @@
             setTimeButton.click();
         }
 
-        // Automatically set the initial time and click the "Set Time" button every 1 second
-        setInitialTime();
+        // Automatically click the "Set Time" button every 1 second
         setInterval(simulateSetTimeButtonClick, 1000);
     </script>
 </body>
