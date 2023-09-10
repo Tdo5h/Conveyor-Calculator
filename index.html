@@ -253,14 +253,27 @@
         });
 
         document.getElementById('setTime').addEventListener('click', () => {
+            // Toggle between AM and PM
+            let targetHours = 5;
+            let targetMinutes = 15;
             const timeInput = document.getElementById('timeInput').value;
             const timeParts = timeInput.split(':');
             if (timeParts.length === 2) {
                 const hours = parseInt(timeParts[0]);
                 const minutes = parseInt(timeParts[1]);
                 if (!isNaN(hours) && !isNaN(minutes)) {
+                    // Check if it's currently AM, then set it to PM, and vice versa
                     const now = new Date();
-                    targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                    if (now.getHours() < 12) {
+                        targetHours = hours;
+                        targetMinutes = minutes;
+                    } else {
+                        targetHours = hours >= 12 ? hours - 12 : hours + 12;
+                        targetMinutes = minutes;
+                    }
+
+                    // Set the target time and calculate time difference
+                    targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHours, targetMinutes);
                     if (targetTime <= now) {
                         targetTime.setDate(targetTime.getDate() + 1);
                     }
