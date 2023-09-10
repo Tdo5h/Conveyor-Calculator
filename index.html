@@ -20,13 +20,16 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        body {
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            font-weight: bold;
-        }
+       body {
+        background-image: url('background.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        font-weight: bold;
+        margin: 0; /* Remove default body margin to make background cover the entire viewport */
+        padding: 0; /* Remove default body padding */
+        height: 100vh; /* Set the body height to 100% of the viewport height */
+    }
 
         .bold { font-weight: bold; }
         .input-small { width: 6rem; }
