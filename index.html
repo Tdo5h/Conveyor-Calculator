@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
+
     <title>Conveyor Calculator</title>
     
     <!-- Apple Touch Icon -->
@@ -67,7 +68,7 @@
         <button id="startConveyor2">Start Conveyor 2</button>
         <button id="recordLap1">Lap Conveyor 1</button>
         <button id="recordLap2">Lap Conveyor 2</button>
-        <input type="time" id="timeInput" class="input-small">
+        <input type="time" id="timeInput" class="input-small" value="05:15">
         <button id="setTime">  Set End Shift </button>
     </div>
     <div id="stats" class="content">
@@ -215,26 +216,6 @@
             return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
         }
 
-        function toggleAMPM(time) {
-            return time.includes('am') ? time.replace('am', 'pm') : time.replace('pm', 'am');
-        }
-
-        function setInitialTime() {
-            const timeInput = document.getElementById('timeInput');
-            timeInput.value = toggleAMPM('5:15 am');
-        }
-
-        // Function to simulate a click on the "Set Time" button
-        function simulateSetTimeButtonClick() {
-            const setTimeButton = document.getElementById('setTime');
-            setTimeButton.click();
-        }
-
-        // Automatically set the initial time and click the "Set Time" button every 1 second
-        setInitialTime();
-        setInterval(simulateSetTimeButtonClick, 1000);
-
-        // Event listeners for buttons
         document.getElementById('startConveyor1').addEventListener('click', () => {
             if (!running1) {
                 lapStart1 = Date.now();
@@ -294,6 +275,15 @@
                 }
             }
         });
+
+        // Function to simulate a click on the "Set Time" button
+        function simulateSetTimeButtonClick() {
+            const setTimeButton = document.getElementById('setTime');
+            setTimeButton.click();
+        }
+
+        // Automatically click the "Set Time" button every 1 second
+        setInterval(simulateSetTimeButtonClick, 1000);
     </script>
 </body>
 </html>
