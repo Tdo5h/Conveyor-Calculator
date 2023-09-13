@@ -1,6 +1,6 @@
 {
     "name": "Conveyor Calculator",
-    "short_name": "Shed 48 cal",
+    "short_name": "Calculator",
     "description": "Conveyor Calculator App",
     "start_url": "./index.html",
     "display": "standalone",
