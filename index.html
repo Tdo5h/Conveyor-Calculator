@@ -6,18 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
-
     <title>Conveyor Calculator</title>
-    
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-
     <!-- Shortcut Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
-
     <link rel="manifest" href="manifest.json">
-
     <style>
         body, html {
             height: 100%;
@@ -25,7 +20,7 @@
             padding: 0;
         }
         body {
-           background-color: black;
+            background-color: black;
         }
         body {
             background-image: url('background.jpg');
@@ -34,7 +29,6 @@
             background-attachment: fixed;
             font-weight: bold;
         }
-
         .bold { font-weight: bold; }
         .input-small { width: 6rem; }
         .red { color: red; }
@@ -42,13 +36,11 @@
         .blue { color: blue; }
         .purple { color: purple; }
         .orange { color: orange; }
-
         .content {
             background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
         }
-
         #recordLap1, #recordLap2 {
             width: auto;
             height: auto;
@@ -64,18 +56,39 @@
 <body>
     <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
+        <button onclick="deleteLap('conveyor1', 0)">Delete Last Lap Con1</button>
+        <button onclick="deleteLap('conveyor2', 0)">Delete Last Lap Con2</button>
         <button id="startConveyor1">Start Conveyor 1</button>
         <button id="startConveyor2">Start Conveyor 2</button>
         <button id="recordLap1">Lap Conveyor 1</button>
         <button id="recordLap2">Lap Conveyor 2</button>
         <input type="time" id="timeInput" class="input-small" value="05:15">
-        <button id="setTime">  Set End Shift AM-PM </button>
+        <button id="setTime">Set AM-PM</button>
+        <button id="pullLaps">Pull Laps</button>
+        
     </div>
     <div id="stats" class="content">
         <!-- Display statistics here -->
     </div>
-
+    <div id="countdown" class="countdown-timer">Time to Shift Change: 00:00:00</div>
+    <div id="clock" class="countdown-timer"></div>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
     <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdX_RAPVeG-uekG-lG1nhSFzZkTMRgg0c",
+            authDomain: "conveyor-laps.firebaseapp.com",
+            databaseURL: "https://conveyor-laps-default-rtdb.firebaseio.com",
+            projectId: "conveyor-laps",
+            storageBucket: "conveyor-laps.appspot.com",
+            messagingSenderId: "708197721355",
+            appId: "1:708197721355:web:234d1d9223b125a657ee0e",
+            measurementId: "G-X2REH4L1M5"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         let lapStart1 = 0;
         let lapStart2 = 0;
         let running1 = false;
@@ -106,12 +119,11 @@
                 statsDiv.innerHTML += `<div class="green">Average Lap TimeAll: ${formatTime(averageTime1)}</div>`;
                 statsDiv.innerHTML += `<div class="black">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes1))} </div>`;
                 statsDiv.innerHTML += `<div class="green">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes1))} </div>`;
-                
             }
             statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
             lapTimes1.slice().reverse().forEach((lapData, idx) => {
                 const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-                statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}. ${lapTimeStr} (${lapData[1]})</div>`;
+                statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
             });
 
             if (running1) {
@@ -127,10 +139,9 @@
                     const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
                     const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
-                    
+                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor= ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor= ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
+                    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor= ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
                 }
             } else {
                 statsDiv.innerHTML += 'Conveyor 1 stopped';
@@ -146,7 +157,7 @@
             statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
             lapTimes2.slice().reverse().forEach((lapData, idx) => {
                 const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-                statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}. ${lapTimeStr} (${lapData[1]})</div>`;
+                statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
             });
 
             if (running2) {
@@ -191,10 +202,13 @@
 
         function getFormattedTime() {
             const now = new Date();
+            const day = now.getDate();
+            const month = now.getMonth() + 1; // Months are 0-based, so add 1
+            const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
             const hours = now.getHours();
             const minutes = now.getMinutes();
             const ampm = hours >= 12 ? 'pm' : 'am';
-            const formattedTime = hours % 12 + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+            const formattedTime = `${formattedDate} ${hours % 12}:${(minutes < 10 ? '0' : '') + minutes} ${ampm}`;
             return formattedTime;
         }
 
@@ -217,22 +231,58 @@
         }
 
         document.getElementById('startConveyor1').addEventListener('click', () => {
+            const button = document.getElementById('startConveyor1');
             if (!running1) {
                 lapStart1 = Date.now();
                 running1 = true;
+                button.textContent = "Stop Conveyor 1"; // Change button text to "Stop Conveyor 1"
                 startCountdown();
                 displayStats();
+            } else {
+                running1 = false;
+                button.textContent = "Start Conveyor 1"; // Change button text back to "Start Conveyor 1"
+                // Calculate and update work to be done if needed
+                if (timeDifferenceRemaining > 0) {
+                    workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                    displayStats();
+                }
             }
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Your JavaScript code here
+            // Add event listeners and perform DOM operations
+        });
+
         document.getElementById('startConveyor2').addEventListener('click', () => {
+            const button = document.getElementById('startConveyor2');
             if (!running2) {
                 lapStart2 = Date.now();
                 running2 = true;
+                button.textContent = "Stop Conveyor 2"; // Change button text to "Stop Conveyor 2"
                 startCountdown();
                 displayStats();
+            } else {
+                running2 = false;
+                button.textContent = "Start Conveyor 2"; // Change button text back to "Start Conveyor 2"
+                // Calculate and update work to be done if needed
+                if (timeDifferenceRemaining > 0) {
+                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                    displayStats();
+                }
             }
         });
+
+        function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
+            // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
+            if (lapTime > 900000) {
+                // Send lap time data to Firebase
+                database.ref(`laps/${conveyor}`).push({
+                    lapTime: lapTime,
+                    timeOfDay: timeOfDay
+                });
+            }
+        }
 
         document.getElementById('recordLap1').addEventListener('click', () => {
             if (running1) {
@@ -241,6 +291,9 @@
                 lapTimes1.push([lapTime, timeOfDay]);
                 lapStart1 = Date.now();
                 displayStats();
+
+                // Send lap time data to Firebase
+                sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
             }
         });
 
@@ -251,6 +304,9 @@
                 lapTimes2.push([lapTime, timeOfDay]);
                 lapStart2 = Date.now();
                 displayStats();
+
+                // Send lap time data to Firebase
+                sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
             }
         });
 
@@ -275,15 +331,104 @@
                 }
             }
         });
-
+     
+        document.getElementById('pullLaps').addEventListener('click', () => {
+            // Show confirmation dialog
+            const confirmPull = confirm("This will pull the newest 6 lap times entered. To see statistics (Load/Lift) Start corresponding conveyor timer. Stop conveyor again after reviewing load/lift so it’s not making a bad lap. If there are bad laps in the list from missed laps or stock off. Delete 1 at a time back to bad lap entry to correct Load/Lift output.");
+            if (confirmPull) {
+                // Retrieve the newest 6 laps from Firebase for Conveyor 1
+                const lapsRef1 = database.ref('laps/conveyor1').limitToLast(6);
+                lapsRef1.once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        lapTimes1.length = 0; // Clear the existing lap times
+                        for (const key in data) {
+                            const lapData = data[key];
+                            lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
+                        }
+                        displayStats();
+                    }
+                });
+                // Retrieve the newest 4 laps from Firebase for Conveyor 2
+                const lapsRef2 = database.ref('laps/conveyor2').limitToLast(6);
+                lapsRef2.once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        lapTimes2.length = 0; // Clear the existing lap times
+                        for (const key in data) {
+                            const lapData = data[key];
+                            lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
+                        }
+                        displayStats();
+                    }
+                });
+                }
+            }
+        );
         // Function to simulate a click on the "Set Time" button
         function simulateSetTimeButtonClick() {
             const setTimeButton = document.getElementById('setTime');
             setTimeButton.click();
         }
-
         // Automatically click the "Set Time" button every 1 second
         setInterval(simulateSetTimeButtonClick, 1000);
+        
+        // New function to ping Firebase
+        function pingFirebase() {
+            const ref = database.ref('.info/connected');
+            ref.on('value', (snap) => {
+                if (snap.val() === true) {
+                    console.log('Connected to Firebase');
+                } else {
+                    console.log('Disconnected from Firebase');
+                }
+            });
+        }
+        // Ping Firebase every 2.5 minutes (250,000 milliseconds)
+        setInterval(pingFirebase, 250000);
+
+        function confirmDeleteLap(conveyor, index) {
+    // Show a confirmation dialog
+    const confirmation = window.confirm (` ${index + 1}  ${conveyor === 'conveyor1 ' ? '1' : '2'} `);
+    if (confirmation) {
+        deleteLap(conveyor, index);
+    }
+}
+
+function deleteLap(conveyor, index) {
+        let lapTimes;
+        if (conveyor === 'conveyor1') {
+            lapTimes = lapTimes1;
+        } else if (conveyor === 'conveyor2') {
+            lapTimes = lapTimes2;
+        }
+
+        if (index >= 0 && index < lapTimes.length) {
+            // Create a confirmation message
+            const confirmationMessage = "This is to preserve statistics when StockOff. Stop the conveyor timer also. It starts and stops with the same button. Restart on the next pop-off.\n\nDelete this lap?";
+
+            // Display the confirmation dialog
+            const userConfirmed = window.confirm(confirmationMessage);
+
+            if (userConfirmed) {
+                // If the user confirms, remove the lap at the specified index
+                lapTimes.splice(index, 1);
+
+                // Update the statistics after lap removal
+                displayStats();
+            }
+        }
+    }
+
+    // Assuming the rest of your code follows here...
+
+    // Assign the deleteLap function to the window object to make it accessible globally
+    window.deleteLap = deleteLap;
+
+    // Call the displayStats function if it's defined elsewhere in your code
+    displayStats();
+
+    
     </script>
 </body>
 </html>
