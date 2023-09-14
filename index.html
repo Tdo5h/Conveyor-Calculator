@@ -63,8 +63,8 @@
 <body>
     <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-        <button id="startConveyor1">START   CONVEYOR   1</button>
-        <button id="startConveyor2">START   CONVEYOR   2</button>
+        <button id="startConveyor1">START CONVEYOR 1</button>
+        <button id="startConveyor2">START CONVEYOR 2</button>
         <button onclick="deleteLap('conveyor1', 0)">Delete Lap Conveyor   1</button>
         <button onclick="deleteLap('conveyor2', 0)">Delete Lap Conveyor   2</button>
         <button id="recordLap1">Lap Conveyor 1</button>
@@ -242,12 +242,12 @@
             if (!running1) {
                 lapStart1 = Date.now();
                 running1 = true;
-                button.textContent = "Stop Conveyor 1"; // Change button text to "Stop Conveyor 1"
+                button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
                 startCountdown();
                 displayStats();
             } else {
                 running1 = false;
-                button.textContent = "Start Conveyor 1"; // Change button text back to "Start Conveyor 1"
+                button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
                 // Calculate and update work to be done if needed
                 if (timeDifferenceRemaining > 0) {
                     workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
@@ -266,12 +266,12 @@
             if (!running2) {
                 lapStart2 = Date.now();
                 running2 = true;
-                button.textContent = "Stop Conveyor 2"; // Change button text to "Stop Conveyor 2"
+                button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
                 startCountdown();
                 displayStats();
             } else {
                 running2 = false;
-                button.textContent = "Start Conveyor 2"; // Change button text back to "Start Conveyor 2"
+                button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
                 // Calculate and update work to be done if needed
                 if (timeDifferenceRemaining > 0) {
                     workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
