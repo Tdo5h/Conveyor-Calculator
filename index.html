@@ -64,13 +64,13 @@
 <body>
     <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-        <button id="startConveyor1" style="height: 30px; width: 150px;">START CONVEYOR 1</button>
-        <button id="startConveyor2" style="height: 30px; width: 150px;">START CONVEYOR 2</button>
+       
         
-        <button onclick="deleteLap('conveyor1', 0)" style="width: 180px;">Delete Lap Conveyor 1</button>
-        <button onclick="deleteLap('conveyor2', 0)" style="width: 180px;">Delete Lap Conveyor 2</button>
-
+        <button onclick="deleteLap('conveyor1', 0)" style="width: 185px;">Delete Lap Conveyor 1</button>
+        <button onclick="deleteLap('conveyor2', 0)" style="width: 185px;">Delete Lap Conveyor 2</button>
         <button id="recordLap1">Lap Conveyor 1</button>
+        <button id="startConveyor1" style=" width: 185px;">START CONVEYOR 1</button>
+        <button id="startConveyor2" style=" width: 185px;">START CONVEYOR 2</button>
         <button id="recordLap2">Lap Conveyor 2</button>
         <input type="time" id="timeInput" class="input-small" value="05:15">
         <button id="setTime">Set AM-PM</button>
@@ -242,47 +242,59 @@
         }
 
         document.getElementById('startConveyor1').addEventListener('click', () => {
-            const button = document.getElementById('startConveyor1');
-            if (!running1) {
-                lapStart1 = Date.now();
-                running1 = true;
-                button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
-                startCountdown();
+    const button = document.getElementById('startConveyor1');
+    if (!running1) {
+        // Show confirmation dialog when starting Conveyor 1
+        const confirmation = window.confirm("Are you sure you want to start Conveyor 1?");
+        if (confirmation) {
+            lapStart1 = Date.now();
+            running1 = true;
+            button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
+            startCountdown();
+            displayStats();
+        }
+    } else {
+        // Show confirmation dialog when stopping Conveyor 1
+        const confirmation = window.confirm("Are you sure you want to stop Conveyor 1?");
+        if (confirmation) {
+            running1 = false;
+            button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
+                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
                 displayStats();
-            } else {
-                running1 = false;
-                button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
-                // Calculate and update work to be done if needed
-                if (timeDifferenceRemaining > 0) {
-                    workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-                    displayStats();
-                }
             }
-        });
+        }
+    }
+});
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Your JavaScript code here
-            // Add event listeners and perform DOM operations
-        });
-
-        document.getElementById('startConveyor2').addEventListener('click', () => {
-            const button = document.getElementById('startConveyor2');
-            if (!running2) {
-                lapStart2 = Date.now();
-                running2 = true;
-                button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
-                startCountdown();
+document.getElementById('startConveyor2').addEventListener('click', () => {
+    const button = document.getElementById('startConveyor2');
+    if (!running2) {
+        // Show confirmation dialog when starting Conveyor 2
+        const confirmation = window.confirm("Are you sure you want to start Conveyor 2?");
+        if (confirmation) {
+            lapStart2 = Date.now();
+            running2 = true;
+            button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
+            startCountdown();
+            displayStats();
+        }
+    } else {
+        // Show confirmation dialog when stopping Conveyor 2
+        const confirmation = window.confirm("Are you sure you want to stop Conveyor 2?");
+        if (confirmation) {
+            running2 = false;
+            button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
+                workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
                 displayStats();
-            } else {
-                running2 = false;
-                button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
-                // Calculate and update work to be done if needed
-                if (timeDifferenceRemaining > 0) {
-                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-                    displayStats();
-                }
             }
-        });
+        }
+    }
+});
+
 
         function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
             // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
