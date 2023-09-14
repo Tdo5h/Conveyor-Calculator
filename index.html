@@ -47,6 +47,13 @@
             font-size: 230%;
         }
 
+    
+        #pullLaps{
+            width: auto;
+            height: auto;
+            font-size: 120%;
+        }
+
         /* Increase the size of Conveyor headers by 50% */
         .conveyor-header {
             font-size: 180%;
@@ -56,10 +63,10 @@
 <body>
     <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-        <button onclick="deleteLap('conveyor1', 0)">Delete Last Lap Con1</button>
-        <button onclick="deleteLap('conveyor2', 0)">Delete Last Lap Con2</button>
-        <button id="startConveyor1">Start Conveyor 1</button>
-        <button id="startConveyor2">Start Conveyor 2</button>
+        <button id="startConveyor1">START   CONVEYOR   1</button>
+        <button id="startConveyor2">START   CONVEYOR   2</button>
+        <button onclick="deleteLap('conveyor1', 0)">Delete Lap Conveyor   1</button>
+        <button onclick="deleteLap('conveyor2', 0)">Delete Lap Conveyor   2</button>
         <button id="recordLap1">Lap Conveyor 1</button>
         <button id="recordLap2">Lap Conveyor 2</button>
         <input type="time" id="timeInput" class="input-small" value="05:15">
