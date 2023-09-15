@@ -120,16 +120,18 @@
         
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
-             <!-- Add content for the settings window here -->
-             <button onclick="deleteLap('conveyor1', 0)" style="width: 120px;">Delete 1 Lap Conveyor 1</button>
-             <button onclick="deleteLap('conveyor2', 0)" style="width: 120px;">Delete 1 Lap Conveyor 2</button>
-             <div class="black">
-                Subtract Cut conveyor1 =
-                <input type="number" id="subtractLoad1" class="input-small" placeholder="Subtract Load 1">
+            <!-- Add content for the settings window here -->
+            <button onclick="deleteLap('conveyor2', 0)" style="width: 120px; ">Delete 1 Lap Conveyor 2</button>
+            <button onclick="deleteLap('conveyor1', 0)" style="width: 120px; ">Delete 1 Lap Conveyor 1</button>
+            <div class="black" style="margin-top: 20px;">
+            Subtract Cut conveyor1 =
+            <input type="number" id="subtractLoad1" class="input-small" placeholder="Subtract Load 1">
             </div>
-            <div class="black">
-                Subtract Cut conveyor2 =
-                <input type="number" id="subtractLoad2" class="input-small" placeholder="Subtract Load 2">
+            <div class="black" style="margin-top: 10px;">
+            Subtract Cut conveyor2 =
+            <input type="number" id="subtractLoad2" class="input-small" placeholder="Subtract Load 2">
+            </div>
+
                 
             </div>
                 <button id="closeSettings">Close</button>
