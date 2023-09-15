@@ -113,88 +113,93 @@
         let countdownInterval;
 
         function displayStats() {
-            const statsDiv = document.getElementById('stats');
-            statsDiv.innerHTML = '';
+    const statsDiv = document.getElementById('stats');
+    statsDiv.innerHTML = '';
 
-            function formatTime(seconds) {
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const secondsStr = Math.floor(seconds % 60);
-                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
-            }
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secondsStr = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
+    }
 
-            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
-            if (lapTimes1.length > 0) {
-                const averageTime1 = calculateAverageTime(lapTimes1);
-                statsDiv.innerHTML += `<div class="green">Average Lap TimeAll: ${formatTime(averageTime1)}</div>`;
-                statsDiv.innerHTML += `<div class="black">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes1))} </div>`;
-                statsDiv.innerHTML += `<div class="green">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes1))} </div>`;
-            }
-            statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
-            lapTimes1.slice().reverse().forEach((lapData, idx) => {
-                const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-                statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
-            });
+    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
+    
+    const averageTime1 = calculateAverageTime(lapTimes1);
+    statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime1)}</div>`;
+    statsDiv.innerHTML += `<div class="black">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes1))} </div>`;
+    statsDiv.innerHTML += `<div class="green">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes1))} </div>`;
+    
+    statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
+    lapTimes1.slice().reverse().forEach((lapData, idx) => {
+        const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+        statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    });
 
-            if (running1) {
-                const runningTime = Math.floor((Date.now() - lapStart1) / 1000);
-                statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
-                statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime)}</div>`;
-                if (timeDifferenceRemaining > 0) {
-                    const averageTimeAll1 = calculateAverageTime(lapTimes1);
-                    const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
-                    const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
+    if (running1) {
+        const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
+        statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
+        statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime1)}</div>`;
+    } else {
+        statsDiv.innerHTML += 'Conveyor 1 stopped';
+    }
 
-                    const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
-                    const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-                    const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
+    // Display load lift information at all times
+    const averageTimeAll1 = calculateAverageTime(lapTimes1);
+    const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
+    const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
 
-                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
-                }
-            } else {
-                statsDiv.innerHTML += 'Conveyor 1 stopped';
-            }
+    const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
+    const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
+    const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
-            if (lapTimes2.length > 0) {
-                const averageTime2 = calculateAverageTime(lapTimes2);
-                statsDiv.innerHTML += `<div class="green">Average Lap TimeAll: ${formatTime(averageTime2)}</div>`;
-                statsDiv.innerHTML += `<div class="black">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes2))} </div>`;
-                statsDiv.innerHTML += `<div class="green">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes2))} </div>`;
-            }
-            statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
-            lapTimes2.slice().reverse().forEach((lapData, idx) => {
-                const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-                statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
-            });
+    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
 
-            if (running2) {
-                const runningTime = Math.floor((Date.now() - lapStart2) / 1000);
-                statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
-                statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime)}</div>`;
-                if (timeDifferenceRemaining > 0) {
-                    const averageTimeAll2 = calculateAverageTime(lapTimes2);
-                    const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
-                    const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
+    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
+    
+    const averageTime2 = calculateAverageTime(lapTimes2);
+    statsDiv.innerHTML += `<div class="green">Average Lap Time All: ${formatTime(averageTime2)}</div>`;
+    statsDiv.innerHTML += `<div class="black">Average Last 4 Laps:  ${formatTime(calculateAverageTimeX4(lapTimes2))} </div>`;
+    statsDiv.innerHTML += `<div class="green">Average Last 2 Laps:  ${formatTime(calculateAverageTimeX2(lapTimes2))} </div>`;
 
-                    const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
-                    const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-                    const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
+    statsDiv.innerHTML += '<div class="blue">Lap times:</div>';
+    lapTimes2.slice().reverse().forEach((lapData, idx) => {
+        const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+        statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    });
 
-                    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
-                    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
-                }
-            } else {
-                statsDiv.innerHTML += 'Conveyor 2 stopped';
-            }
+    if (running2) {
+        const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
+        statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
+        statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime2)}</div>`;
+    } else {
+        statsDiv.innerHTML += 'Conveyor 2 stopped';
+    }
 
-            if (timeDifferenceRemaining > 0) {
-                statsDiv.innerHTML += `<div class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
-            }
-        }
+    // Display load lift information at all times
+    const averageTimeAll2 = calculateAverageTime(lapTimes2);
+    const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
+    const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
+
+    const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
+    const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
+    const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
+
+    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
+
+    if (timeDifferenceRemaining > 0) {
+        statsDiv.innerHTML += `<div class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
+    }
+}
+
+
+
+
+
 
         function startCountdown() {
             clearInterval(countdownInterval);
@@ -356,7 +361,7 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
      
         document.getElementById('pullLaps').addEventListener('click', () => {
             // Show confirmation dialog
-            const confirmPull = confirm("This will pull the newest 6 lap times entered. To see statistics (Load/Lift) Start corresponding conveyor timer. Stop conveyor again after reviewing load/lift so it’s not making a bad lap. If there are bad laps in the list from missed laps or stock off. Delete 1 at a time back to bad lap entry to correct Load/Lift output.");
+            const confirmPull = confirm("This will pull the newest 6 lap times entered. If there are bad laps in the list from missed laps or stock off. Delete 1 at a time back to bad lap entry to correct Load/Lift output.");
             if (confirmPull) {
                 // Retrieve the newest 6 laps from Firebase for Conveyor 1
                 const lapsRef1 = database.ref('laps/conveyor1').limitToLast(6);
@@ -427,7 +432,7 @@ function deleteLap(conveyor, index) {
 
         if (index >= 0 && index < lapTimes.length) {
             // Create a confirmation message
-            const confirmationMessage = "This is to preserve statistics when StockOff. Stop the conveyor timer also. It starts and stops with the same button. Restart on the next pop-off.\n\nDelete this lap?";
+            const confirmationMessage = "Delete last lap entered. This is to preserve statistics when StockOff. Stop the conveyor timer also. Restart conveyor timer on the next pop-off.\n\nDelete this lap?";
 
             // Display the confirmation dialog
             const userConfirmed = window.confirm(confirmationMessage);
