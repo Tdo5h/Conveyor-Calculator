@@ -82,10 +82,11 @@
     </div>
     
     <div id="clock" class="countdown-timer"></div>
+
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
     <script>
-        // Initialize Firebase
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAdX_RAPVeG-uekG-lG1nhSFzZkTMRgg0c",
             authDomain: "conveyor-laps.firebaseapp.com",
@@ -96,8 +97,25 @@
             appId: "1:708197721355:web:234d1d9223b125a657ee0e",
             measurementId: "G-X2REH4L1M5"
         };
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        // Function to reconnect to Firebase
+        function reconnectToFirebase() {
+            // Check if the connection is still active, and if not, reconnect
+            if (!firebase.database().ref(".info/connected")) {
+                // Attempt to reconnect
+                firebase.database().goOnline();
+            }
+        }
+
+        // Reconnect to Firebase every 1 minutes (60,000 milliseconds)
+        setInterval(reconnectToFirebase, 60000);
+
+        // Call the reconnect function on page load
+        reconnectToFirebase();
 
         let lapStart1 = 0;
         let lapStart2 = 0;
