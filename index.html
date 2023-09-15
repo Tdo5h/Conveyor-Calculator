@@ -59,22 +59,78 @@
         .conveyor-header {
             font-size: 180%;
         }
+
+/* Style for the pop-up window */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+.popup-content {
+    background-color: white;
+    width: 80%;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Style for the close button */
+#closeSettings {
+    background-color: #ccc;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    float: right;
+}
+
+/* Add more styles as needed for your settings window */
+
     </style>
 </head>
 <body>
     <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-       
-        <button id="startConveyor1" style=" width: 150px;">START CONVEYOR 1</button>
-        <button id="startConveyor2" style=" width: 150px;">START CONVEYOR 2</button>
-        <button id="recordLap1">Lap Conveyor 1</button>
-        <button onclick="deleteLap('conveyor1', 0)" style="width: 150px;">Delete Lap Conveyor 1</button>
-        <button onclick="deleteLap('conveyor2', 0)" style="width: 150px;">Delete Lap Conveyor 2</button>
-        <button id="recordLap2">Lap Conveyor 2</button>
-        <input type="time" id="timeInput" class="input-small" value="05:15">
-        <button id="setTime">Set AM-PM</button>
-        <button id="pullLaps">Pull Laps</button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button id="startConveyor2" style="width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
+            <button id="startConveyor1" style="width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button id="recordLap2" style="width: 200px; margin-right: 0;">Lap Conveyor 2</button>
+            <button id="recordLap1" style="width: 200px; margin-left: 0;">Lap Conveyor 1</button>
+        </div>
         
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <input type="time" id="timeInput" class="input-small" value="05:15">
+            <button id="setTime" style="display: none; margin-left: 20px; margin-right: 20px;">Set AM-PM</button>
+            <button id="openSettings" style="margin-right: 20px;">Settings</button>
+            <button id="pullLaps" style="margin-left: 20px;">Pull Laps</button>
+        </div>
+        
+        <div id="settingsPopup" class="popup">
+            <div class="popup-content">
+             <!-- Add content for the settings window here -->
+             <button onclick="deleteLap('conveyor1', 0)" style="width: 120px;">Delete 1 Lap Conveyor 1</button>
+             <button onclick="deleteLap('conveyor2', 0)" style="width: 120px;">Delete 1 Lap Conveyor 2</button>
+             <div class="black">
+                Subtract Already Cut conveyor1 =
+                <input type="number" id="subtractLoad1" class="input-small" placeholder="Subtract Load 1">
+            </div>
+            <div class="black">
+                Subtract Already Cut conveyor2 =
+                <input type="number" id="subtractLoad2" class="input-small" placeholder="Subtract Load 2">
+            </div>
+                <button id="closeSettings">Close</button>
+            </div>
+        </div>
 
     </div>
     <div id="stats" class="content">
@@ -129,7 +185,39 @@
         let workToBeDone2 = 0;
         let targetTime = 0;
         let countdownInterval;
+        let loadValue1 = 0;
+        let loadValue2 = 0;
 
+     // Function to subtract load value from Conveyor 1
+document.getElementById('subtractLoad1').addEventListener('input', () => {
+    const subtractLoad1 = parseInt(document.getElementById('subtractLoad1').value);
+    if (!isNaN(subtractLoad1)) {
+        // Subtract the entered value from the initial loadValue1
+        loadValue1 = 0 - subtractLoad1;
+        displayStats();
+    } else {
+        // If the input box is empty or contains non-numeric characters, reset the load value to 0
+        loadValue1 = 0;
+        displayStats();
+    }
+});
+
+document.getElementById('subtractLoad2').addEventListener('input', () => {
+    const subtractLoad2 = parseInt(document.getElementById('subtractLoad2').value);
+    if (!isNaN(subtractLoad2)) {
+        // Subtract the entered value from the initial loadValue2
+        loadValue2 = 0 - subtractLoad2;
+        displayStats();
+    } else {
+        // If the input box is empty or contains non-numeric characters, reset the load value to 0
+        loadValue2 = 0;
+        displayStats();
+    }
+});
+
+        function calculateWorkToBeDone(averageTime, timeDifference) {
+            return (averageTime > 0 ? timeDifference / averageTime : 0) - loadValue1 - loadValue2;
+        }
         function displayStats() {
     const statsDiv = document.getElementById('stats');
     statsDiv.innerHTML = '';
@@ -140,7 +228,7 @@
         const secondsStr = Math.floor(seconds % 60);
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
-
+   
     statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
     
     const averageTime1 = calculateAverageTime(lapTimes1);
@@ -164,16 +252,17 @@
 
     // Display load lift information at all times
     const averageTimeAll1 = calculateAverageTime(lapTimes1);
-    const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
-    const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
+            const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
+            const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
 
-    const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
-    const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-    const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
+            const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
+            const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
+            const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone1_All.toFixed(1)}  (Lifts = ${(workToBeDone1_All * 10 / 16).toFixed(1)})</div>`;
-    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone1_X4.toFixed(1)}  (Lifts = ${(workToBeDone1_X4 * 10 / 16).toFixed(1)})</div>`;
-    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone1_X2.toFixed(1)}  (Lifts = ${(workToBeDone1_X2 * 10 / 16).toFixed(1)})</div>`;
+            statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor 1 = ${(workToBeDone1_All + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_All + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+            statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+            statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+
 
     statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
     
@@ -197,28 +286,22 @@
     }
 
     // Display load lift information at all times
-    const averageTimeAll2 = calculateAverageTime(lapTimes2);
-    const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2);
-    const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
+    const averageTimeAll2 = calculateAverageTime(lapTimes2);  // Use lapTimes2
+const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2); // Use lapTimes2
+const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2); // Use lapTimes2
 
-    const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
-    const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-    const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
+const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
+const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
+const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
-    statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor = ${workToBeDone2_All.toFixed(1)}  (Lifts = ${(workToBeDone2_All * 10 / 16).toFixed(1)})</div>`;
-    statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor = ${workToBeDone2_X4.toFixed(1)}  (Lifts = ${(workToBeDone2_X4 * 10 / 16).toFixed(1)})</div>`;
-    statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor = ${workToBeDone2_X2.toFixed(1)} (Lifts = ${(workToBeDone2_X2 * 10 / 16).toFixed(1)})</div>`;
+statsDiv.innerHTML += `<div class="green">Avg All - Load Conveyor 2 = ${(workToBeDone2_All + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_All + loadValue2) * 10 / 16).toFixed(1)})</div>`;
+statsDiv.innerHTML += `<div class="black">Avg 4x - Load Conveyor 2 = ${(workToBeDone2_X4 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X4 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
+statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
 
     if (timeDifferenceRemaining > 0) {
         statsDiv.innerHTML += `<div class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
     }
 }
-
-
-
-
-
-
         function startCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = setInterval(function() {
@@ -266,53 +349,38 @@
         document.getElementById('startConveyor1').addEventListener('click', () => {
     const button = document.getElementById('startConveyor1');
     if (!running1) {
-        // Show confirmation dialog when starting Conveyor 1
-        const confirmation = window.confirm("Are you sure you want to start Conveyor 1 timer?");
-        if (confirmation) {
-            lapStart1 = Date.now();
-            running1 = true;
-            button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
-            startCountdown();
-            displayStats();
-        }
+        lapStart1 = Date.now();
+        running1 = true;
+        button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
+        startCountdown();
+        displayStats();
     } else {
-        // Show confirmation dialog when stopping Conveyor 1
-        const confirmation = window.confirm("Are you sure you want to stop Conveyor 1 timer?");
-        if (confirmation) {
-            running1 = false;
-            button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
-            // Calculate and update work to be done if needed
-            if (timeDifferenceRemaining > 0) {
-                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-                displayStats();
-            }
+        running1 = false;
+        button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
+        // Calculate and update work to be done if needed
+        if (timeDifferenceRemaining > 0) {
+            workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+            displayStats();
         }
     }
 });
 
+// Start Conveyor 2 without confirmation
 document.getElementById('startConveyor2').addEventListener('click', () => {
     const button = document.getElementById('startConveyor2');
     if (!running2) {
-        // Show confirmation dialog when starting Conveyor 2 
-        const confirmation = window.confirm("Are you sure you want to start Conveyor 2 timer?");
-        if (confirmation) {
-            lapStart2 = Date.now();
-            running2 = true;
-            button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
-            startCountdown();
-            displayStats();
-        }
+        lapStart2 = Date.now();
+        running2 = true;
+        button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
+        startCountdown();
+        displayStats();
     } else {
-        // Show confirmation dialog when stopping Conveyor 2
-        const confirmation = window.confirm("Are you sure you want to stop Conveyor 2 timer?");
-        if (confirmation) {
-            running2 = false;
-            button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
-            // Calculate and update work to be done if needed
-            if (timeDifferenceRemaining > 0) {
-                workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-                displayStats();
-            }
+        running2 = false;
+        button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
+        // Calculate and update work to be done if needed
+        if (timeDifferenceRemaining > 0) {
+            workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+            displayStats();
         }
     }
 });
@@ -465,13 +533,34 @@ function deleteLap(conveyor, index) {
         }
     }
 
-    // Assuming the rest of your code follows here...
+    document.addEventListener('DOMContentLoaded', () => {
+    // Your existing code here
+
+    // Get references to the settings button and the pop-up window
+    const openSettingsButton = document.getElementById('openSettings');
+    const closeSettingsButton = document.getElementById('closeSettings');
+    const settingsPopup = document.getElementById('settingsPopup');
+
+    // Function to open the settings pop-up
+    openSettingsButton.addEventListener('click', () => {
+        settingsPopup.style.display = 'block';
+    });
+
+    // Function to close the settings pop-up
+    closeSettingsButton.addEventListener('click', () => {
+        settingsPopup.style.display = 'none';
+    });
+
+    // Continue with the rest of your code...
+    // ...
 
     // Assign the deleteLap function to the window object to make it accessible globally
     window.deleteLap = deleteLap;
 
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
+});
+
 
     
     </script>
