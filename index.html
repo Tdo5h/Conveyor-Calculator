@@ -203,32 +203,44 @@
         let loadValue1 = 0;
         let loadValue2 = 0;
 
-        // Function to open the lap selection pop-up for a specific conveyor
-    function openDeleteLapPopup(conveyor) {
-        const lapListDiv = document.getElementById('lapList');
-        lapListDiv.innerHTML = ''; // Clear previous lap list
 
-        // Get the lap times for the selected conveyor
-        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+// Function to open the lap selection pop-up for a specific conveyor
+function openDeleteLapPopup(conveyor) {
+    const lapListDiv = document.getElementById('lapList');
+    lapListDiv.innerHTML = ''; // Clear previous lap list
 
-        // Display the list of laps with delete buttons in reverse order (bottom to top)
-        for (let i = lapTimes.length - 1; i >= 0; i--) {
-            const lapData = lapTimes[i];
-            const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-            lapListDiv.innerHTML = `
-                <div>
-                    <button onclick="deleteSelectedLap('${conveyor}', ${i})">
-                        Delete Lap ${i + 1} (${lapData[1]}) - ${lapTimeStr}
-                    </button>
-                </div>
-            ` + lapListDiv.innerHTML; // Prepend to the lap list
-        }
+    // Get the lap times for the selected conveyor
+    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-        // Show the lap selection pop-up
-        const deleteLapPopup = document.getElementById('deleteLapPopup');
-        deleteLapPopup.style.display = 'block';
-    }
+    // Convert date and time strings to timestamps and create an array of lap objects
+    const lapObjects = lapTimes.map((lapData, index) => {
+        const timestamp = Date.parse(lapData[1].replace(/\//g, '/') + ':00');
+        return { index, timestamp, lapData };
+    });
 
+    // Sort lap objects by timestamp in ascending order
+    lapObjects.sort((a, b) => a.timestamp - b.timestamp);
+
+    // Reverse the order to have the newest lap at the top
+    lapObjects.reverse();
+
+    // Display the list of laps with delete buttons
+    lapObjects.forEach((lapObj) => {
+        const lapData = lapObj.lapData;
+        const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+        lapListDiv.innerHTML += `
+            <div>
+                <button onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
+                    Delete Lap (${lapData[1]}) - ${lapTimeStr}
+                </button>
+            </div>
+        `;
+    });
+
+    // Show the lap selection pop-up
+    const deleteLapPopup = document.getElementById('deleteLapPopup');
+    deleteLapPopup.style.display = 'block';
+}
     // Function to close the lap selection pop-up
     function closeDeleteLapPopup() {
         const deleteLapPopup = document.getElementById('deleteLapPopup');
@@ -237,15 +249,18 @@
 
     // Function to delete a selected lap for a specific conveyor
     function deleteSelectedLap(conveyor, index) {
-        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-        if (index >= 0 && index < lapTimes.length) {
-            lapTimes.splice(index, 1); // Remove the selected lap
-            displayStats(); // Update statistics
-        }
+    // Calculate the index for the reversed order
+    const reversedIndex = lapTimes.length - 1 - index;
 
-        closeDeleteLapPopup(); // Close the lap selection pop-up
+    if (reversedIndex >= 0 && reversedIndex < lapTimes.length) {
+        lapTimes.splice(reversedIndex, 1); // Remove the selected lap
+        displayStats(); // Update statistics
     }
+
+    closeDeleteLapPopup(); // Close the lap selection pop-up
+}
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
