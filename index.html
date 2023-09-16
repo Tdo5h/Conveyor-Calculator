@@ -42,14 +42,18 @@
             background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
-        
         }
         
-        .lap-time {
-    background-color: rgba(0, 0, 0, 0.242);
-    font-size: 35px;
-    padding: 25px; /* Adjust the padding size as needed */
+        
+.lap-time {
+    background-color: rgba(0, 0, 0, 0.242); 
 }
+/* Add padding to the pop-up items */
+.popup-item {
+    font-size: 20px;
+    padding: 10px; /* Adjust the padding size as needed */
+}
+
 
 
         #recordLap1, #recordLap2 {
@@ -104,7 +108,6 @@
 
     </style>
 </head>
-<body>
         <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -115,12 +118,13 @@
             <button id="recordLap2" style="width: 170px; margin-right: 5; font-size: 20px;">Lap Conveyor 2</button>
             <button id="recordLap1" style="width: 170px; margin-left: 5; font-size: 20px;">Lap Conveyor 1</button>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-            <input type="time" id="timeInput" class="input-small" value="05:15">
-           <button id="setTime" style="display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
-            <button id="openSettings" style="margin-right: 20px;">Settings</button>
-            <button id="pullLaps" style="margin-left: 20px;">Pull Laps</button>
-        </div>
+       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+    <input type="time" id="timeInput" class="input-small" value="05:15">
+    <button id="setTime" style="display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
+    <button id="openSettings" style="margin: 0 auto;">Settings</button>
+    <button id="pullLaps" style="margin-left: 20px;">Pull Laps</button>
+    </div>
+
        
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
