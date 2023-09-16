@@ -46,7 +46,8 @@
         }
         
         .lap-time {
-        font-size: 25px; /* Adjust the font size as needed */
+            background-color: rgba(0, 0, 0, 0.242);
+        font-size: 35px; /* Adjust the font size as needed */
     }
 
         #recordLap1, #recordLap2 {
@@ -74,7 +75,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.242);
     z-index: 1;
 }
 
@@ -203,8 +204,7 @@
         let loadValue1 = 0;
         let loadValue2 = 0;
 
-
-// Function to open the lap selection pop-up for a specific conveyor
+       // Function to open the lap selection pop-up for a specific conveyor
 function openDeleteLapPopup(conveyor) {
     const lapListDiv = document.getElementById('lapList');
     lapListDiv.innerHTML = ''; // Clear previous lap list
@@ -241,6 +241,8 @@ function openDeleteLapPopup(conveyor) {
     const deleteLapPopup = document.getElementById('deleteLapPopup');
     deleteLapPopup.style.display = 'block';
 }
+
+
     // Function to close the lap selection pop-up
     function closeDeleteLapPopup() {
         const deleteLapPopup = document.getElementById('deleteLapPopup');
@@ -249,18 +251,15 @@ function openDeleteLapPopup(conveyor) {
 
     // Function to delete a selected lap for a specific conveyor
     function deleteSelectedLap(conveyor, index) {
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-    // Calculate the index for the reversed order
-    const reversedIndex = lapTimes.length - 1 - index;
+        if (index >= 0 && index < lapTimes.length) {
+            lapTimes.splice(index, 1); // Remove the selected lap
+            displayStats(); // Update statistics
+        }
 
-    if (reversedIndex >= 0 && reversedIndex < lapTimes.length) {
-        lapTimes.splice(reversedIndex, 1); // Remove the selected lap
-        displayStats(); // Update statistics
+        closeDeleteLapPopup(); // Close the lap selection pop-up
     }
-
-    closeDeleteLapPopup(); // Close the lap selection pop-up
-}
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
@@ -534,38 +533,45 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         });
      
         document.getElementById('pullLaps').addEventListener('click', () => {
-            // Show confirmation dialog
-            const confirmPull = confirm("This will pull the newest 6 lap times entered. If there are bad laps in the list from missed laps or stock off. Go To setting and Delete.");
-            if (confirmPull) {
-                // Retrieve the newest 6 laps from Firebase for Conveyor 1
-                const lapsRef1 = database.ref('laps/conveyor1').limitToLast(6);
-                lapsRef1.once('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        lapTimes1.length = 0; // Clear the existing lap times
-                        for (const key in data) {
-                            const lapData = data[key];
-                            lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
-                        }
-                        displayStats();
+    // Prompt the user to enter the number of laps to pull with a default value of 6
+    const lapCountInput = prompt("Enter the number of laps to pull:", "6");
+
+    if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
+        // Parse the input as an integer
+        const lapCount = parseInt(lapCountInput);
+
+        if (!isNaN(lapCount) && lapCount > 0) {
+            // Retrieve the specified number of laps from Firebase for Conveyor 1
+            const lapsRef1 = database.ref('laps/conveyor1').limitToLast(lapCount);
+            lapsRef1.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    lapTimes1.length = 0; // Clear the existing lap times
+                    for (const key in data) {
+                        const lapData = data[key];
+                        lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
                     }
-                });
-                // Retrieve the newest 4 laps from Firebase for Conveyor 2
-                const lapsRef2 = database.ref('laps/conveyor2').limitToLast(6);
-                lapsRef2.once('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        lapTimes2.length = 0; // Clear the existing lap times
-                        for (const key in data) {
-                            const lapData = data[key];
-                            lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
-                        }
-                        displayStats();
-                    }
-                });
+                    displayStats();
                 }
-            }
-        );
+            });
+            // Retrieve the specified number of laps from Firebase for Conveyor 2
+            const lapsRef2 = database.ref('laps/conveyor2').limitToLast(lapCount);
+            lapsRef2.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    lapTimes2.length = 0; // Clear the existing lap times
+                    for (const key in data) {
+                        const lapData = data[key];
+                        lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
+                    }
+                    displayStats();
+                }
+            });
+        } else {
+            alert("Please enter a valid number of laps greater than 0.");
+        }
+    }
+});
         // Function to simulate a click on the "Set Time" button
         function simulateSetTimeButtonClick() {
             const setTimeButton = document.getElementById('setTime');
