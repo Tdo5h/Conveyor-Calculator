@@ -98,10 +98,9 @@
     </style>
 </head>
 <body>
-    <div class="content">
+        <div class="content">
         <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-
-  <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <button id="startConveyor2" style="width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
             <button id="startConveyor1" style="width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
         </div>
@@ -109,22 +108,27 @@
             <button id="recordLap2" style="width: 170px; margin-right: 5; font-size: 20px;">Lap Conveyor 2</button>
             <button id="recordLap1" style="width: 170px; margin-left: 5; font-size: 20px;">Lap Conveyor 1</button>
         </div>
-        
-        
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
             <input type="time" id="timeInput" class="input-small" value="05:15">
            <button id="setTime" style="display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
             <button id="openSettings" style="margin-right: 20px;">Settings</button>
             <button id="pullLaps" style="margin-left: 20px;">Pull Laps</button>
         </div>
-
-
-        
+       
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
             <!-- Add content for the settings window here -->
-            <button onclick="deleteLap('conveyor2', 0)" style="width: 120px; ">Delete 1 Lap Conveyor 2</button>
-            <button onclick="deleteLap('conveyor1', 0)" style="width: 120px; margin-left: 20px; ">Delete 1 Lap Conveyor 1</button>
+            <button onclick="openDeleteLapPopup('conveyor1')">Delete Lap Conveyor 1</button>
+            <button onclick="openDeleteLapPopup('conveyor2')">Delete Lap Conveyor 2</button>
+
+            <div id="deleteLapPopup" class="popup">
+                <div class="popup-content">
+                    <h2>Select a Lap to Delete</h2>
+                    <div id="lapList"></div>
+                    <button onclick="closeDeleteLapPopup()">Cancel</button>
+                </div>
+            </div>
+
             <div class="black" style="margin-top: 20px;">
             Subtract Cut conveyor1 =
             <input type="number" id="subtractLoad1" class="input-small" placeholder="Subtract Load 1">
@@ -194,6 +198,57 @@
         let countdownInterval;
         let loadValue1 = 0;
         let loadValue2 = 0;
+
+        // Function to open the lap selection pop-up for a specific conveyor
+    function openDeleteLapPopup(conveyor) {
+        const lapListDiv = document.getElementById('lapList');
+        lapListDiv.innerHTML = ''; // Clear previous lap list
+
+        // Get the lap times for the selected conveyor
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+
+        // Display the list of laps with delete buttons in reverse order (bottom to top)
+        for (let i = lapTimes.length - 1; i >= 0; i--) {
+            const lapData = lapTimes[i];
+            const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+            lapListDiv.innerHTML = `
+                <div>
+                    <button onclick="deleteSelectedLap('${conveyor}', ${i})">
+                        Delete Lap ${i + 1} (${lapData[1]}) - ${lapTimeStr}
+                    </button>
+                </div>
+            ` + lapListDiv.innerHTML; // Prepend to the lap list
+        }
+
+        // Show the lap selection pop-up
+        const deleteLapPopup = document.getElementById('deleteLapPopup');
+        deleteLapPopup.style.display = 'block';
+    }
+
+    // Function to close the lap selection pop-up
+    function closeDeleteLapPopup() {
+        const deleteLapPopup = document.getElementById('deleteLapPopup');
+        deleteLapPopup.style.display = 'none';
+    }
+
+    // Function to delete a selected lap for a specific conveyor
+    function deleteSelectedLap(conveyor, index) {
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+
+        if (index >= 0 && index < lapTimes.length) {
+            lapTimes.splice(index, 1); // Remove the selected lap
+            displayStats(); // Update statistics
+        }
+
+        closeDeleteLapPopup(); // Close the lap selection pop-up
+    }
+
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secondsStr = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
+    }
 
      // Function to subtract load value from Conveyor 1
 document.getElementById('subtractLoad1').addEventListener('input', () => {
@@ -454,7 +509,7 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
      
         document.getElementById('pullLaps').addEventListener('click', () => {
             // Show confirmation dialog
-            const confirmPull = confirm("This will pull the newest 6 lap times entered. If there are bad laps in the list from missed laps or stock off. Delete 1 at a time back to bad lap entry to correct Load/Lift output.");
+            const confirmPull = confirm("This will pull the newest 6 lap times entered. If there are bad laps in the list from missed laps or stock off. Go To setting and Delete.");
             if (confirmPull) {
                 // Retrieve the newest 6 laps from Firebase for Conveyor 1
                 const lapsRef1 = database.ref('laps/conveyor1').limitToLast(6);
@@ -514,32 +569,6 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         deleteLap(conveyor, index);
     }
 }
-
-function deleteLap(conveyor, index) {
-        let lapTimes;
-        if (conveyor === 'conveyor1') {
-            lapTimes = lapTimes1;
-        } else if (conveyor === 'conveyor2') {
-            lapTimes = lapTimes2;
-        }
-
-        if (index >= 0 && index < lapTimes.length) {
-            // Create a confirmation message
-            const confirmationMessage = "Delete last lap entered. This is to preserve statistics when StockOff. Stop the conveyor timer also. Restart conveyor timer on the next pop-off.\n\nDelete this lap?";
-
-            // Display the confirmation dialog
-            const userConfirmed = window.confirm(confirmationMessage);
-
-            if (userConfirmed) {
-                // If the user confirms, remove the lap at the specified index
-                lapTimes.splice(index, 1);
-
-                // Update the statistics after lap removal
-                displayStats();
-            }
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
     // Your existing code here
 
@@ -560,9 +589,6 @@ function deleteLap(conveyor, index) {
 
     // Continue with the rest of your code...
     // ...
-
-    // Assign the deleteLap function to the window object to make it accessible globally
-    window.deleteLap = deleteLap;
 
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
