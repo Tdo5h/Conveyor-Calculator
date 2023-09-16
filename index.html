@@ -421,17 +421,21 @@ statsDiv.innerHTML += `<div class="green">Avg 2x - Load Conveyor 2 = ${(workToBe
         startCountdown();
         displayStats();
     } else {
-        running1 = false;
-        button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
-        // Calculate and update work to be done if needed
-        if (timeDifferenceRemaining > 0) {
-            workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-            displayStats();
+        // Ask for confirmation before stopping Conveyor 1
+        const confirmStop = confirm("Are you sure you want to stop Conveyor 1?");
+        if (confirmStop) {
+            running1 = false;
+            button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
+                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                displayStats();
+            }
         }
     }
 });
 
-// Start Conveyor 2 without confirmation
+// Update the event listener for Conveyor 2 in a similar manner
 document.getElementById('startConveyor2').addEventListener('click', () => {
     const button = document.getElementById('startConveyor2');
     if (!running2) {
@@ -441,16 +445,19 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         startCountdown();
         displayStats();
     } else {
-        running2 = false;
-        button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
-        // Calculate and update work to be done if needed
-        if (timeDifferenceRemaining > 0) {
-            workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-            displayStats();
+        // Ask for confirmation before stopping Conveyor 2
+        const confirmStop = confirm("Are you sure you want to stop Conveyor 2?");
+        if (confirmStop) {
+            running2 = false;
+            button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
+                workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                displayStats();
+            }
         }
     }
 });
-
 
         function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
             // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
@@ -596,10 +603,11 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
 
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
-});
 
 
-    
+
+
+});    
     </script>
 </body>
 </html>
