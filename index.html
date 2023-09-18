@@ -399,7 +399,7 @@ if (running1) {
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes1.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    statsDiv.innerHTML += `<div class="red">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
@@ -436,7 +436,7 @@ if (running2) {
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes2.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    statsDiv.innerHTML += `<div class="red">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
