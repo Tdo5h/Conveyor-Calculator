@@ -128,39 +128,39 @@
 </head><div class="content">
     <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button id="startConveyor2" style="border: 1px solid black; width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
-        <button id="startConveyor1" style="border: 1px solid black; width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
+        <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
+        <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
     </div>
     <div style="display: flex; justify-content: center; margin-top: 20px;">
-        <button id="recordLap2" style="border: 1px solid black; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
-        <button id="recordLap1" style="border: 1px solid black; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
+        <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
+        <button id="recordLap1" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-        <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;" value="05:15">
-        <button id="setTime" style="border: 1px solid black; display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
-        <button id="openSettings" style="border: 1px solid black; margin: 0 auto;">Settings</button>
-        <button id="pullLaps" style="border: 1px solid black; margin-left: 20px;">Pull Laps</button>
+        <input type="time" id="timeInput" class="input-small" style="border: 1px solid black; border-radius: 5px;" value="05:15">
+        <button id="setTime" style="border: 1px solid black; border-radius: 5px; display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
+        <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin: 0 auto;">Settings</button>
+        <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: 20px;">Pull Laps</button>
     </div>
     <div id="settingsPopup" class="popup">
         <div class="popup-content">
             <!-- Add content for the settings window here -->
-            <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black;">Delete Lap Conveyor 2</button>
-            <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black;">Delete Lap Conveyor 1</button>
+            <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 2</button>
+            <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 1</button>
             <div id="deleteLapPopup" class="popup">
                 <div class="popup-content">
                     <h2>Select a Lap to Delete</h2>
                     <div id="lapList"></div>
-                    <button onclick="closeDeleteLapPopup()" style="border: 1px solid black;">Cancel</button>
+                    <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px;">Cancel</button>
                 </div>
             </div>
 
             <div class="black" style="margin-top: 20px;">
                 Subtract Cut conveyor1 =
-                <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black;" placeholder="Subtract Load 1">
+                <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 1">
             </div>
             <div class="black" style="margin-top: 10px;">
                 Subtract Cut conveyor2 =
-                <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black;" placeholder="Subtract Load 2">
+                <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
             </div>
 
         </div>
@@ -172,6 +172,7 @@
 </div>
 
 <div id="clock" class="countdown-timer"></div>
+
 
 
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
