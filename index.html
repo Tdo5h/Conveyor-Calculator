@@ -413,7 +413,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
             const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
             const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-            statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone1_All + loadValue1).toFixed(1)} <span style="margin-left: 70px;">Lifts = ${((workToBeDone1_All + loadValue1) * 10 / 16).toFixed(1)}</span></div>`;
+            statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone1_All + loadValue1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_All + loadValue1) * 10 / 16).toFixed(1)}</span></div>`;
             statsDiv.innerHTML += `<div class="black" style="display: none;>Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
             statsDiv.innerHTML += `<div class="green" style="display: none;>Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 
@@ -448,7 +448,7 @@ const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceR
 const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
 const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
-statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone2_All + loadValue2).toFixed(1)} <span style="margin-left: 70px;">Lifts = ${((workToBeDone2_All + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
+statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone2_All + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_All + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
 statsDiv.innerHTML += `<div class="black" style="display: none;">Avg 4x - Load Conveyor 2 = ${(workToBeDone2_X4 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X4 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none;">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
 
