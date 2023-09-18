@@ -57,7 +57,7 @@
         .red { color: red; }
         .green { color: green; }
         .blue { color: blue; }
-        .purple { color: purple; }
+        .purple { color: rgb(73, 0, 57); }
         .orange { color: orange; }
         .content {
             background-color: rgba(255, 255, 255, 0.7);
@@ -125,56 +125,54 @@
 /* Add more styles as needed for your settings window */
 
     </style>
-</head>
-        <div class="content">
-        <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <button id="startConveyor2" style="width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
-            <button id="startConveyor1" style="width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
-        </div>
-        <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <button id="recordLap2" style="width: 170px; margin-right: 5; font-size: 20px;">Lap Conveyor 2</button>
-            <button id="recordLap1" style="width: 170px; margin-left: 5; font-size: 20px;">Lap Conveyor 1</button>
-        </div>
-       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-    <input type="time" id="timeInput" class="input-small" value="05:15">
-    <button id="setTime" style="display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
-    <button id="openSettings" style="margin: 0 auto;">Settings</button>
-    <button id="pullLaps" style="margin-left: 20px;">Pull Laps</button>
-    </div>       
-        <div id="settingsPopup" class="popup">
-            <div class="popup-content">
-            <!-- Add content for the settings window here --> 
-            <button onclick="openDeleteLapPopup('conveyor2')">Delete Lap Conveyor 2</button>
-            <button onclick="openDeleteLapPopup('conveyor1')">Delete Lap Conveyor 1</button>
+</head><div class="content">
+    <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="startConveyor2" style="border: 1px solid black; width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
+        <button id="startConveyor1" style="border: 1px solid black; width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
+    </div>
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <button id="recordLap2" style="border: 1px solid black; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
+        <button id="recordLap1" style="border: 1px solid black; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;" value="05:15">
+        <button id="setTime" style="border: 1px solid black; display: none; margin-left: 20px; margin-right: 20px; width: 150px; height: 50px;">Set AM-PM</button>
+        <button id="openSettings" style="border: 1px solid black; margin: 0 auto;">Settings</button>
+        <button id="pullLaps" style="border: 1px solid black; margin-left: 20px;">Pull Laps</button>
+    </div>
+    <div id="settingsPopup" class="popup">
+        <div class="popup-content">
+            <!-- Add content for the settings window here -->
+            <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black;">Delete Lap Conveyor 2</button>
+            <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black;">Delete Lap Conveyor 1</button>
             <div id="deleteLapPopup" class="popup">
                 <div class="popup-content">
                     <h2>Select a Lap to Delete</h2>
                     <div id="lapList"></div>
-                    <button onclick="closeDeleteLapPopup()">Cancel</button>
+                    <button onclick="closeDeleteLapPopup()" style="border: 1px solid black;">Cancel</button>
                 </div>
             </div>
 
             <div class="black" style="margin-top: 20px;">
-            Subtract Cut conveyor1 =
-            <input type="number" id="subtractLoad1" class="input-small" placeholder="Subtract Load 1">
+                Subtract Cut conveyor1 =
+                <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black;" placeholder="Subtract Load 1">
             </div>
             <div class="black" style="margin-top: 10px;">
-            Subtract Cut conveyor2 =
-            <input type="number" id="subtractLoad2" class="input-small" placeholder="Subtract Load 2">
+                Subtract Cut conveyor2 =
+                <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black;" placeholder="Subtract Load 2">
             </div>
 
-                
-            </div>
-              <button id="closeSettings" style="border-radius: 10px; background-color: white; color: black; padding: 10px 20px; font-size: 16px; position: absolute;  margin-top: 20px; left: 50%; transform: translate(-50%, -50%);">Done</button>
         </div>
+        <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 10px 20px; font-size: 16px; position: absolute; margin-top: 20px; left: 50%; transform: translate(-50%, -50%);">Done</button>
+    </div>
+</div>
+<div id="stats" class="content">
+    <!-- Display statistics here -->
+</div>
 
-    </div>
-    <div id="stats" class="content">
-        <!-- Display statistics here -->
-    </div>
-    
-    <div id="clock" class="countdown-timer"></div>
+<div id="clock" class="countdown-timer"></div>
+
 
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
@@ -399,7 +397,7 @@ if (running1) {
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes1.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="red">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
@@ -436,7 +434,7 @@ if (running2) {
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes2.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="red">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
