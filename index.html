@@ -606,7 +606,7 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
      
         document.getElementById('pullLaps').addEventListener('click', () => {
     // Prompt the user to enter the number of laps to pull with a default value of 6
-    const lapCountInput = prompt("Enter the number of laps to pull:", "6");
+    const lapCountInput = prompt("If you won’t to see average for 2 laps pull 2 so on and so forth. The rest will go back to cloud and can be pulled again. If lap times are not pulling then there not sending either. Turn airplane mode on and off to send data and pull laps again. Enter the number of laps to pull:", "6");
 
     if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
         // Parse the input as an integer
