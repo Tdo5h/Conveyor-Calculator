@@ -86,7 +86,7 @@
 
         /* Increase the size of Conveyor headers by 50% */
         .conveyor-header {
-            font-size: 180%;
+        font-size: 180%;
         }
 
 /* Style for the pop-up window */
@@ -105,8 +105,31 @@ button {
     background-color: white;
 }
 
-
+#countdownDisplay {
+        position: fixed;   /* Fixes the position relative to the viewport */
+        bottom: 0;         /* Positions it at the bottom of the viewport */
+        left: 0;           /* Aligns it to the left side */
+        width: 100%;       /* Makes it span the full width of the viewport */
+        background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent black background for visibility */
+        color: white;      /* White text color for visibility */
+        text-align: center; /* Center-aligns the text */
+        padding: 10px 0;   /* Adds some vertical padding */
+    }
    
+    #conveyorCalculator {
+    position: fixed;       /* Fixes the position relative to the viewport */
+    top: 0;                /* Positions it at the top of the viewport */
+    left: 0;               /* Start from the very left edge of the viewport */
+    width: 100%;           /* Makes it span the full width of the viewport */
+    text-align: center;    /* Center-aligns the text */
+    background-color: rgba(0, 0, 0, 0.801); /* Semi-transparent black background for visibility */
+    color: rgb(255, 255, 255);       /* White text color for visibility */
+    padding: 10px 0;       /* Adds some vertical padding */
+    box-sizing: border-box;/* Ensures that padding and border are included in the total width and height */
+    z-index: 1000;         /* Ensures it stays above other elements */
+}
+
+
 
 .popup-content {
     background-color: white;
@@ -131,10 +154,10 @@ button {
 
     </style>
 </head><div class="content">
-    <h1 style="font-size: 2.2rem;">Conveyor Calculator</h1>
+    <h1 id="conveyorCalculator" style="font-size: 2.2rem;">Conveyor Calculator</h1>
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px; margin-right: 20px;">START CONVEYOR 2</button>
-        <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px; margin-left: 20px;">START CONVEYOR 1</button>
+        <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 70px;margin-right: 20px;">START CONVEYOR 2</button>
+        <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 70px; margin-left: 20px;">START CONVEYOR 1</button>
     </div>
     <div style="display: flex; justify-content: center; margin-top: 20px;">
         <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
@@ -190,22 +213,23 @@ button {
 
 
 
-<script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
-<script>
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAdX_RAPVeG-uekG-lG1nhSFzZkTMRgg0c",
-        authDomain: "conveyor-laps.firebaseapp.com",
-        databaseURL: "https://conveyor-laps-default-rtdb.firebaseio.com",
-        projectId: "conveyor-laps",
-        storageBucket: "conveyor-laps.appspot.com",
-        messagingSenderId: "708197721355",
-        appId: "1:708197721355:web:234d1d9223b125a657ee0e",
-        measurementId: "G-X2REH4L1M5"
-    };
 
-  // Initialize Firebase
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdX_RAPVeG-uekG-lG1nhSFzZkTMRgg0c",
+            authDomain: "conveyor-laps.firebaseapp.com",
+            databaseURL: "https://conveyor-laps-default-rtdb.firebaseio.com",
+            projectId: "conveyor-laps",
+            storageBucket: "conveyor-laps.appspot.com",
+            messagingSenderId: "708197721355",
+            appId: "1:708197721355:web:234d1d9223b125a657ee0e",
+            measurementId: "G-X2REH4L1M5"
+        };
+
+      // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
@@ -213,22 +237,22 @@ let isOnline = true; // Track online/offline status
 
 // Function to send data to Firebase
 function sendDataToFirebase(data) {
-// Check if the device is online
-if (isOnline) {
-    // Attempt to send the data to Firebase
-    database.ref('your_data_path').push(data, (error) => {
-        if (error) {
-            // Data transmission failed, implement retry mechanism here
-            retrySendingData(data);
-        } else {
-            // Data sent successfully
-            console.log('Data sent to Firebase.');
-        }
-    });
-} else {
-    // Device is offline, implement retry mechanism here
-    retrySendingData(data);
-}
+    // Check if the device is online
+    if (isOnline) {
+        // Attempt to send the data to Firebase
+        database.ref('your_data_path').push(data, (error) => {
+            if (error) {
+                // Data transmission failed, implement retry mechanism here
+                retrySendingData(data);
+            } else {
+                // Data sent successfully
+                console.log('Data sent to Firebase.');
+            }
+        });
+    } else {
+        // Device is offline, implement retry mechanism here
+        retrySendingData(data);
+    }
 }
 
 // Retry mechanism
@@ -236,37 +260,37 @@ let retryCount = 0;
 const maxRetries = 50; // Maximum number of retry attempts
 
 function retrySendingData(data) {
-if (retryCount < maxRetries) {
-    retryCount++;
-    console.log(`Retry attempt ${retryCount} to send data.`);
-    
-    // Implement a delay before retrying (e.g., 5 seconds)
-    setTimeout(() => {
-        sendDataToFirebase(data); // Retry sending data
-    }, 5000); // 5000 milliseconds (5 seconds)
-} else {
-    console.log('Max retry attempts reached. Data transmission failed.');
-}
+    if (retryCount < maxRetries) {
+        retryCount++;
+        console.log(`Retry attempt ${retryCount} to send data.`);
+        
+        // Implement a delay before retrying (e.g., 5 seconds)
+        setTimeout(() => {
+            sendDataToFirebase(data); // Retry sending data
+        }, 5000); // 5000 milliseconds (5 seconds)
+    } else {
+        console.log('Max retry attempts reached. Data transmission failed.');
+    }
 }
 
 // Listen for online/offline events
 window.addEventListener('online', () => {
-isOnline = true;
-console.log('Device is online.');
+    isOnline = true;
+    console.log('Device is online.');
 
-// Check if there is pending data to send, and if so, trigger data transmission
-if (pendingDataToSend.length > 0) {
-    console.log('Sending pending data...');
-    for (const data of pendingDataToSend) {
-        sendDataToFirebase(data);
+    // Check if there is pending data to send, and if so, trigger data transmission
+    if (pendingDataToSend.length > 0) {
+        console.log('Sending pending data...');
+        for (const data of pendingDataToSend) {
+            sendDataToFirebase(data);
+        }
+        pendingDataToSend = []; // Clear the pending data array
     }
-    pendingDataToSend = []; // Clear the pending data array
-}
 });
 
 window.addEventListener('offline', () => {
-isOnline = false;
-console.log('Device is offline.');
+    isOnline = false;
+    console.log('Device is offline.');
 });
 
 // Call sendDataToFirebase when you want to send data
@@ -274,128 +298,129 @@ const dataToSend = { /* your data object */ };
 sendDataToFirebase(dataToSend);
 
 
-    let lapStart1 = 0;
-    let lapStart2 = 0;
-    let running1 = false;
-    let running2 = false;
-    const lapTimes1 = [];
-    const lapTimes2 = [];
-    let timeDifference = 0;
-    let timeDifferenceRemaining = 0;
-    let workToBeDone1 = 0;
-    let workToBeDone2 = 0;
-    let targetTime = 0;
-    let countdownInterval;
-    let loadValue1 = 0;
-    let loadValue2 = 0;
+        let lapStart1 = 0;
+        let lapStart2 = 0;
+        let running1 = false;
+        let running2 = false;
+        const lapTimes1 = [];
+        const lapTimes2 = [];
+        let timeDifference = 0;
+        let timeDifferenceRemaining = 0;
+        let workToBeDone1 = 0;
+        let workToBeDone2 = 0;
+        let targetTime = 0;
+        let countdownInterval;
+        let loadValue1 = 0;
+        let loadValue2 = 0;
 
+   
 
-   // Function to open the lap selection pop-up for a specific conveyor
+       // Function to open the lap selection pop-up for a specific conveyor
 function openDeleteLapPopup(conveyor) {
-const lapListDiv = document.getElementById('lapList');
-lapListDiv.innerHTML = ''; // Clear previous lap list
+    const lapListDiv = document.getElementById('lapList');
+    lapListDiv.innerHTML = ''; // Clear previous lap list
 
-// Get the lap times for the selected conveyor
-const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
-
-// Convert date and time strings to timestamps and create an array of lap objects
-const lapObjects = lapTimes.map((lapData, index) => {
-    const timestamp = Date.parse(lapData[1].replace(/\//g, '/') + ':00');
-    return { index, timestamp, lapData };
-});
-
-// Sort lap objects by timestamp in ascending order
-lapObjects.sort((a, b) => a.timestamp - b.timestamp);
-
-// Reverse the order to have the newest lap at the top
-lapObjects.reverse();
-
-// Display the list of laps with delete buttons
-lapObjects.forEach((lapObj) => {
-    const lapData = lapObj.lapData;
-    const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    lapListDiv.innerHTML += `
-        <div>
-            <button onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
-                 (${lapData[1]}) - ${lapTimeStr}
-            </button>
-        </div>
-    `;
-});
-
-// Show the lap selection pop-up
-const deleteLapPopup = document.getElementById('deleteLapPopup');
-deleteLapPopup.style.display = 'block';
-}
-
-
-// Function to close the lap selection pop-up
-function closeDeleteLapPopup() {
-    const deleteLapPopup = document.getElementById('deleteLapPopup');
-    deleteLapPopup.style.display = 'none';
-}
-
-// Function to delete a selected lap for a specific conveyor
-function deleteSelectedLap(conveyor, index) {
+    // Get the lap times for the selected conveyor
     const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-    if (index >= 0 && index < lapTimes.length) {
-        lapTimes.splice(index, 1); // Remove the selected lap
-        displayStats(); // Update statistics
+    // Convert date and time strings to timestamps and create an array of lap objects
+    const lapObjects = lapTimes.map((lapData, index) => {
+        const timestamp = Date.parse(lapData[1].replace(/\//g, '/') + ':00');
+        return { index, timestamp, lapData };
+    });
+
+    // Sort lap objects by timestamp in ascending order
+    lapObjects.sort((a, b) => a.timestamp - b.timestamp);
+
+    // Reverse the order to have the newest lap at the top
+    lapObjects.reverse();
+
+    // Display the list of laps with delete buttons
+    lapObjects.forEach((lapObj) => {
+        const lapData = lapObj.lapData;
+        const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+        lapListDiv.innerHTML += `
+            <div>
+                <button onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
+                    Delete Lap (${lapData[1]}) - ${lapTimeStr}
+                </button>
+            </div>
+        `;
+    });
+
+    // Show the lap selection pop-up
+    const deleteLapPopup = document.getElementById('deleteLapPopup');
+    deleteLapPopup.style.display = 'block';
+}
+
+
+    // Function to close the lap selection pop-up
+    function closeDeleteLapPopup() {
+        const deleteLapPopup = document.getElementById('deleteLapPopup');
+        deleteLapPopup.style.display = 'none';
     }
 
-    closeDeleteLapPopup(); // Close the lap selection pop-up
-}
+    // Function to delete a selected lap for a specific conveyor
+    function deleteSelectedLap(conveyor, index) {
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secondsStr = Math.floor(seconds % 60);
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
-}
+        if (index >= 0 && index < lapTimes.length) {
+            lapTimes.splice(index, 1); // Remove the selected lap
+            displayStats(); // Update statistics
+        }
 
- // Function to subtract load value from Conveyor 1
+        closeDeleteLapPopup(); // Close the lap selection pop-up
+    }
+
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secondsStr = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
+    }
+
+     // Function to subtract load value from Conveyor 1
 document.getElementById('subtractLoad1').addEventListener('input', () => {
-const subtractLoad1 = parseInt(document.getElementById('subtractLoad1').value);
-if (!isNaN(subtractLoad1)) {
-    // Subtract the entered value from the initial loadValue1
-    loadValue1 = 0 - subtractLoad1;
-    displayStats();
-} else {
-    // If the input box is empty or contains non-numeric characters, reset the load value to 0
-    loadValue1 = 0;
-    displayStats();
-}
+    const subtractLoad1 = parseInt(document.getElementById('subtractLoad1').value);
+    if (!isNaN(subtractLoad1)) {
+        // Subtract the entered value from the initial loadValue1
+        loadValue1 = 0 - subtractLoad1;
+        displayStats();
+    } else {
+        // If the input box is empty or contains non-numeric characters, reset the load value to 0
+        loadValue1 = 0;
+        displayStats();
+    }
 });
 
 document.getElementById('subtractLoad2').addEventListener('input', () => {
-const subtractLoad2 = parseInt(document.getElementById('subtractLoad2').value);
-if (!isNaN(subtractLoad2)) {
-    // Subtract the entered value from the initial loadValue2
-    loadValue2 = 0 - subtractLoad2;
-    displayStats();
-} else {
-    // If the input box is empty or contains non-numeric characters, reset the load value to 0
-    loadValue2 = 0;
-    displayStats();
-}
+    const subtractLoad2 = parseInt(document.getElementById('subtractLoad2').value);
+    if (!isNaN(subtractLoad2)) {
+        // Subtract the entered value from the initial loadValue2
+        loadValue2 = 0 - subtractLoad2;
+        displayStats();
+    } else {
+        // If the input box is empty or contains non-numeric characters, reset the load value to 0
+        loadValue2 = 0;
+        displayStats();
+    }
 });
 
-    function calculateWorkToBeDone(averageTime, timeDifference) {
-        return (averageTime > 0 ? timeDifference / averageTime : 0) - loadValue1 - loadValue2;
+        function calculateWorkToBeDone(averageTime, timeDifference) {
+            return (averageTime > 0 ? timeDifference / averageTime : 0) - loadValue1 - loadValue2;
+        }
+        function displayStats() {
+    const statsDiv = document.getElementById('stats');
+    statsDiv.innerHTML = '';
+
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secondsStr = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
-    function displayStats() {
-const statsDiv = document.getElementById('stats');
-statsDiv.innerHTML = '';
-
-function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secondsStr = Math.floor(seconds % 60);
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
-}
-
-statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
+   
+    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
 
 const averageTime1 = calculateAverageTime(lapTimes1);
 statsDiv.innerHTML += `<div class="green">Average Lap Times: ${formatTime(averageTime1)}</div>`;
@@ -403,37 +428,37 @@ statsDiv.innerHTML += `<div class="black" style="display: none;">Average Last 4 
 statsDiv.innerHTML += `<div class="green" style="display: none;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX2(lapTimes1))}</div>`;
 
 if (running1) {
-const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
-statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
-statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime1)}</div>`;
+    const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
+    statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
+    statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime1)}</div>`;
 } else {
-statsDiv.innerHTML += '<div class="black">Conveyor 1 stopped</div>';
+    statsDiv.innerHTML += '<div class="black">Conveyor 1 stopped</div>';
 }
 
 
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes1.slice().reverse().forEach((lapData, idx) => {
-const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+    statsDiv.innerHTML += `<div class="purple">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
 
-// Display load lift information at all times
-const averageTimeAll1 = calculateAverageTime(lapTimes1);
-        const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
-        const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
+    // Display load lift information at all times
+    const averageTimeAll1 = calculateAverageTime(lapTimes1);
+            const averageTimeX2_1 = calculateAverageTimeX2(lapTimes1);
+            const averageTimeX4_1 = calculateAverageTimeX4(lapTimes1);
 
-        const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
-        const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-        const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
+            const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
+            const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
+            const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
-        statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone1_All + loadValue1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_All + loadValue1) * 10 / 16).toFixed(1)}</span></div>`;
-        statsDiv.innerHTML += `<div class="black" style="display: none;>Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
-        statsDiv.innerHTML += `<div class="green" style="display: none;>Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+            statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Load Conveyor = ${(workToBeDone1_All + loadValue1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_All + loadValue1) * 10 / 16).toFixed(1)}</span></div>`;
+            statsDiv.innerHTML += `<div class="black" style="display: none;>Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+            statsDiv.innerHTML += `<div class="green" style="display: none;>Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 
 
-        statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
+            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
 
 const averageTime2 = calculateAverageTime(lapTimes2);
 statsDiv.innerHTML += `<div class="green">Average Lap Time : ${formatTime(averageTime2)}</div>`;
@@ -441,24 +466,24 @@ statsDiv.innerHTML += `<div class="black" style="display: none;">Average Last 4 
 statsDiv.innerHTML += `<div class="green" style="display: none;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX2(lapTimes2))}</div>`;
 
 if (running2) {
-const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
-statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
-statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime2)}</div>`;
+    const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
+    statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
+    statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime2)}</div>`;
 } else {
-statsDiv.innerHTML += '<div class="black">Conveyor 2 stopped</div>';
+    statsDiv.innerHTML += '<div class="black">Conveyor 2 stopped</div>';
 }
 
 statsDiv.innerHTML += '<div class="blue" style="display: none;>Lap times:</div>';
 lapTimes2.slice().reverse().forEach((lapData, idx) => {
-const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
+    statsDiv.innerHTML += `<div class="purple">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 
 
 
 
-// Display load lift information at all times
-const averageTimeAll2 = calculateAverageTime(lapTimes2);  // Use lapTimes2
+    // Display load lift information at all times
+    const averageTimeAll2 = calculateAverageTime(lapTimes2);  // Use lapTimes2
 const averageTimeX2_2 = calculateAverageTimeX2(lapTimes2); // Use lapTimes2
 const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2); // Use lapTimes2
 
@@ -471,291 +496,258 @@ statsDiv.innerHTML += `<div class="black" style="display: none;">Avg 4x - Load C
 statsDiv.innerHTML += `<div class="green" style="display: none;">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
 
 
-if (timeDifferenceRemaining > 0) {
-    statsDiv.innerHTML += `<div class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
-}
-}
-function startCountdown() {
-clearInterval(countdownInterval);
-countdownInterval = setInterval(function() {
     if (timeDifferenceRemaining > 0) {
-        timeDifferenceRemaining--;
-        displayStats();
+        statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
     }
-}, 1000);
 }
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(function() {
+                if (timeDifferenceRemaining > 0) {
+                    timeDifferenceRemaining--;
+                    displayStats();
+                }
+            }, 1000);
+        }
 
+        function calculateWorkToBeDone(averageTime, timeDifference) {
+            return averageTime > 0 ? timeDifference / averageTime : 0;
+        }
 
+        function getFormattedTime() {
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.getMonth() + 1; // Months are 0-based, so add 1
+            const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'pm' : 'am';
+            const formattedTime = `${formattedDate} ${hours % 12}:${(minutes < 10 ? '0' : '') + minutes} ${ampm}`;
+            return formattedTime;
+        }
 
+        function calculateAverageTime(lapTimes) {
+            const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData[0], 0);
+            const numLaps = lapTimes.length;
+            return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
+        }
 
+        function calculateAverageTimeX2(lapTimes) {
+            const lastTwoLaps = lapTimes.slice(-2);
+            const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData[0], 0);
+            return lastTwoLaps.length > 0 ? totalLapTime / lastTwoLaps.length / 1000 : 0;
+        }
 
+        function calculateAverageTimeX4(lapTimes) {
+            const lastFourLaps = lapTimes.slice(-4);
+            const totalLapTime = lastFourLaps.reduce((total, lapData) => total + lapData[0], 0);
+            return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
+        }
 
-    function calculateWorkToBeDone(averageTime, timeDifference) {
-        return averageTime > 0 ? timeDifference / averageTime : 0;
-    }
-
-    function getFormattedTime() {
-        const now = new Date();
-        const day = now.getDate();
-        const month = now.getMonth() + 1; // Months are 0-based, so add 1
-        const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const ampm = hours >= 12 ? 'pm' : 'am';
-        const formattedTime = `${formattedDate} ${hours % 12}:${(minutes < 10 ? '0' : '') + minutes} ${ampm}`;
-        return formattedTime;
-    }
-
-    function calculateAverageTime(lapTimes) {
-        const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData[0], 0);
-        const numLaps = lapTimes.length;
-        return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
-    }
-
-    function calculateAverageTimeX2(lapTimes) {
-        const lastTwoLaps = lapTimes.slice(-2);
-        const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData[0], 0);
-        return lastTwoLaps.length > 0 ? totalLapTime / lastTwoLaps.length / 1000 : 0;
-    }
-
-    function calculateAverageTimeX4(lapTimes) {
-        const lastFourLaps = lapTimes.slice(-4);
-        const totalLapTime = lastFourLaps.reduce((total, lapData) => total + lapData[0], 0);
-        return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
-    }
-
-    document.getElementById('startConveyor1').addEventListener('click', () => {
-const button = document.getElementById('startConveyor1');
-if (!running1) {
-    lapStart1 = Date.now();
-    running1 = true;
-    button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
-    startCountdown();
-    displayStats();
-} else {
-    // Ask for confirmation before stopping Conveyor 1
-    const confirmStop = confirm("Are you sure you want to stop Conveyor 1?");
-    if (confirmStop) {
-        running1 = false;
-        button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
-        // Calculate and update work to be done if needed
-        if (timeDifferenceRemaining > 0) {
-            workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-            displayStats();
+        document.getElementById('startConveyor1').addEventListener('click', () => {
+    const button = document.getElementById('startConveyor1');
+    if (!running1) {
+        lapStart1 = Date.now();
+        running1 = true;
+        button.textContent = "STOP CONVEYOR 1"; // Change button text to "Stop Conveyor 1"
+        startCountdown();
+        displayStats();
+    } else {
+        // Ask for confirmation before stopping Conveyor 1
+        const confirmStop = confirm("Are you sure you want to stop Conveyor 1?");
+        if (confirmStop) {
+            running1 = false;
+            button.textContent = "START CONVEYOR 1"; // Change button text back to "Start Conveyor 1"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
+                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                displayStats();
+            }
         }
     }
-}
 });
 
 // Update the event listener for Conveyor 2 in a similar manner
 document.getElementById('startConveyor2').addEventListener('click', () => {
-const button = document.getElementById('startConveyor2');
-if (!running2) {
-    lapStart2 = Date.now();
-    running2 = true;
-    button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
-    startCountdown();
-    displayStats();
-} else {
-    // Ask for confirmation before stopping Conveyor 2
-    const confirmStop = confirm("Are you sure you want to stop Conveyor 2?");
-    if (confirmStop) {
-        running2 = false;
-        button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
-        // Calculate and update work to be done if needed
-        if (timeDifferenceRemaining > 0) {
-            workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-            displayStats();
-        }
-    }
-}
-});
-
-    function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
-        // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
-        if (lapTime > 900000) {
-            // Send lap time data to Firebase
-            database.ref(`laps/${conveyor}`).push({
-                lapTime: lapTime,
-                timeOfDay: timeOfDay
-            });
-        }
-    }
-
-    document.getElementById('recordLap1').addEventListener('click', () => {
-        if (running1) {
-            const lapTime = Date.now() - lapStart1;
-            const timeOfDay = getFormattedTime();
-            lapTimes1.push([lapTime, timeOfDay]);
-            lapStart1 = Date.now();
-            displayStats();
-
-            // Send lap time data to Firebase
-            sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
-        }
-    });
-
-    document.getElementById('recordLap2').addEventListener('click', () => {
-        if (running2) {
-            const lapTime = Date.now() - lapStart2;
-            const timeOfDay = getFormattedTime();
-            lapTimes2.push([lapTime, timeOfDay]);
-            lapStart2 = Date.now();
-            displayStats();
-
-            // Send lap time data to Firebase
-            sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
-        }
-    });
-
-    document.getElementById('setTime').addEventListener('click', () => {
-        const timeInput = document.getElementById('timeInput').value;
-        const timeParts = timeInput.split(':');
-        if (timeParts.length === 2) {
-            const hours = parseInt(timeParts[0]);
-            const minutes = parseInt(timeParts[1]);
-            if (!isNaN(hours) && !isNaN(minutes)) {
-                const now = new Date();
-                targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-                if (targetTime <= now) {
-                    targetTime.setDate(targetTime.getDate() + 1);
-                }
-                timeDifference = targetTime.getTime() - now.getTime();
-                timeDifferenceRemaining = timeDifference / 1000;
-                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+    const button = document.getElementById('startConveyor2');
+    if (!running2) {
+        lapStart2 = Date.now();
+        running2 = true;
+        button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
+        startCountdown();
+        displayStats();
+    } else {
+        // Ask for confirmation before stopping Conveyor 2
+        const confirmStop = confirm("Are you sure you want to stop Conveyor 2?");
+        if (confirmStop) {
+            running2 = false;
+            button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
+            // Calculate and update work to be done if needed
+            if (timeDifferenceRemaining > 0) {
                 workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
                 displayStats();
-                startCountdown();
             }
         }
+    }
+});
+
+        function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
+            // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
+            if (lapTime > 900000) {
+                // Send lap time data to Firebase
+                database.ref(`laps/${conveyor}`).push({
+                    lapTime: lapTime,
+                    timeOfDay: timeOfDay
+                });
+            }
+        }
+
+        document.getElementById('recordLap1').addEventListener('click', () => {
+            if (running1) {
+                const lapTime = Date.now() - lapStart1;
+                const timeOfDay = getFormattedTime();
+                lapTimes1.push([lapTime, timeOfDay]);
+                lapStart1 = Date.now();
+                displayStats();
+
+                // Send lap time data to Firebase
+                sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
+            }
+        });
+
+        document.getElementById('recordLap2').addEventListener('click', () => {
+            if (running2) {
+                const lapTime = Date.now() - lapStart2;
+                const timeOfDay = getFormattedTime();
+                lapTimes2.push([lapTime, timeOfDay]);
+                lapStart2 = Date.now();
+                displayStats();
+
+                // Send lap time data to Firebase
+                sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
+            }
+        });
+
+        document.getElementById('setTime').addEventListener('click', () => {
+            const timeInput = document.getElementById('timeInput').value;
+            const timeParts = timeInput.split(':');
+            if (timeParts.length === 2) {
+                const hours = parseInt(timeParts[0]);
+                const minutes = parseInt(timeParts[1]);
+                if (!isNaN(hours) && !isNaN(minutes)) {
+                    const now = new Date();
+                    targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                    if (targetTime <= now) {
+                        targetTime.setDate(targetTime.getDate() + 1);
+                    }
+                    timeDifference = targetTime.getTime() - now.getTime();
+                    timeDifferenceRemaining = timeDifference / 1000;
+                    workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                    displayStats();
+                    startCountdown();
+                }
+            }
+        });
+     
+        document.getElementById('pullLaps').addEventListener('click', () => {
+    // Prompt the user to enter the number of laps to pull with a default value of 6
+    const lapCountInput = prompt("  If you won’t to see average for 2 laps pull 2 so on and so forth. The rest will go back to cloud and can be pulled again. If lap times are not pulling then there not sending either. Turn airplane mode on and off to send data and pull laps again. Enter the number of laps to pull:", "6");
+
+    if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
+        // Parse the input as an integer
+        const lapCount = parseInt(lapCountInput);
+
+        if (!isNaN(lapCount) && lapCount > 0) {
+            // Retrieve the specified number of laps from Firebase for Conveyor 1
+            const lapsRef1 = database.ref('laps/conveyor1').limitToLast(lapCount);
+            lapsRef1.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    lapTimes1.length = 0; // Clear the existing lap times
+                    for (const key in data) {
+                        const lapData = data[key];
+                        lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
+                    }
+                    displayStats();
+                }
+            });
+            // Retrieve the specified number of laps from Firebase for Conveyor 2
+            const lapsRef2 = database.ref('laps/conveyor2').limitToLast(lapCount);
+            lapsRef2.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    lapTimes2.length = 0; // Clear the existing lap times
+                    for (const key in data) {
+                        const lapData = data[key];
+                        lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
+                    }
+                    displayStats();
+                }
+            });
+        } else {
+            alert("Please enter a valid number of laps greater than 0.");
+        }
+    }
+});
+        // Function to simulate a click on the "Set Time" button
+        function simulateSetTimeButtonClick() {
+            const setTimeButton = document.getElementById('setTime');
+            setTimeButton.click();
+        }
+        // Automatically click the "Set Time" button every 1 second
+        setInterval(simulateSetTimeButtonClick, 1000);
+        
+        // New function to ping Firebase
+        function pingFirebase() {
+            const ref = database.ref('.info/connected');
+            ref.on('value', (snap) => {
+                if (snap.val() === true) {
+                    console.log('Connected to Firebase');
+                } else {
+                    console.log('Disconnected from Firebase');
+                }
+            });
+        }
+        // Ping Firebase every 2.5 minutes (250,000 milliseconds)
+        setInterval(pingFirebase, 250000);
+
+        function confirmDeleteLap(conveyor, index) {
+    // Show a confirmation dialog
+    const confirmation = window.confirm (` ${index + 1}  ${conveyor === 'conveyor1 ' ? '1' : '2'} `);
+    if (confirmation) {
+        deleteLap(conveyor, index);
+    }
+}
+    document.addEventListener('DOMContentLoaded', () => {
+    // Your existing code here
+
+    // Get references to the settings button and the pop-up window
+    const openSettingsButton = document.getElementById('openSettings');
+    const closeSettingsButton = document.getElementById('closeSettings');
+    const settingsPopup = document.getElementById('settingsPopup');
+
+    // Function to open the settings pop-up
+    openSettingsButton.addEventListener('click', () => {
+        settingsPopup.style.display = 'block';
     });
- 
-    document.getElementById('pullLaps').addEventListener('click', () => {
-// Prompt the user to enter the number of laps to pull with a default value of 6
-const lapCountInput = prompt("If you won’t to see average for 2 laps pull 2 so on and so forth. The rest will go back to cloud and can be pulled again. If lap times are not pulling then there not sending either. Turn airplane mode on and off without closing app to send data and pull laps again.       Enter the number of laps to pull:", "6");
 
-if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
-    // Parse the input as an integer
-    const lapCount = parseInt(lapCountInput);
+    // Function to close the settings pop-up
+    closeSettingsButton.addEventListener('click', () => {
+        settingsPopup.style.display = 'none';
+    });
 
-    if (!isNaN(lapCount) && lapCount > 0) {
-        // Retrieve the specified number of laps from Firebase for Conveyor 1
-        const lapsRef1 = database.ref('laps/conveyor1').limitToLast(lapCount);
-        lapsRef1.once('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                lapTimes1.length = 0; // Clear the existing lap times
-                for (const key in data) {
-                    const lapData = data[key];
-                    lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
-                }
-                displayStats();
-            }
-        });
-        // Retrieve the specified number of laps from Firebase for Conveyor 2
-        const lapsRef2 = database.ref('laps/conveyor2').limitToLast(lapCount);
-        lapsRef2.once('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                lapTimes2.length = 0; // Clear the existing lap times
-                for (const key in data) {
-                    const lapData = data[key];
-                    lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
-                }
-                displayStats();
-            }
-        });
-    } else {
-        alert("Please enter a valid number of laps greater than 0.");
-    }
-}
-});
-    // Function to simulate a click on the "Set Time" button
-    function simulateSetTimeButtonClick() {
-        const setTimeButton = document.getElementById('setTime');
-        setTimeButton.click();
-    }
- 
-    
-    // New function to ping Firebase
-    function pingFirebase() {
-        const ref = database.ref('.info/connected');
-        ref.on('value', (snap) => {
-            if (snap.val() === true) {
-                console.log('Connected to Firebase');
-            } else {
-                console.log('Disconnected from Firebase');
-            }
-        });
-    }
-    // Ping Firebase every 2.5 minutes (250,000 milliseconds)
-    setInterval(pingFirebase, 250000);
+    // Continue with the rest of your code...
+    // ...
 
-    function confirmDeleteLap(conveyor, index) {
-// Show a confirmation dialog
-const confirmation = window.confirm (` ${index + 1}  ${conveyor === 'conveyor1 ' ? '1' : '2'} `);
-if (confirmation) {
-    deleteLap(conveyor, index);
-}
-}
-document.addEventListener('DOMContentLoaded', () => {
-// Your existing code here
+    // Call the displayStats function if it's defined elsewhere in your code
+    displayStats();
 
-// Get references to the settings button and the pop-up window
-const openSettingsButton = document.getElementById('openSettings');
-const closeSettingsButton = document.getElementById('closeSettings');
-const settingsPopup = document.getElementById('settingsPopup');
-
-// Function to open the settings pop-up
-openSettingsButton.addEventListener('click', () => {
-    settingsPopup.style.display = 'block';
-});
-
-// Function to close the settings pop-up
-closeSettingsButton.addEventListener('click', () => {
-    settingsPopup.style.display = 'none';
-});
-
-// Continue with the rest of your code...
-// ...
-
-// Call the displayStats function if it's defined elsewhere in your code
-displayStats();
-function initiateCountdownFromTime() {
-const now = new Date();
-const AM_5_15 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
-const PM_5_15 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 15);
-
-let targetTime;
-
-if (now.getHours() < 5 || (now.getHours() === 5 && now.getMinutes() < 15)) {
-    // Current time is before 05:15 AM
-    targetTime = AM_5_15;
-} else if (now.getHours() < 17 || (now.getHours() === 17 && now.getMinutes() < 15)) {
-    // Current time is after 05:15 AM but before 05:15 PM
-    targetTime = PM_5_15;
-} else {
-    // Current time is after 05:15 PM
-    // Set target to 05:15 AM of the next day
-    AM_5_15.setDate(AM_5_15.getDate() + 1);
-    targetTime = AM_5_15;
-}
-
-timeDifferenceRemaining = (targetTime - now) / 1000; // Convert to seconds
-workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-displayStats();
-startCountdown();
-}
-
-// Start the countdown automatically when the page is loaded
-window.onload = initiateCountdownFromTime;
-
-
+   
 
 
 
 });    
-</script>
+    </script>
 </body>
 </html>
