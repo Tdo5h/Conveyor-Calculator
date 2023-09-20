@@ -233,9 +233,9 @@ button {
             measurementId: "G-X2REH4L1M5"
         };
 
-      // Initialize Firebase
+// Initialize Firebase initially
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+let database = firebase.database();
 
 let isOnline = true; // Track online/offline status
 
@@ -276,6 +276,23 @@ function retrySendingData(data) {
         console.log('Max retry attempts reached. Data transmission failed.');
     }
 }
+
+// Function to reinitialize Firebase
+function reinitializeFirebase() {
+    // Close the current app instance
+    firebase.app().delete().then(() => {
+        // Re-initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log("Firebase reinitialized!");
+    }).catch((error) => {
+        console.error("Error reinitializing Firebase:", error);
+    });
+}
+
+// Set an interval to reinitialize Firebase every 30 minutes
+setInterval(reinitializeFirebase, 30 * 60 * 1000);
+
 
 // Listen for online/offline events
 window.addEventListener('online', () => {
@@ -427,7 +444,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
 
 const averageTime1 = calculateAverageTime(lapTimes1);
-statsDiv.innerHTML += `<div class="green">Average Lap Times: ${formatTime(averageTime1)}</div>`;
+statsDiv.innerHTML += `<div class="green">Average Lap Time: ${formatTime(averageTime1)}</div>`;
 statsDiv.innerHTML += `<div class="black" style="display: none;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX4(lapTimes1))}</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX2(lapTimes1))}</div>`;
 
