@@ -261,7 +261,7 @@ function sendDataToFirebase(data) {
 
 // Retry mechanism
 let retryCount = 0;
-const maxRetries = 50; // Maximum number of retry attempts
+const maxRetries = 5; // Maximum number of retry attempts
 
 function retrySendingData(data) {
     if (retryCount < maxRetries) {
