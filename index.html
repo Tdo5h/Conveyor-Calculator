@@ -624,30 +624,37 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         }
 
         document.getElementById('recordLap1').addEventListener('click', () => {
-            if (running1) {
-                const lapTime = Date.now() - lapStart1;
-                const timeOfDay = getFormattedTime();
-                lapTimes1.push([lapTime, timeOfDay]);
-                lapStart1 = Date.now();
-                displayStats();
+    if (running1) {
+        reinitializeFirebase(); // Reinitialize Firebase on lap button click
+        
+        const lapTime = Date.now() - lapStart1;
+        const timeOfDay = getFormattedTime();
+        lapTimes1.push([lapTime, timeOfDay]);
+        lapStart1 = Date.now();
+        displayStats();
 
-                // Send lap time data to Firebase
-                sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
-            }
-        });
+        // Send lap time data to Firebase
+        sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
+    }
+});
 
-        document.getElementById('recordLap2').addEventListener('click', () => {
-            if (running2) {
-                const lapTime = Date.now() - lapStart2;
-                const timeOfDay = getFormattedTime();
-                lapTimes2.push([lapTime, timeOfDay]);
-                lapStart2 = Date.now();
-                displayStats();
+document.getElementById('recordLap2').addEventListener('click', () => {
+    if (running2) {
+        reinitializeFirebase(); // Reinitialize Firebase on lap button click
+        
+        const lapTime = Date.now() - lapStart2;
+        const timeOfDay = getFormattedTime();
+        lapTimes2.push([lapTime, timeOfDay]);
+        lapStart2 = Date.now();
+        displayStats();
 
-                // Send lap time data to Firebase
-                sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
-            }
-        });
+        // Send lap time data to Firebase
+        sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
+    }
+});
+
+
+
 
         document.getElementById('setTime').addEventListener('click', () => {
             const timeInput = document.getElementById('timeInput').value;
