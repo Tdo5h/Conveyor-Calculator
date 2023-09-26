@@ -233,85 +233,66 @@ button {
             measurementId: "G-X2REH4L1M5"
         };
 
-// Initialize Firebase initially
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 let database = firebase.database();
 
 let isOnline = true; // Track online/offline status
+let pendingDataToSend = []; // Array to store data when offline
 
 // Function to send data to Firebase
 function sendDataToFirebase(data) {
-    // Check if the device is online
     if (isOnline) {
-        // Attempt to send the data to Firebase
         database.ref('your_data_path').push(data, (error) => {
             if (error) {
-                // Data transmission failed, implement retry mechanism here
-                retrySendingData(data);
+                // Data transmission failed, store it for future attempts
+                pendingDataToSend.push(data);
             } else {
-                // Data sent successfully
                 console.log('Data sent to Firebase.');
             }
         });
     } else {
-        // Device is offline, implement retry mechanism here
-        retrySendingData(data);
-    }
-}
-
-// Retry mechanism
-let retryCount = 0;
-const maxRetries = 5; // Maximum number of retry attempts
-
-function retrySendingData(data) {
-    if (retryCount < maxRetries) {
-        retryCount++;
-        console.log(`Retry attempt ${retryCount} to send data.`);
-        
-        // Implement a delay before retrying (e.g., 5 seconds)
-        setTimeout(() => {
-            sendDataToFirebase(data); // Retry sending data
-        }, 5000); // 5000 milliseconds (5 seconds)
-    } else {
-        console.log('Max retry attempts reached. Data transmission failed.');
+        // Device is offline, store the data for future attempts
+        pendingDataToSend.push(data);
     }
 }
 
 // Function to reinitialize Firebase
 function reinitializeFirebase() {
-    // Close the current app instance
     firebase.app().delete().then(() => {
-        // Re-initialize Firebase
         firebase.initializeApp(firebaseConfig);
         database = firebase.database();
         console.log("Firebase reinitialized!");
+
+        // Check if there is pending data to send, and if so, trigger data transmission
+        if (pendingDataToSend.length > 0) {
+            console.log('Sending pending data...');
+            for (const data of pendingDataToSend) {
+                sendDataToFirebase(data);
+            }
+            pendingDataToSend = []; // Clear the pending data array
+        }
     }).catch((error) => {
         console.error("Error reinitializing Firebase:", error);
     });
 }
 
-// Set an interval to reinitialize Firebase every 30 minutes
-setInterval(reinitializeFirebase, 30 * 60 * 1000);
-
-
 // Listen for online/offline events
 window.addEventListener('online', () => {
     isOnline = true;
     console.log('Device is online.');
-
-    // Check if there is pending data to send, and if so, trigger data transmission
-    if (pendingDataToSend.length > 0) {
-        console.log('Sending pending data...');
-        for (const data of pendingDataToSend) {
-            sendDataToFirebase(data);
-        }
-        pendingDataToSend = []; // Clear the pending data array
-    }
 });
 
 window.addEventListener('offline', () => {
     isOnline = false;
     console.log('Device is offline.');
+});
+
+// Reinitialize Firebase and send any pending data 2 seconds after screen focus
+window.addEventListener('focus', () => {
+    setTimeout(() => {
+        reinitializeFirebase();
+    }, 2000); // 2000 milliseconds (2 seconds)
 });
 
 // Call sendDataToFirebase when you want to send data
