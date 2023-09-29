@@ -240,6 +240,13 @@ let database = firebase.database();
 let isOnline = true; // Track online/offline status
 let pendingDataToSend = []; // Array to store data when offline
 
+// Reinitialize Firebase and send any pending data 2 seconds after screen focus
+window.addEventListener('focus', () => {
+    setTimeout(() => {
+        reinitializeFirebase();
+    }, 2500); // 2000 milliseconds (2 seconds)
+});
+
 // Function to send data to Firebase
 function sendDataToFirebase(data) {
     if (isOnline) {
@@ -288,12 +295,7 @@ window.addEventListener('offline', () => {
     console.log('Device is offline.');
 });
 
-// Reinitialize Firebase and send any pending data 2 seconds after screen focus
-window.addEventListener('focus', () => {
-    setTimeout(() => {
-        reinitializeFirebase();
-    }, 1750); // 2000 milliseconds (2 seconds)
-});
+
 
 // Call sendDataToFirebase when you want to send data
 const dataToSend = { /* your data object */ };
