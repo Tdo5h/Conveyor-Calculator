@@ -239,16 +239,16 @@ let database = firebase.database();
 
 let isOnline = true; // Track online/offline status
 let pendingDataToSend = []; // Array to store data when offline
+const localLapList = [/* array of laps */];  // Example local lap list
 
 // Reinitialize Firebase and send any pending data 2 seconds after screen focus
 window.addEventListener('focus', () => {
     setTimeout(() => {
         reinitializeFirebase();
-    }, 2500); // 2000 milliseconds (2 seconds)
+    }, 2500); // 2.5 seconds
 });
 
-// Function to send data to Firebase
-function sendDataToFirebase(data) {
+function sendDataToFirebase(data, callback) {
     if (isOnline) {
         database.ref('your_data_path').push(data, (error) => {
             if (error) {
@@ -256,6 +256,7 @@ function sendDataToFirebase(data) {
                 pendingDataToSend.push(data);
             } else {
                 console.log('Data sent to Firebase.');
+                if (callback) callback(); // Invoke the callback upon successful transmission
             }
         });
     } else {
@@ -264,7 +265,25 @@ function sendDataToFirebase(data) {
     }
 }
 
-// Function to reinitialize Firebase
+function checkLapsAndSendMissing() {
+    // Fetch data from Firebase
+    database.ref('your_data_path').once('value').then(snapshot => {
+        const firebaseLapList = snapshot.val() || [];
+
+        // Compare the fetched data with the local lap list
+        const missingLaps = localLapList.filter(lap => !firebaseLapList.includes(lap));
+
+        // Send missing laps to Firebase
+        for (const missingLap of missingLaps) {
+            sendDataToFirebase(missingLap, () => {
+                console.log('Missing lap sent to Firebase:', missingLap);
+            });
+        }
+    }).catch(error => {
+        console.error('Error fetching data from Firebase:', error);
+    });
+}
+
 function reinitializeFirebase() {
     firebase.app().delete().then(() => {
         firebase.initializeApp(firebaseConfig);
@@ -279,6 +298,9 @@ function reinitializeFirebase() {
             }
             pendingDataToSend = []; // Clear the pending data array
         }
+
+        // Check laps and send missing ones
+        checkLapsAndSendMissing();
     }).catch((error) => {
         console.error("Error reinitializing Firebase:", error);
     });
@@ -294,8 +316,6 @@ window.addEventListener('offline', () => {
     isOnline = false;
     console.log('Device is offline.');
 });
-
-
 
 // Call sendDataToFirebase when you want to send data
 const dataToSend = { /* your data object */ };
