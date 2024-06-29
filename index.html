@@ -198,7 +198,7 @@ button {
             </div>
 
             <div class="black" style="margin-top: 30px;">
-                Set AM-PM To Show Correct Shift End Loads  
+                Set AM To PM Day Shift 
                 <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="05:15">
             <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 10px; padding: 6;">Set</button>            
             </div>
@@ -530,6 +530,7 @@ statsDiv.innerHTML += `<div class="green" style="display: none;">Avg 2x - Load C
 
 if (timeDifferenceRemaining > 0) {
     statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
+    statsDiv.innerHTML += '<div class="black bold" style="font-size: 50%;">Set AM To PM In Settings On Day Shift For Shift End Load To Display Correctly</div>';
 }
 
 }
