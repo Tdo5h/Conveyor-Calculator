@@ -481,10 +481,12 @@ const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRe
 const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeX2_1, twelveHours);
 const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
+
+statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone1_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_X2_12h + loadValue1) * 9 / 16).toFixed(1)}</span></div>`;
 statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Shift End Load = ${(workToBeDone1_All + loadValue1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_All + loadValue1) * 9 / 16).toFixed(1)}</span></div>`;
 statsDiv.innerHTML += `<div class="black" style="display: none;">Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none;">Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
-statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone1_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_X2_12h + loadValue1) * 9 / 16).toFixed(1)}</span></div>`;
+
 
 statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
 
@@ -517,13 +519,14 @@ const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRe
 const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeX2_2, twelveHours);
 const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
-statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Shift End Load = ${(workToBeDone2_All + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_All + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
 
+statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone2_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_X2_12h + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
+statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Shift End Load = ${(workToBeDone2_All + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_All + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
 
 
 statsDiv.innerHTML += `<div class="black" style="display: none;">Avg 4x - Load Conveyor 2 = ${(workToBeDone2_X4 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X4 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none;">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
-statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone2_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_X2_12h + loadValue2) * 10 / 16).toFixed(1)}</span></div>`;
+
 
 if (timeDifferenceRemaining > 0) {
     statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
