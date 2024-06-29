@@ -444,7 +444,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
    
-    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:</div>';
+    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1: 9</div>';
 
 const averageTime1 = calculateAverageTime(lapTimes1);
 statsDiv.innerHTML += `<div class="green">Average Lap Time: ${formatTime(averageTime1)}</div>`;
@@ -482,7 +482,7 @@ lapTimes1.slice().reverse().forEach((lapData, idx) => {
             statsDiv.innerHTML += `<div class="green" style="display: none;>Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 
 
-            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2:</div>';
+            statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 2: 10</div>';
 
 const averageTime2 = calculateAverageTime(lapTimes2);
 statsDiv.innerHTML += `<div class="green">Average Lap Time : ${formatTime(averageTime2)}</div>`;
