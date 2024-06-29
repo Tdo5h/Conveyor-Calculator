@@ -444,7 +444,8 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
    
-    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1:     (9 units)</div>';
+    statsDiv.innerHTML += '<div class="red conveyor-header">Conveyor 1: <span style="font-size: 50%;">(9 units)</span></div>';
+
 
 const averageTime1 = calculateAverageTime(lapTimes1);
 statsDiv.innerHTML += `<div class="green">Average Lap Time: ${formatTime(averageTime1)}</div>`;
