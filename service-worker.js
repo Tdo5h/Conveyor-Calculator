@@ -1,14 +1,17 @@
-
   self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.open('conveyor-calculator-v1').then((cache) => {
-      return cache.match(event.request).then((response) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).then((networkResponse) => {
+          return caches.open('conveyor-calculator-v1').then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
         });
-        return response || fetchPromise;
-      });
-    })
-  );
-});
+      }).catch(() => {
+        return caches.match('/offline.html');
+      })
+    );
+  });
