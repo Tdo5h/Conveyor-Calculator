@@ -19,7 +19,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif; /* Added font-family for better appearance */
         }
 
         .popup-content {
@@ -69,7 +69,7 @@
             background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Added box-shadow for better appearance */
         }
 
         #recordLap1, #recordLap2 {
@@ -98,16 +98,10 @@
         button {
             color: rgb(0, 0, 0);
             background-color: white;
-            border: 1px solid black;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #f0f0f0;
+            border: 1px solid black; /* Added border for better appearance */
+            border-radius: 5px; /* Added border-radius for better appearance */
+            padding: 10px 20px; /* Added padding for better appearance */
+            cursor: pointer; /* Added cursor pointer for better appearance */
         }
 
         #countdownDisplay {
@@ -154,31 +148,31 @@
     <div class="content">
         <h1 id="conveyorCalculator" style="font-size: 2.2rem;">Conveyor Calculator</h1>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <button id="startConveyor2" style="width: 200px; margin-top: 10px; margin-right: 20px;">START CONVEYOR 2</button>
-            <button id="startConveyor1" style="width: 200px; margin-top: 10px; margin-left: 20px;">START CONVEYOR 1</button>
+            <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px;margin-right: 20px;">START CONVEYOR 2</button>
+            <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px; margin-left: 20px;">START CONVEYOR 1</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <button id="recordLap2" style="width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
-            <button id="recordLap1" style="width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
+            <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
+            <button id="recordLap1" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
             <div style="display: flex; justify-content: start; width: 100%;">
-                <button id="openSettings" style="margin-right: auto; margin-top: 10px;">Settings</button>
-                <button id="Reset" style="margin: 0 10px; margin-top: 10px;">Reset</button>
-                <button id="pullLaps" style="margin-left: auto; margin-top: 10px;">Pull Laps</button>
+                <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin-right: auto; margin-top: 10px;">Settings</button>
+                <button id="Reset" style="border: 1px solid black; border-radius: 5px; margin: 0 10px; margin-top: 10px;">Reset</button>
+                <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: auto; margin-top: 10px;">Pull Laps</button>
             </div>              
         </div>
         
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
                 <!-- Add content for the settings window here -->
-                <button onclick="openDeleteLapPopup('conveyor2')">Delete Lap Conveyor 2</button>
-                <button onclick="openDeleteLapPopup('conveyor1')">Delete Lap Conveyor 1</button>
+                <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 2</button>
+                <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 1</button>
                 <div id="deleteLapPopup" class="popup">
                     <div class="popup-content2">
                         <h2></h2>
                         <div id="lapList"></div>
-                        <button onclick="closeDeleteLapPopup()">Cancel</button>
+                        <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px;">Cancel</button>
                     </div>
                 </div>
 
