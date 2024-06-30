@@ -19,6 +19,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
 
         .popup-content {
@@ -68,6 +69,7 @@
             background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         #recordLap1, #recordLap2 {
@@ -96,6 +98,16 @@
         button {
             color: rgb(0, 0, 0);
             background-color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
         }
 
         #countdownDisplay {
@@ -142,31 +154,31 @@
     <div class="content">
         <h1 id="conveyorCalculator" style="font-size: 2.2rem;">Conveyor Calculator</h1>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px;margin-right: 20px;">START CONVEYOR 2</button>
-            <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px; margin-left: 20px;">START CONVEYOR 1</button>
+            <button id="startConveyor2" style="width: 200px; margin-top: 10px; margin-right: 20px;">START CONVEYOR 2</button>
+            <button id="startConveyor1" style="width: 200px; margin-top: 10px; margin-left: 20px;">START CONVEYOR 1</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
-            <button id="recordLap1" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
+            <button id="recordLap2" style="width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
+            <button id="recordLap1" style="width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
             <div style="display: flex; justify-content: start; width: 100%;">
-                <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin-right: auto; margin-top: 10px;">Settings</button>
-                <button id="Reset" style="border: 1px solid black; border-radius: 5px; margin: 0 10px; margin-top: 10px;">Reset</button>
-                <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: auto; margin-top: 10px;">Pull Laps</button>
+                <button id="openSettings" style="margin-right: auto; margin-top: 10px;">Settings</button>
+                <button id="Reset" style="margin: 0 10px; margin-top: 10px;">Reset</button>
+                <button id="pullLaps" style="margin-left: auto; margin-top: 10px;">Pull Laps</button>
             </div>              
         </div>
         
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
                 <!-- Add content for the settings window here -->
-                <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 2</button>
-                <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 1</button>
+                <button onclick="openDeleteLapPopup('conveyor2')">Delete Lap Conveyor 2</button>
+                <button onclick="openDeleteLapPopup('conveyor1')">Delete Lap Conveyor 1</button>
                 <div id="deleteLapPopup" class="popup">
                     <div class="popup-content2">
                         <h2></h2>
                         <div id="lapList"></div>
-                        <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px;">Cancel</button>
+                        <button onclick="closeDeleteLapPopup()">Cancel</button>
                     </div>
                 </div>
 
@@ -177,12 +189,6 @@
                 <div class="black" style="margin-top: 10px;">
                     Subtract Cut conveyor2 =
                     <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
-                </div>
-
-                <div class="black" style="margin-top: 30px;">
-                    Set AM To PM Day Shift 
-                    <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="05:15">
-                    <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 10px; padding: 6;">Set</button>            
                 </div>
 
                 <!-- New setting to change the multiplier for both conveyors -->
@@ -533,7 +539,6 @@
 
             if (timeDifferenceRemaining > 0) {
                 statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold">Time to Shift Change: ${formatTime(timeDifferenceRemaining)}</div>`;
-                statsDiv.innerHTML += '<div class="black bold" style="font-size: 55%;">Set AM To PM In Settings On Day Shift For Shift End Load To Display Correctly</div>';
             }
         }
 
@@ -543,6 +548,14 @@
                 if (timeDifferenceRemaining > 0) {
                     timeDifferenceRemaining--;
                     displayStats();
+                } else {
+                    // Reset the countdown to the next 5:15 AM or PM
+                    const now = new Date();
+                    const nextTargetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
+                    if (now >= nextTargetTime) {
+                        nextTargetTime.setHours(nextTargetTime.getHours() + 12);
+                    }
+                    timeDifferenceRemaining = (nextTargetTime.getTime() - now.getTime()) / 1000;
                 }
             }, 1000);
         }
@@ -661,29 +674,6 @@
             }
         });
 
-        document.getElementById('setTime').addEventListener('click', () => {
-            const timeInput = document.getElementById('timeInput').value;
-            const timeParts = timeInput.split(':');
-            if (timeParts.length === 2) {
-                let hours = parseInt(timeParts[0]);
-                const minutes = parseInt(timeParts[1]);
-                if (!isNaN(hours) && !isNaN(minutes)) {
-                    const now = new Date();
-                    let targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-
-                    if (targetTime <= now) {
-                        targetTime.setDate(targetTime.getDate() + 1);
-                    }
-                    timeDifference = targetTime.getTime() - now.getTime();
-                    timeDifferenceRemaining = timeDifference / 1000;
-                    workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
-                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
-                    displayStats();
-                    startCountdown();
-                }
-            }
-        });
-
         document.getElementById('pullLaps').addEventListener('click', () => {
             // Prompt the user to enter the number of laps to pull with a default value of 6
             const lapCountInput = prompt("Enter the number of laps to pull:", "6");
@@ -785,6 +775,15 @@
                 displayStats(); // Update the statistics display
             }
         });
+
+        // Initialize the countdown to the next 5:15 AM or PM
+        const now = new Date();
+        const nextTargetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
+        if (now >= nextTargetTime) {
+            nextTargetTime.setHours(nextTargetTime.getHours() + 12);
+        }
+        timeDifferenceRemaining = (nextTargetTime.getTime() - now.getTime()) / 1000;
+        startCountdown();
     </script>
 </body>
 </html>
