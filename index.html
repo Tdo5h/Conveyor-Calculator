@@ -485,7 +485,7 @@
 
             const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
             const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-            const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeX2_1, twelveHours);
+            const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeAll1, twelveHours); // Updated to use averageTimeAll1
             const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
             statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone1_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone1_X2_12h + loadValue1) * conveyorMultiplier1 / 16).toFixed(1)}</span></div>`;
@@ -522,7 +522,7 @@
 
             const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
             const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-            const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeX2_2, twelveHours);
+            const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeAll2, twelveHours); // Updated to use averageTimeAll2
             const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
             statsDiv.innerHTML += `<div class="black" style="font-size: 118%;">Full Shift Load = ${(workToBeDone2_X2_12h + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((workToBeDone2_X2_12h + loadValue2) * conveyorMultiplier2 / 16).toFixed(1)}</span></div>`;
