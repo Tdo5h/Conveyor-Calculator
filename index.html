@@ -152,6 +152,7 @@
         <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
             <div style="display: flex; justify-content: start; width: 100%;">
                 <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin-right: auto; margin-top: 10px;">Settings</button>
+                <button id="Reset" style="border: 1px solid black; border-radius: 5px; margin: 0 10px; margin-top: 10px;">Reset</button>
                 <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: auto; margin-top: 10px;">Pull Laps</button>
             </div>              
         </div>
@@ -772,6 +773,17 @@
 
             // Call the displayStats function if it's defined elsewhere in your code
             displayStats();
+        });
+
+        // Function to remove all laps from the app
+        document.getElementById('Reset').addEventListener('click', () => {
+            const confirmReset = confirm("Are you sure you want to remove all laps?");
+            if (confirmReset) {
+                // Clear the lap times arrays
+                lapTimes1.length = 0;
+                lapTimes2.length = 0;
+                displayStats(); // Update the statistics display
+            }
         });
     </script>
 </body>
