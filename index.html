@@ -47,6 +47,7 @@
             border: 1px solid black;
             border-radius: 5px;
             margin-top: 5px;
+            font-weight: bold; /* Make button text bold */
         }
 
         body {
@@ -102,6 +103,7 @@
             border-radius: 5px; /* Added border-radius for better appearance */
             padding: 10px 20px; /* Added padding for better appearance */
             cursor: pointer; /* Added cursor pointer for better appearance */
+            font-weight: bold; /* Make button text bold */
         }
 
         #countdownDisplay {
@@ -141,6 +143,7 @@
             padding: 5px 10px;
             cursor: pointer;
             float: right;
+            font-weight: bold; /* Make button text bold */
         }
     </style>
 </head>
@@ -148,31 +151,31 @@
     <div class="content">
         <h1 id="conveyorCalculator" style="font-size: 2rem;">Conveyor Calculator</h1>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px;margin-right: 20px;">START CONVEYOR 2</button>
-            <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px; margin-left: 20px;">START CONVEYOR 1</button>
+            <button id="startConveyor2" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px;margin-right: 20px; font-weight: bold;">START CONVEYOR 2</button>
+            <button id="startConveyor1" style="border: 1px solid black; border-radius: 5px; width: 200px;margin-top: 10px; margin-left: 20px; font-weight: bold;">START CONVEYOR 1</button>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px;">Lap Conveyor 2</button>
-            <button id="recordLap1" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-left: 5px; font-size: 20px;">Lap Conveyor 1</button>
+            <button id="recordLap2" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-right: 5px; font-size: 20px; font-weight: bold;">Lap Conveyor 2</button>
+            <button id="recordLap1" style="border: 1px solid black; border-radius: 5px; width: 170px; margin-left: 5px; font-size: 20px; font-weight: bold;">Lap Conveyor 1</button>
         </div>
         <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; margin-top: 20px;">
             <div style="display: flex; justify-content: start; width: 100%;">
-                <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin-right: auto; margin-top: 10px;">Settings</button>
-                <button id="Reset" style="border: 1px solid black; border-radius: 5px; margin: 0 10px; margin-top: 10px;">Reset</button>
-                <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: auto; margin-top: 10px;">Pull Laps</button>
+                <button id="openSettings" style="border: 1px solid black; border-radius: 5px; margin-right: auto; margin-top: 10px; font-weight: bold;">Settings</button>
+                <button id="Reset" style="border: 1px solid black; border-radius: 5px; margin: 0 10px; margin-top: 10px; font-weight: bold;">Reset</button>
+                <button id="pullLaps" style="border: 1px solid black; border-radius: 5px; margin-left: auto; margin-top: 10px; font-weight: bold;">Pull Laps</button>
             </div>              
         </div>
         
         <div id="settingsPopup" class="popup">
             <div class="popup-content">
                 <!-- Add content for the settings window here -->
-                <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 2</button>
-                <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black; border-radius: 5px;">Delete Lap Conveyor 1</button>
+                <button onclick="openDeleteLapPopup('conveyor2')" style="border: 1px solid black; border-radius: 5px; font-weight: bold;">Delete Lap Conveyor 2</button>
+                <button onclick="openDeleteLapPopup('conveyor1')" style="border: 1px solid black; border-radius: 5px; font-weight: bold;">Delete Lap Conveyor 1</button>
                 <div id="deleteLapPopup" class="popup">
                     <div class="popup-content2">
                         <h2></h2>
                         <div id="lapList"></div>
-                        <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px;">Cancel</button>
+                        <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px; font-weight: bold;">Cancel</button>
                     </div>
                 </div>
 
@@ -204,7 +207,7 @@
                     </select>
                 </div>
             </div>
-            <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 10px 20px; font-size: 16px; position: absolute; margin-top: 20px; left: 50%; transform: translate(-50%, -50%);">Done</button>
+            <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 10px 20px; font-size: 16px; position: absolute; margin-top: 20px; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">Done</button>
         </div>
     </div>
     <div id="stats" class="content">
@@ -462,13 +465,10 @@
 
             if (running1) {
                 const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
-                statsDiv.innerHTML += '<div class="black bold">Conveyor 1 is running</div>';
                 statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime1)}</div>`;
                 statsDiv.innerHTML += `<div class="black bold">Estimated Next Pull: <span id="estNextPull1">${formatTimeWithoutExtraZeros(averageTime1 - runningTime1)}</span></div>`;
-            } else {
-                statsDiv.innerHTML += '<div class="black">Conveyor 1 stopped</div>';
             }
-
+            statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
             statsDiv.innerHTML += '<div class="blue" style="display: none;">Lap times:</div>';
             lapTimes1.slice().reverse().forEach((lapData, idx) => {
                 const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
@@ -502,13 +502,10 @@
 
             if (running2) {
                 const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
-                statsDiv.innerHTML += '<div class="black bold">Conveyor 2 is running</div>';
                 statsDiv.innerHTML += `<div class="blue bold">Current lap time: ${formatTime(runningTime2)}</div>`;
                 statsDiv.innerHTML += `<div class="black bold">Estimated Next Pull: <span id="estNextPull2">${formatTimeWithoutExtraZeros(averageTime2 - runningTime2)}</span></div>`;
-            } else {
-                statsDiv.innerHTML += '<div class="black">Conveyor 2 stopped</div>';
             }
-
+            statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
             statsDiv.innerHTML += '<div class="blue" style="display: none;">Lap times:</div>';
             lapTimes2.slice().reverse().forEach((lapData, idx) => {
                 const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
@@ -539,18 +536,13 @@
         function startCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = setInterval(function() {
-                if (timeDifferenceRemaining > 0) {
-                    timeDifferenceRemaining--;
-                    displayStats();
-                } else {
-                    // Reset the countdown to the next 5:15 AM or PM
-                    const now = new Date();
-                    const nextTargetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
-                    if (now >= nextTargetTime) {
-                        nextTargetTime.setHours(nextTargetTime.getHours() + 12);
-                    }
-                    timeDifferenceRemaining = (nextTargetTime.getTime() - now.getTime()) / 1000;
+                const now = new Date();
+                const nextTargetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
+                if (now >= nextTargetTime) {
+                    nextTargetTime.setHours(nextTargetTime.getHours() + 12);
                 }
+                timeDifferenceRemaining = (nextTargetTime.getTime() - now.getTime()) / 1000;
+                displayStats();
             }, 1000);
         }
 
@@ -778,6 +770,24 @@
         }
         timeDifferenceRemaining = (nextTargetTime.getTime() - now.getTime()) / 1000;
         startCountdown();
+
+        // Save the current time when the page is hidden
+        let hiddenTime = 0;
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                hiddenTime = Date.now();
+            } else {
+                const elapsedTime = (Date.now() - hiddenTime) / 1000;
+                if (running1) {
+                    lapStart1 += elapsedTime * 1000;
+                }
+                if (running2) {
+                    lapStart2 += elapsedTime * 1000;
+                }
+                timeDifferenceRemaining -= elapsedTime;
+                displayStats();
+            }
+        });
     </script>
 </body>
 </html>
