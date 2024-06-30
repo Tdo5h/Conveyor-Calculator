@@ -127,7 +127,7 @@
         }
 
         .popup-content {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9); /* Changed background color to lighter for better readability */
             width: 80%;
             max-width: 400px;
             margin: 20px auto;
@@ -180,18 +180,16 @@
                 </div>
 
                 <div class="black" style="margin-top: 40px;">
-                    Subtract Cut conveyor1 =
-                    <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 1">
+                    Subtract Cut conveyor1 = <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px; width: 50px;" placeholder="0" value="0">
                 </div>
                 <div class="black" style="margin-top: 10px;">
-                    Subtract Cut conveyor2 =
-                    <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
+                    Subtract Cut conveyor2 = <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px; width: 50px;" placeholder="0" value="0">
                 </div>
 
                 <!-- New setting to change the multiplier for both conveyors -->
                 <div class="black" style="margin-top: 30px;">
                     Set Units for Conveyor 1:
-                    <select id="conveyorMultiplier1" class="input-small" style="border: 1px solid black; border-radius: 5px;">
+                    <select id="conveyorMultiplier1" class="input-small" style="border: 1px solid black; border-radius: 5px; color: black;">
                         <option value="8">*8</option>
                         <option value="9" selected>*9</option>
                         <option value="10">*10</option>
@@ -200,7 +198,7 @@
 
                 <div class="black" style="margin-top: 30px;">
                     Set Units for Conveyor 2:
-                    <select id="conveyorMultiplier2" class="input-small" style="border: 1px solid black; border-radius: 5px;">
+                    <select id="conveyorMultiplier2" class="input-small" style="border: 1px solid black; border-radius: 5px; color: black;">
                         <option value="8">*8</option>
                         <option value="9">*9</option>
                         <option value="10" selected>*10</option>
