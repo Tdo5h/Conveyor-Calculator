@@ -470,7 +470,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
    
-    statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.2em;">Conveyor 1: <span style="font-size: 0.8em;">(${conveyor1Units} units)</span></div>`;
+    statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1: <span style="font-size: 0.8em;">(${conveyor1Units} units)</span></div>`;
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime1 = calculateAverageTime(lapTimes1);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
@@ -492,7 +492,8 @@ statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Aria
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 lapTimes1.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+    const [date, time] = lapData[1].split(' ');
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes1.length - idx}. ${date}   ${time}   ${lapTimeStr}</div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -506,7 +507,7 @@ const twelveHours = 43200;
 
 const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
 const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeX2_1, twelveHours);
+const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeAll1, twelveHours); // Changed to use averageTimeAll1
 const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
 
 
@@ -518,7 +519,7 @@ statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Ari
 
 statsDiv.innerHTML += '<div style="line-height: 1;">&nbsp;</div>';
 statsDiv.innerHTML += '<div style="border-top: 1px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
-statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.2em;">Conveyor 2: <span style="font-size: 0.8em;">(${conveyor2Units} units)</span></div>`;
+statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2: <span style="font-size: 0.8em;">(${conveyor2Units} units)</span></div>`;
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime2 = calculateAverageTime(lapTimes2);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
@@ -540,7 +541,8 @@ statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Aria
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 lapTimes2.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr}</div>`;
+    const [date, time] = lapData[1].split(' ');
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes2.length - idx}. ${date}   ${time}   ${lapTimeStr}</div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -551,7 +553,7 @@ const averageTimeX4_2 = calculateAverageTimeX4(lapTimes2);
 
 const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
 const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeX2_2, twelveHours);
+const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeAll2, twelveHours); // Changed to use averageTimeAll2
 const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
 
 
