@@ -187,8 +187,8 @@ button {
                     <button onclick="closeDeleteLapPopup()" style="border: 1px solid black; border-radius: 5px;">Cancel</button>
                 </div>
             </div>
-
-            <div class="black" style="margin-top: 40px;">
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
+            <div class="black" style="margin-top: 20px;">
                 Subtract Cut conveyor1 =
                 <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 1">
             </div>
@@ -196,17 +196,18 @@ button {
                 Subtract Cut conveyor2 =
                 <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
             </div>
-            <div class="black" style="margin-top: 30px;">
+            
+            <div class="black" style="margin-top: 20px; display: none;">
                 Set Time
                 <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="17:15">
             <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 10px; padding: 6;">Set</button>            
             </div>
-
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting conveyor units -->
-            <div class="black" style="margin-top: 30px;">
+            <div class="black" style="margin-top: 20px; font-size: 1.1em;">
                 <div>Set Conveyor Units:</div>
             </div>
-            <div class="black" style="margin-top: 10px;">
+            <div class="black" style="margin-top: 10px; font-size: 1.1em;">
                 <label for="conveyor1Units">Conveyor 1 Units:</label>
                 <select id="conveyor1Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px;">
                     <option value="9" selected>9</option>
@@ -214,7 +215,7 @@ button {
                     <option value="10">10</option>
                 </select>
             </div>
-            <div class="black" style="margin-top: 10px;">
+            <div class="black" style="margin-top: 10px; font-size: 1.1em;">
                 <label for="conveyor2Units">Conveyor 2 Units:</label>
                 <select id="conveyor2Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px;">
                     <option value="10" selected>10</option>
@@ -222,9 +223,34 @@ button {
                     <option value="9">9</option>
                 </select>
             </div>
-
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
+            <!-- New div for setting average laps -->
+            <div class="black" style="margin-top: 20px; font-size: 1.1em;">
+                <div>Set Average Laps:</div>
+            </div>
+            <div class="black" style="margin-top: 10px;">
+                <label for="conveyor1AvgLaps">Conveyor 1 Avg Laps:</label>
+                <select id="conveyor1AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px;">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                    <option value="8">8</option>
+                    <option value="10" selected>10</option>
+                </select>
+            </div>
+            <div class="black" style="margin-top: 10px;">
+                <label for="conveyor2AvgLaps">Conveyor 2 Avg Laps:</label>
+                <select id="conveyor2AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px;">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                    <option value="8">8</option>
+                    <option value="10" selected>10</option>
+                </select>
+            </div>
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New button to reset laps -->
-            <div class="black" style="margin-top: 30px;">
+            <div class="black" style="margin-top: 20px;">
                 <button id="resetLaps" style="border: 1px solid black; border-radius: 5px;">Reset Laps</button>
             </div>
        
@@ -361,6 +387,8 @@ sendDataToFirebase(dataToSend);
         let loadValue2 = 0;
         let conveyor1Units = 9; // Default value for Conveyor 1 units
         let conveyor2Units = 10; // Default value for Conveyor 2 units
+        let conveyor1AvgLaps = 10; // Default value for Conveyor 1 average laps
+        let conveyor2AvgLaps = 10; // Default value for Conveyor 2 average laps
 
    
 
@@ -616,6 +644,12 @@ if (timeDifferenceRemaining > 0) {
             return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
         }
 
+        function calculateAverageTimeX(lapTimes, x) {
+            const lastXLaps = lapTimes.slice(-x);
+            const totalLapTime = lastXLaps.reduce((total, lapData) => total + lapData[0], 0);
+            return lastXLaps.length > 0 ? totalLapTime / lastXLaps.length / 1000 : 0;
+        }
+
         document.getElementById('startConveyor1').addEventListener('click', () => {
     const button = document.getElementById('startConveyor1');
     if (!running1) {
@@ -833,6 +867,17 @@ document.getElementById('recordLap2').addEventListener('click', () => {
             lapTimes2.length = 0;
             displayStats();
         }
+    });
+
+    // Event listeners for average laps settings
+    document.getElementById('conveyor1AvgLaps').addEventListener('change', (event) => {
+        conveyor1AvgLaps = parseInt(event.target.value);
+        displayStats();
+    });
+
+    document.getElementById('conveyor2AvgLaps').addEventListener('change', (event) => {
+        conveyor2AvgLaps = parseInt(event.target.value);
+        displayStats();
     });
 
     // Continue with the rest of your code...
