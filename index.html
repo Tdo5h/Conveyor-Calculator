@@ -196,10 +196,9 @@ button {
                 Subtract Cut conveyor2 =
                 <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
             </div>
-
             <div class="black" style="margin-top: 30px;">
                 Set Time
-                <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="05:15">
+                <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="17:15">
             <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 10px; padding: 6;">Set</button>            
             </div>
 
@@ -517,8 +516,9 @@ statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif;
 statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
 
-statsDiv.innerHTML += '<div style="line-height: 1;">&nbsp;</div>';
-statsDiv.innerHTML += '<div style="border-top: 1px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
+statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+statsDiv.innerHTML += '<div style="border-top: 2px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
+statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2: <span style="font-size: 0.8em;">(${conveyor2Units} units)</span></div>`;
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime2 = calculateAverageTime(lapTimes2);
