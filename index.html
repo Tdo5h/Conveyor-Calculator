@@ -45,7 +45,6 @@
     cursor: pointer; /* To change cursor to hand when hovering */
     border: 1px solid black;
     border-radius: 5px;
-    margin-top: 5px;
 }
 
 
@@ -101,8 +100,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.242);
+    background-color: rgba(0, 0, 0, 0.242); /* Darker background for better readability */
     z-index: 1;
+    color: rgb(0, 0, 0); /* White text color for better readability */
+    font-size: 1.2em; /* Slightly larger font size for better readability */
 }
 button {
     color: rgb(0, 0, 0);
@@ -143,6 +144,8 @@ button {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    max-height: 90vh; /* Ensure the popup content fits within the viewport height */
+    overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
 /* Style for the close button */
@@ -189,11 +192,11 @@ button {
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <div class="black" style="margin-top: 20px;">
-                Subtract Cut conveyor1 =
+                Subtract Cut Pull conveyor1 =
                 <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 1">
             </div>
             <div class="black" style="margin-top: 10px;">
-                Subtract Cut conveyor2 =
+                Subtract Cut Pull conveyor2 =
                 <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
             </div>
             
@@ -205,7 +208,7 @@ button {
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting conveyor units -->
             <div class="black" style="margin-top: 20px; font-size: 1.1em;">
-                <div>Set Conveyor Units:</div>
+                <div>Set Conveyor Units</div>
             </div>
             <div class="black" style="margin-top: 10px; font-size: 1.1em;">
                 <label for="conveyor1Units">Conveyor 1 Units:</label>
@@ -226,7 +229,7 @@ button {
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting average laps -->
             <div class="black" style="margin-top: 20px; font-size: 1.1em;">
-                <div>Set Average Laps:</div>
+                <div>Set Average Laps</div>
             </div>
             <div class="black" style="margin-top: 10px;">
                 <label for="conveyor1AvgLaps">Conveyor 1 Avg Laps:</label>
@@ -497,7 +500,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
    
-    statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1: <span style="font-size: 0.8em;">(${conveyor1Units} units, ${conveyor1AvgLaps} avg laps)</span></div>`;
+    statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1: <span style="font-size: 0.5em;">(${conveyor1Units} units, ${conveyor1AvgLaps} avg laps)</span></div>`;
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime1 = calculateAverageTimeX(lapTimes1, conveyor1AvgLaps);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
@@ -547,7 +550,7 @@ statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Ari
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 statsDiv.innerHTML += '<div style="border-top: 2px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2: <span style="font-size: 0.8em;">(${conveyor2Units} units, ${conveyor2AvgLaps} avg laps)</span></div>`;
+statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2: <span style="font-size: 0.5em;">(${conveyor2Units} units, ${conveyor2AvgLaps} avg laps)</span></div>`;
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime2 = calculateAverageTimeX(lapTimes2, conveyor2AvgLaps);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
@@ -605,6 +608,15 @@ if (timeDifferenceRemaining > 0) {
             countdownInterval = setInterval(function() {
                 if (timeDifferenceRemaining > 0) {
                     timeDifferenceRemaining--;
+                    displayStats();
+                } else {
+                    // Reset the timer to 12 hours at 5:15
+                    const now = new Date();
+                    const resetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 5, 15);
+                    if (now >= resetTime) {
+                        resetTime.setDate(resetTime.getDate() + 1);
+                    }
+                    timeDifferenceRemaining = (resetTime.getTime() - now.getTime()) / 1000;
                     displayStats();
                 }
             }, 1000);
@@ -752,6 +764,11 @@ document.getElementById('recordLap2').addEventListener('click', () => {
                     }
                     timeDifference = targetTime.getTime() - now.getTime();
                     timeDifferenceRemaining = timeDifference / 1000;
+                    // Check if it's after 5:15 PM and adjust timeDifferenceRemaining
+                    const fiveFifteenPM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 15);
+                    if (now > fiveFifteenPM) {
+                        timeDifferenceRemaining -= 43200; // Subtract 12 hours (43200 seconds)
+                    }
                     workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
                     workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
                     displayStats();
@@ -879,9 +896,6 @@ document.getElementById('recordLap2').addEventListener('click', () => {
         conveyor2AvgLaps = parseInt(event.target.value);
         displayStats();
     });
-
-    // Continue with the rest of your code...
-    // ...
 
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
