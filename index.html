@@ -523,7 +523,7 @@ statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 lapTimes1.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
     const [date, time] = lapData[1].split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes1.length - idx}. ${date}   ${time}   ${lapTimeStr}</div>`;
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -573,7 +573,7 @@ statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 lapTimes2.slice().reverse().forEach((lapData, idx) => {
     const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
     const [date, time] = lapData[1].split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes2.length - idx}. ${date}   ${time}   ${lapTimeStr}</div>`;
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -608,6 +608,10 @@ if (timeDifferenceRemaining > 0) {
             countdownInterval = setInterval(function() {
                 if (timeDifferenceRemaining > 0) {
                     timeDifferenceRemaining--;
+                    // Ensure timeDifferenceRemaining never exceeds 12 hours (43200 seconds)
+                    if (timeDifferenceRemaining > 43200) {
+                        timeDifferenceRemaining -= 43200;
+                    }
                     displayStats();
                 } else {
                     // Reset the timer to 12 hours at 5:15
@@ -768,6 +772,10 @@ document.getElementById('recordLap2').addEventListener('click', () => {
                     const fiveFifteenPM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 15);
                     if (now > fiveFifteenPM) {
                         timeDifferenceRemaining -= 43200; // Subtract 12 hours (43200 seconds)
+                    }
+                    // Ensure timeDifferenceRemaining never exceeds 12 hours (43200 seconds)
+                    if (timeDifferenceRemaining > 43200) {
+                        timeDifferenceRemaining -= 43200;
                     }
                     workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
                     workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
