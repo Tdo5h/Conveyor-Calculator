@@ -213,9 +213,9 @@ button {
             <div class="black" style="margin-top: 10px; font-size: 1.1em;">
                 <label for="conveyor1Units">Conveyor 1 Units:</label>
                 <select id="conveyor1Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px; color: black;">
-                    <option value="9" selected>9</option>
+                    <option value="10" selected>10</option>
                     <option value="8">8</option>
-                    <option value="10">10</option>
+                    <option value="9">9</option>
                 </select>
             </div>
             <div class="black" style="margin-top: 10px; font-size: 1.1em;">
@@ -269,7 +269,6 @@ button {
 
 
 
-
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
     <script>
@@ -284,7 +283,6 @@ button {
             appId: "1:708197721355:web:234d1d9223b125a657ee0e",
             measurementId: "G-X2REH4L1M5"
         };
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 let database = firebase.database();
@@ -297,6 +295,7 @@ const localLapList = [/* array of laps */];  // Example local lap list
 window.addEventListener('focus', () => {
     setTimeout(() => {
         reinitializeFirebase();
+        autoPullLapsOnPageOpenAndScreenAwake();
     }, 2500); // 2.5 seconds
 });
 
@@ -388,7 +387,7 @@ sendDataToFirebase(dataToSend);
         let countdownInterval;
         let loadValue1 = 0;
         let loadValue2 = 0;
-        let conveyor1Units = 9; // Default value for Conveyor 1 units
+        let conveyor1Units = 10; // Default value for Conveyor 1 units
         let conveyor2Units = 10; // Default value for Conveyor 2 units
         let conveyor1AvgLaps = 10; // Default value for Conveyor 1 average laps
         let conveyor2AvgLaps = 10; // Default value for Conveyor 2 average laps
@@ -485,7 +484,6 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         displayStats();
     }
 });
-
         function calculateWorkToBeDone(averageTime, timeDifference) {
             return (averageTime > 0 ? timeDifference / averageTime : 0) - loadValue1 - loadValue2;
         }
@@ -501,33 +499,45 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     }
    
     statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1: <span style="font-size: 0.5em;">(${conveyor1Units} units, ${conveyor1AvgLaps} avg laps)</span></div>`;
-    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    
 const averageTime1 = calculateAverageTimeX(lapTimes1, conveyor1AvgLaps);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
+statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+if (lapTimes1.length > 0) {
+            const newestLapTime1 = lapTimes1[lapTimes1.length - 1].timeOfDay; // Access the correct property
+            console.log('Newest lap time for conveyor1:', newestLapTime1); // Log the newest lap time
+            const timeSinceNewestLap1 = Date.now() - Date.parse(newestLapTime1);
+            if (!isNaN(timeSinceNewestLap1)) {
+                statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap1).toISOString().substr(11, 8)} </div>`;
+            } else {
+                console.error('Invalid time value for newest lap time:', newestLapTime1);
+            }
+        }
+
 statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 4))}</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 2))}</div>`;
-
+statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 if (running1) {
     const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
-    statsDiv.innerHTML += `<div class="blue bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime1)}</div>`;
+    statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime1)}</div>`;
     const estimatedNextPull1 = averageTime1 - runningTime1;
     if (estimatedNextPull1 > 0) {
-        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull1)}</div>`;
+        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull1)}</div>`;
     } else {
-        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull1))}</span></div>`;
+        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull1))}</span></div>`;
     }
 }
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Lap times:</div>';
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-lapTimes1.slice().reverse().forEach((lapData, idx) => {
-    const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    const [date, time] = lapData[1].split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes1.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
+    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+    const [date, time] = lapData.timeOfDay.split(' ');
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} </div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
-   // Display load lift information at all times
+// Display load lift information at all times
 const averageTimeAll1 = calculateAverageTime(lapTimes1);
 const averageTimeX2_1 = calculateAverageTimeX(lapTimes1, 2);
 const averageTimeX4_1 = calculateAverageTimeX(lapTimes1, 4);
@@ -554,26 +564,37 @@ statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Ar
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 const averageTime2 = calculateAverageTimeX(lapTimes2, conveyor2AvgLaps);
 statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
+statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+if (lapTimes2.length > 0) {
+            const newestLapTime2 = lapTimes2[lapTimes2.length - 1].timeOfDay; // Access the correct property
+            console.log('Newest lap time for conveyor2:', newestLapTime2); // Log the newest lap time
+            const timeSinceNewestLap2 = Date.now() - Date.parse(newestLapTime2);
+            if (!isNaN(timeSinceNewestLap2)) {
+                statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap2).toISOString().substr(11, 8)} </div>`;
+            } else {
+                console.error('Invalid time value for newest lap time:', newestLapTime2);
+            }
+        }
 statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 4))}</div>`;
 statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 2))}</div>`;
 
 if (running2) {
     const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
-    statsDiv.innerHTML += `<div class="blue bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime2)}</div>`;
+    statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime2)}</div>`;
     const estimatedNextPull2 = averageTime2 - runningTime2;
     if (estimatedNextPull2 > 0) {
-        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull2)}</div>`;
+        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull2)}</div>`;
     } else {
-        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull2))}</span></div>`;
+        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull2))}</span></div>`;
     }
 }
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Lap times:</div>';
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-lapTimes2.slice().reverse().forEach((lapData, idx) => {
-    const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-    const [date, time] = lapData[1].split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${lapTimes2.length - idx}.(${lapData[1]}) - ${lapTimeStr} </div>`;
+lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
+    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+    const [date, time] = lapData.timeOfDay.split(' ');
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} </div>`;
 });
 statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -643,27 +664,34 @@ if (timeDifferenceRemaining > 0) {
         }
 
         function calculateAverageTime(lapTimes) {
-            const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData[0], 0);
+            const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData.lapTime, 0);
             const numLaps = lapTimes.length;
             return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
         }
 
         function calculateAverageTimeX2(lapTimes) {
             const lastTwoLaps = lapTimes.slice(-2);
-            const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData[0], 0);
+            const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData.lapTime, 0);
             return lastTwoLaps.length > 0 ? totalLapTime / lastTwoLaps.length / 1000 : 0;
         }
 
         function calculateAverageTimeX4(lapTimes) {
             const lastFourLaps = lapTimes.slice(-4);
-            const totalLapTime = lastFourLaps.reduce((total, lapData) => total + lapData[0], 0);
+            const totalLapTime = lastFourLaps.reduce((total, lapData) => total + lapData.lapTime, 0);
             return lastFourLaps.length > 0 ? totalLapTime / lastFourLaps.length / 1000 : 0;
         }
 
         function calculateAverageTimeX(lapTimes, x) {
             const lastXLaps = lapTimes.slice(-x);
-            const totalLapTime = lastXLaps.reduce((total, lapData) => total + lapData[0], 0);
+            const totalLapTime = lastXLaps.reduce((total, lapData) => total + lapData.lapTime, 0);
             return lastXLaps.length > 0 ? totalLapTime / lastXLaps.length / 1000 : 0;
+        }
+
+        function getNewestLapTime(lapTimes) {
+            if (lapTimes.length > 0) {
+                return lapTimes[lapTimes.length - 1].timeOfDay;
+            }
+            return null;
         }
 
         document.getElementById('startConveyor1').addEventListener('click', () => {
@@ -712,15 +740,18 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         }
     }
 });
-
         function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
             // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
             if (lapTime > 900000) {
                 // Send lap time data to Firebase
-                database.ref(`laps/${conveyor}`).push({
-                    lapTime: lapTime,
-                    timeOfDay: timeOfDay
-                });
+                const lapData = {
+                    name: conveyor,
+                    data: JSON.stringify({ lapTime: lapTime, timeOfDay: timeOfDay }),
+                    ttl: 60,
+                    published_at: new Date().toISOString(),
+                    coreid: "e00fce68038c121e8ce77681"
+                };
+                database.ref(`laps/${conveyor}`).push(lapData);
             }
         }
 
@@ -728,7 +759,7 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
     if (running1) {
         const lapTime = Date.now() - lapStart1;
         const timeOfDay = getFormattedTime();
-        lapTimes1.push([lapTime, timeOfDay]);
+        lapTimes1.push({ lapTime: lapTime, timeOfDay: timeOfDay });
         lapStart1 = Date.now();
         displayStats();
 
@@ -741,7 +772,7 @@ document.getElementById('recordLap2').addEventListener('click', () => {
     if (running2) {
         const lapTime = Date.now() - lapStart2;
         const timeOfDay = getFormattedTime();
-        lapTimes2.push([lapTime, timeOfDay]);
+        lapTimes2.push({ lapTime: lapTime, timeOfDay: timeOfDay });
         lapStart2 = Date.now();
         displayStats();
 
@@ -801,8 +832,8 @@ document.getElementById('recordLap2').addEventListener('click', () => {
                 if (data) {
                     lapTimes1.length = 0; // Clear the existing lap times
                     for (const key in data) {
-                        const lapData = data[key];
-                        lapTimes1.push([lapData.lapTime, lapData.timeOfDay]);
+                        const lapData = JSON.parse(data[key].data);
+                        lapTimes1.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
                     }
                     displayStats();
                 }
@@ -814,8 +845,8 @@ document.getElementById('recordLap2').addEventListener('click', () => {
                 if (data) {
                     lapTimes2.length = 0; // Clear the existing lap times
                     for (const key in data) {
-                        const lapData = data[key];
-                        lapTimes2.push([lapData.lapTime, lapData.timeOfDay]);
+                        const lapData = JSON.parse(data[key].data);
+                        lapTimes2.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
                     }
                     displayStats();
                 }
@@ -908,11 +939,68 @@ document.getElementById('recordLap2').addEventListener('click', () => {
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
 
-   
-
-
+    // Auto pull 6 laps on page open and start conveyors
+    autoPullLapsOnPageOpenAndScreenAwake();
 
 });    
+
+function autoPullLapsOnPageOpenAndScreenAwake() {
+    const lapCount = 6;
+
+    // Retrieve the specified number of laps from Firebase for Conveyor 1
+    pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
+        lapStart1 = Date.now();
+        running1 = true;
+        document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
+        displayStats();
+    });
+
+    // Retrieve the specified number of laps from Firebase for Conveyor 2
+    pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
+        lapStart2 = Date.now();
+        running2 = true;
+        document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
+        displayStats();
+    });
+}
+
+function pullAndDisplay(conveyor, lapTimesArray, count, callback) {
+        // Adjust reference based on the conveyor name
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName).limitToLast(count);
+
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                lapTimesArray.length = 0; // Clear the existing lap times
+                
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        try {
+                            const entryData = JSON.parse(data[key].data);
+                            if (entryData.lapTime && entryData.timeOfDay) {
+                                lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
+                                if (lapTimesArray.length > 10) {
+                                    lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                                }
+                            } else {
+                                console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing entry data:', data[key].data, e);
+                        }
+                    }
+                }
+                displayStats();
+                if (callback) callback(); // Call the callback function if provided
+            } else {
+                console.error('No data found in snapshot.');
+            }
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
+    }
+
     </script>
 </body>
 </html>
