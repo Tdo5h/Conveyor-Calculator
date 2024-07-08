@@ -518,7 +518,10 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     }
 
     statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1</div>`;
-    statsDiv.innerHTML += `<div style="font-size: 0.8em;">(${conveyor1Units} units, ${conveyor1AvgLaps} avg laps)</div>`;
+        statsDiv.innerHTML += `<div style="font-size: 0.9em;">
+            (<span style="color: ${conveyor1Units !== 10 ? 'red' : 'black'};">${conveyor1Units} units</span>, 
+            <span style="color: ${conveyor1AvgLaps !== 10 ? 'red' : 'black'};">${conveyor1AvgLaps} avg laps</span>)
+        </div>`;
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     const averageTime1 = calculateAverageTimeX(lapTimes1, conveyor1AvgLaps);
     statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
@@ -586,7 +589,10 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     statsDiv.innerHTML += '<div style="border-top: 2px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2</div>`;
-    statsDiv.innerHTML += `<div style="font-size: 0.8em;">(${conveyor2Units} units, ${conveyor2AvgLaps} avg laps)</div>`;
+        statsDiv.innerHTML += `<div style="font-size: 0.9em;">
+            (<span style="color: ${conveyor2Units !== 10 ? 'red' : 'black'};">${conveyor2Units} units</span>, 
+            <span style="color: ${conveyor2AvgLaps !== 10 ? 'red' : 'black'};">${conveyor2AvgLaps} avg laps</span>)
+        </div>`;
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     const averageTime2 = calculateAverageTimeX(lapTimes2, conveyor2AvgLaps);
     statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
