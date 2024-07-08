@@ -459,17 +459,16 @@ sendDataToFirebase(dataToSend);
 
     let lapDeleted = false; // Flag to track if a lap has been deleted
 
-function deleteSelectedLap(conveyor, index) {
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+    function deleteSelectedLap(conveyor, index) {
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-    if (index >= 0 && index < lapTimes.length) {
-        lapTimes.splice(index, 1); // Remove the selected lap
-        lapDeleted = true; // Set the flag to true
-        displayStats(); // Update statistics
+        if (index >= 0 && index < lapTimes.length) {
+            lapTimes.splice(index, 1); // Remove the selected lap
+            lapDeleted = true; // Set the flag to true
+            displayStats(); // Update statistics
+            openDeleteLapPopup(conveyor); // Update the lap list in the popup
+        }
     }
-
-    closeDeleteLapPopup(); // Close the lap selection pop-up
-}
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
@@ -517,143 +516,143 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         const secondsStr = Math.floor(seconds % 60);
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
     }
+
     statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 1</div>`;
     statsDiv.innerHTML += `<div style="font-size: 0.8em;">(${conveyor1Units} units, ${conveyor1AvgLaps} avg laps)</div>`;
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-const averageTime1 = calculateAverageTimeX(lapTimes1, conveyor1AvgLaps);
-statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-if (lapTimes1.length > 0) {
-            const newestLapTime1 = lapTimes1[lapTimes1.length - 1].timeOfDay; // Access the correct property
-            console.log('Newest lap time for conveyor1:', newestLapTime1); // Log the newest lap time
-            const timeSinceNewestLap1 = Date.now() - Date.parse(newestLapTime1);
-            if (!isNaN(timeSinceNewestLap1)) {
-                statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap1).toISOString().substr(11, 8)} </div>`;
-                const expectedNextDrag1 = new Date(Date.parse(newestLapTime1) + averageTime1 * 1000);
-                expectedNextDrag1.setMinutes(expectedNextDrag1.getMinutes() - 2);
-                expectedNextDrag1.setSeconds(expectedNextDrag1.getSeconds() - 0);
-                // Move Next Drag next to Conveyor 1 header, drop the size by 25% and make it black
-                statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 1</div>', `Conveyor 1 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag1.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
-            } else {
-                console.error('Invalid time value for newest lap time:', newestLapTime1);
-            }
+    const averageTime1 = calculateAverageTimeX(lapTimes1, conveyor1AvgLaps);
+    statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time: ${formatTime(averageTime1)}</div>`;
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    if (lapTimes1.length > 0) {
+        const newestLapTime1 = lapTimes1[lapTimes1.length - 1].timeOfDay; // Access the correct property
+        console.log('Newest lap time for conveyor1:', newestLapTime1); // Log the newest lap time
+        const timeSinceNewestLap1 = Date.now() - Date.parse(newestLapTime1);
+        if (!isNaN(timeSinceNewestLap1)) {
+            statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap1).toISOString().substr(11, 8)} </div>`;
+            const expectedNextDrag1 = new Date(Date.parse(newestLapTime1) + averageTime1 * 1000);
+            expectedNextDrag1.setMinutes(expectedNextDrag1.getMinutes() - 2);
+            expectedNextDrag1.setSeconds(expectedNextDrag1.getSeconds() - 0);
+            // Move Next Drag next to Conveyor 1 header, drop the size by 25% and make it black
+            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 1</div>', `Conveyor 1 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag1.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
+        } else {
+            console.error('Invalid time value for newest lap time:', newestLapTime1);
         }
+    }
 
-statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 4))}</div>`;
-statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 2))}</div>`;
+    statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 4))}</div>`;
+    statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes1, 2))}</div>`;
 
-if (running1) {
-    const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
-    statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime1)}</div>`;
-    const estimatedNextPull1 = averageTime1 - runningTime1;
-    if (estimatedNextPull1 > 0) {
-        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull1)}</div>`;
-    } else {
-        statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull1))}</span></div>`;
+    if (running1) {
+        const runningTime1 = Math.floor((Date.now() - lapStart1) / 1000);
+        statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime1)}</div>`;
+        const estimatedNextPull1 = averageTime1 - runningTime1;
+        if (estimatedNextPull1 > 0) {
+            statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull1)}</div>`;
+        } else {
+            statsDiv.innerHTML += `<div id="estimatedNextPull1" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull1))}</span></div>`;
+        }
+    }
+    
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
+        const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+        const [date, time] = lapData.timeOfDay.split(' ');
+        const isLongLap = lapData.lapTime > 2 * averageTime1 * 1000;
+        const isShortLap = lapData.lapTime < 0.5 * averageTime1 * 1000;
+        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isLongLap || isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+    });
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+
+    // Display load lift information at all times
+    const averageTimeAll1 = calculateAverageTime(lapTimes1);
+    const averageTimeX2_1 = calculateAverageTimeX(lapTimes1, 2);
+    const averageTimeX4_1 = calculateAverageTimeX(lapTimes1, 4);
+
+    // 12-hour period (43200 seconds)
+    const twelveHours = 43200;
+
+    const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
+    const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
+    const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeAll1, twelveHours); // Changed to use averageTimeAll1
+    const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
+
+    statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Full Shift Load = ${(twelveHours / averageTime1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((twelveHours / averageTime1) * conveyor1Units / 16).toFixed(1)}</span></div>`;
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Shift End Load = ${(timeDifferenceRemaining / averageTime1 + loadValue1 ).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((timeDifferenceRemaining / averageTime1 + loadValue1) * conveyor1Units / 16).toFixed(1)}</span></div>`;
+    statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
+
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    statsDiv.innerHTML += '<div style="border-top: 2px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2</div>`;
+    statsDiv.innerHTML += `<div style="font-size: 0.8em;">(${conveyor2Units} units, ${conveyor2AvgLaps} avg laps)</div>`;
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    const averageTime2 = calculateAverageTimeX(lapTimes2, conveyor2AvgLaps);
+    statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
+    statsDiv.innerHTML += '<div style="line-height: 0.3;">&nbsp;</div>';
+    if (lapTimes2.length > 0) {
+        const newestLapTime2 = lapTimes2[lapTimes2.length - 1].timeOfDay; // Access the correct property
+        console.log('Newest lap time for conveyor2:', newestLapTime2); // Log the newest lap time
+        const timeSinceNewestLap2 = Date.now() - Date.parse(newestLapTime2);
+        if (!isNaN(timeSinceNewestLap2)) {
+            statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap2).toISOString().substr(11, 8)} </div>`;
+            const expectedNextDrag2 = new Date(Date.parse(newestLapTime2) + averageTime2 * 1000);
+            expectedNextDrag2.setMinutes(expectedNextDrag2.getMinutes() - 2);
+            expectedNextDrag2.setSeconds(expectedNextDrag2.getSeconds() - 0);
+            // Move Next Drag next to Conveyor 2 header, drop the size by 25% and make it black
+            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 2</div>', `Conveyor 2 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag2.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
+        } else {
+            console.error('Invalid time value for newest lap time:', newestLapTime2);
+        }
+    }
+    statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 4))}</div>`;
+    statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 2))}</div>`;
+
+    if (running2) {
+        const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
+        statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime2)}</div>`;
+        const estimatedNextPull2 = averageTime2 - runningTime2;
+        if (estimatedNextPull2 > 0) {
+            statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull2)}</div>`;
+        } else {
+            statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull2))}</span></div>`;
+        }
+    }
+    
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
+        const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+        const [date, time] = lapData.timeOfDay.split(' ');
+        const isLongLap = lapData.lapTime > 2 * averageTime2 * 1000;
+        const isShortLap = lapData.lapTime < 0.5 * averageTime2 * 1000;
+        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isLongLap || isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+    });
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+
+    // Display load lift information at all times for Conveyor 2
+    const averageTimeAll2 = calculateAverageTime(lapTimes2);
+    const averageTimeX2_2 = calculateAverageTimeX(lapTimes2, 2);
+    const averageTimeX4_2 = calculateAverageTimeX(lapTimes2, 4);
+
+    const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
+    const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
+    const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeAll2, twelveHours); // Changed to use averageTimeAll2
+    const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
+
+    statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Full Shift Load = ${(twelveHours / averageTime2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((twelveHours / averageTime2) * conveyor2Units / 16).toFixed(1)}</span></div>`;
+    statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
+    statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Shift End Load = ${(timeDifferenceRemaining / averageTime2 + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((timeDifferenceRemaining / averageTime2 + loadValue2) * conveyor2Units / 16).toFixed(1)}</span></div>`;
+
+    statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 4x - Load Conveyor 2 = ${(workToBeDone2_X4 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X4 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
+    statsDiv.innerHTML += '<div style="line-height: 1;">&nbsp;</div>';
+
+    if (timeDifferenceRemaining > 0) {
+        statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold" style="font-family: Arial, sans-serif; font-size: 1em;">Time to Shift Change: ${formatTime(timeDifferenceRemaining % 43200)}</div>`;
     }
 }
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Lap times:</div>';
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
-    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
-    const [date, time] = lapData.timeOfDay.split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} </div>`;
-});
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
-// Display load lift information at all times
-const averageTimeAll1 = calculateAverageTime(lapTimes1);
-const averageTimeX2_1 = calculateAverageTimeX(lapTimes1, 2);
-const averageTimeX4_1 = calculateAverageTimeX(lapTimes1, 4);
-
-// 12-hour period (43200 seconds)
-const twelveHours = 43200;
-
-const workToBeDone1_All = calculateWorkToBeDone(averageTimeAll1, timeDifferenceRemaining);
-const workToBeDone1_X2 = calculateWorkToBeDone(averageTimeX2_1, timeDifferenceRemaining);
-const workToBeDone1_X2_12h = calculateWorkToBeDone(averageTimeAll1, twelveHours); // Changed to use averageTimeAll1
-const workToBeDone1_X4 = calculateWorkToBeDone(averageTimeX4_1, timeDifferenceRemaining);
-
-
-statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Full Shift Load = ${(twelveHours / averageTime1).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((twelveHours / averageTime1) * conveyor1Units / 16).toFixed(1)}</span></div>`;
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Shift End Load = ${(timeDifferenceRemaining / averageTime1 + loadValue1 ).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((timeDifferenceRemaining / averageTime1 + loadValue1) * conveyor1Units / 16).toFixed(1)}</span></div>`;
-statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 4x - Load Conveyor 1 = ${(workToBeDone1_X4 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X4 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
-statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 2x - Load Conveyor 1 = ${(workToBeDone1_X2 + loadValue1).toFixed(1)}  (Lifts = ${((workToBeDone1_X2 + loadValue1) * 10 / 16).toFixed(1)})</div>`;
-
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += '<div style="border-top: 2px solid black; margin: 10px 0;"></div>'; // Black line between Conveyor 1 and Conveyor 2
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += `<div class="black conveyor-header" style="font-family: Arial, sans-serif; font-size: 1.8em;">Conveyor 2</div>`;
-statsDiv.innerHTML += `<div style="font-size: 0.8em;">(${conveyor2Units} units, ${conveyor2AvgLaps} avg laps)</div>`;
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-const averageTime2 = calculateAverageTimeX(lapTimes2, conveyor2AvgLaps);
-statsDiv.innerHTML += `<div class="green" style="font-family: Arial, sans-serif; font-size: 1em;">Average Lap Time : ${formatTime(averageTime2)}</div>`;
-statsDiv.innerHTML += '<div style="line-height: 0.3;">&nbsp;</div>';
-if (lapTimes2.length > 0) {
-            const newestLapTime2 = lapTimes2[lapTimes2.length - 1].timeOfDay; // Access the correct property
-            console.log('Newest lap time for conveyor2:', newestLapTime2); // Log the newest lap time
-            const timeSinceNewestLap2 = Date.now() - Date.parse(newestLapTime2);
-            if (!isNaN(timeSinceNewestLap2)) {
-                statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap2).toISOString().substr(11, 8)} </div>`;
-                const expectedNextDrag2 = new Date(Date.parse(newestLapTime2) + averageTime2 * 1000);
-                expectedNextDrag2.setMinutes(expectedNextDrag2.getMinutes() - 2);
-                expectedNextDrag2.setSeconds(expectedNextDrag2.getSeconds() - 0);
-                // Move Next Drag next to Conveyor 2 header, drop the size by 25% and make it black
-                statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 2</div>', `Conveyor 2 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag2.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
-            } else {
-                console.error('Invalid time value for newest lap time:', newestLapTime2);
-            }
-        }
-statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 4))}</div>`;
-statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 2))}</div>`;
-
-if (running2) {
-    const runningTime2 = Math.floor((Date.now() - lapStart2) / 1000);
-    statsDiv.innerHTML += `<div class="blue bold" style="display: none; sans-serif; font-size: 1em;">Current lap time: ${formatTime(runningTime2)}</div>`;
-    const estimatedNextPull2 = averageTime2 - runningTime2;
-    if (estimatedNextPull2 > 0) {
-        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: ${formatTime(estimatedNextPull2)}</div>`;
-    } else {
-        statsDiv.innerHTML += `<div id="estimatedNextPull2" class="black bold" style="display: none; sans-serif; font-size: 1em;">Estimated Next Pull: <span class="red">-${formatTime(Math.abs(estimatedNextPull2))}</span></div>`;
-    }
-}
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += '<div class="blue" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Lap times:</div>';
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
-    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
-    const [date, time] = lapData.timeOfDay.split(' ');
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} </div>`;
-});
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-
-// Display load lift information at all times for Conveyor 2
-const averageTimeAll2 = calculateAverageTime(lapTimes2);
-const averageTimeX2_2 = calculateAverageTimeX(lapTimes2, 2);
-const averageTimeX4_2 = calculateAverageTimeX(lapTimes2, 4);
-
-const workToBeDone2_All = calculateWorkToBeDone(averageTimeAll2, timeDifferenceRemaining);
-const workToBeDone2_X2 = calculateWorkToBeDone(averageTimeX2_2, timeDifferenceRemaining);
-const workToBeDone2_X2_12h = calculateWorkToBeDone(averageTimeAll2, twelveHours); // Changed to use averageTimeAll2
-const workToBeDone2_X4 = calculateWorkToBeDone(averageTimeX4_2, timeDifferenceRemaining);
-
-
-statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Full Shift Load = ${(twelveHours / averageTime2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((twelveHours / averageTime2) * conveyor2Units / 16).toFixed(1)}</span></div>`;
-statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-statsDiv.innerHTML += `<div class="black" style="font-family: Arial, sans-serif; font-size: 1.18em;">Shift End Load = ${(timeDifferenceRemaining / averageTime2 + loadValue2).toFixed(1)} <span style="margin-left: 40px;">Lifts = ${((timeDifferenceRemaining / averageTime2 + loadValue2) * conveyor2Units / 16).toFixed(1)}</span></div>`;
-
-
-statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 4x - Load Conveyor 2 = ${(workToBeDone2_X4 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X4 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
-statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Avg 2x - Load Conveyor 2 = ${(workToBeDone2_X2 + loadValue2).toFixed(1)}  (Lifts = ${((workToBeDone2_X2 + loadValue2) * 10 / 16).toFixed(1)})</div>`;
-statsDiv.innerHTML += '<div style="line-height: 1;">&nbsp;</div>';
-
-if (timeDifferenceRemaining > 0) {
-    statsDiv.innerHTML += `<div id="countdownDisplay" class="red bold" style="font-family: Arial, sans-serif; font-size: 1em;">Time to Shift Change: ${formatTime(timeDifferenceRemaining % 43200)}</div>`;
-}
-
-}
         function startCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = setInterval(function() {
