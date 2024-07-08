@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
    
+    <link rel="manifest" href="/manifest.json">
     
     <link rel="apple-touch-icon" href="icon.png">
     <title>Conveyor Calculator</title>
@@ -274,6 +275,17 @@ button {
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database-compat.js"></script>
     <script>
+        
+          // Register the service worker
+           if ('serviceWorker' in navigator) {
+     window.addEventListener('load', () => {
+       navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+         console.log('ServiceWorker registration successful with scope: ', registration.scope);
+       }, (error) => {
+         console.log('ServiceWorker registration failed: ', error);
+       });
+     });
+   }
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAdX_RAPVeG-uekG-lG1nhSFzZkTMRgg0c",
