@@ -191,11 +191,11 @@ button {
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <div class="black" style="margin-top: 20px;">
-                Subtract Drag conveyor1 =
+                Subtract Cut Pull conveyor1 =
                 <input type="number" id="subtractLoad1" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 1">
             </div>
             <div class="black" style="margin-top: 10px;">
-                Subtract Drag conveyor2 =
+                Subtract Cut Pull conveyor2 =
                 <input type="number" id="subtractLoad2" class="input-small" style="border: 1px solid black; border-radius: 5px;" placeholder="Subtract Load 2">
             </div>
             
@@ -395,44 +395,61 @@ sendDataToFirebase(dataToSend);
         let conveyor2AvgLaps = 10; // Default value for Conveyor 2 average laps
 
    
+   
+        function openDeleteLapPopup(conveyor) {
+        const lapListDiv = document.getElementById('lapList');
+        lapListDiv.innerHTML = ''; // Clear previous lap list
 
-       // Function to open the lap selection pop-up for a specific conveyor
-function openDeleteLapPopup(conveyor) {
-    const lapListDiv = document.getElementById('lapList');
-    lapListDiv.innerHTML = ''; // Clear previous lap list
+        // Get the lap times for the selected conveyor
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-    // Get the lap times for the selected conveyor
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+        // Calculate the average lap time
+        const averageLapTime = calculateAverageTime(lapTimes);
 
-    // Convert date and time strings to timestamps and create an array of lap objects
-    const lapObjects = lapTimes.map((lapData, index) => {
-        const timestamp = Date.parse(lapData[1].replace(/\//g, '/') + ':00');
-        return { index, timestamp, lapData };
-    });
+        // Convert date and time strings to timestamps and create an array of lap objects
+        const lapObjects = lapTimes.map((lapData, index) => {
+            const timestamp = lapData.timeOfDay ? Date.parse(lapData.timeOfDay.replace(/\//g, '/') + ':00') : 0;
+            return { index, timestamp, lapData };
+        });
 
-    // Sort lap objects by timestamp in ascending order
-    lapObjects.sort((a, b) => a.timestamp - b.timestamp);
+        // Sort lap objects by timestamp in ascending order
+        lapObjects.sort((a, b) => a.timestamp - b.timestamp);
 
-    // Reverse the order to have the newest lap at the top
-    lapObjects.reverse();
+        // Reverse the order to have the newest lap at the top
+        lapObjects.reverse();
 
-    // Display the list of laps with delete buttons
-    lapObjects.forEach((lapObj) => {
-        const lapData = lapObj.lapData;
-        const lapTimeStr = formatTime(Math.floor(lapData[0] / 1000));
-        lapListDiv.innerHTML += `
-            <div>
-                <button onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
-                    Delete Lap (${lapData[1]}) - ${lapTimeStr}
-                </button>
-            </div>
-        `;
-    });
+        // Display the list of laps with delete buttons
+        lapObjects.forEach((lapObj, idx) => {
+            const lapData = lapObj.lapData;
+            const lapTimeStr = lapData.lapTime ? formatTime(Math.floor(lapData.lapTime / 1000)) : 'N/A';
+            const lapDateStr = lapData.timeOfDay ? lapData.timeOfDay : 'N/A';
+            const isLongLap = lapData.lapTime > 2 * averageLapTime * 1000; // Check if lap time is more than twice the average
+            const isShortLap = lapData.lapTime < 0.5 * averageLapTime * 1000; // Check if lap time is less than half the average
 
-    // Show the lap selection pop-up
-    const deleteLapPopup = document.getElementById('deleteLapPopup');
-    deleteLapPopup.style.display = 'block';
-}
+            lapListDiv.innerHTML += `
+                <div>
+                    <button style="color: black; background-color: ${isLongLap ? 'red' : isShortLap ? 'yellow' : 'white'}; border: 1px solid black; border-radius: 5px;" onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
+                        ${lapObjects.length - idx}. Delete Lap (${lapDateStr}) - ${lapTimeStr}
+                    </button>
+                </div>
+            `;
+        });
+
+        // Show the lap selection pop-up
+        const deleteLapPopup = document.getElementById('deleteLapPopup');
+        deleteLapPopup.style.display = 'block';
+    }
+
+
+
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secondsStr = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondsStr.toString().padStart(2, '0')}`;
+    }
+
+ 
 
     // Function to close the lap selection pop-up
     function closeDeleteLapPopup() {
@@ -440,17 +457,19 @@ function openDeleteLapPopup(conveyor) {
         deleteLapPopup.style.display = 'none';
     }
 
-    // Function to delete a selected lap for a specific conveyor
-    function deleteSelectedLap(conveyor, index) {
-        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+    let lapDeleted = false; // Flag to track if a lap has been deleted
 
-        if (index >= 0 && index < lapTimes.length) {
-            lapTimes.splice(index, 1); // Remove the selected lap
-            displayStats(); // Update statistics
-        }
+function deleteSelectedLap(conveyor, index) {
+    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-        closeDeleteLapPopup(); // Close the lap selection pop-up
+    if (index >= 0 && index < lapTimes.length) {
+        lapTimes.splice(index, 1); // Remove the selected lap
+        lapDeleted = true; // Set the flag to true
+        displayStats(); // Update statistics
     }
+
+    closeDeleteLapPopup(); // Close the lap selection pop-up
+}
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
@@ -675,10 +694,10 @@ if (timeDifferenceRemaining > 0) {
         }
 
         function calculateAverageTime(lapTimes) {
-            const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData.lapTime, 0);
-            const numLaps = lapTimes.length;
-            return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
-        }
+        const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData.lapTime, 0);
+        const numLaps = lapTimes.length;
+        return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
+    }
 
         document.addEventListener('DOMContentLoaded', () => {
             // Add event listener for the enable lap buttons
@@ -969,31 +988,38 @@ document.getElementById('recordLap2').addEventListener('click', () => {
 
     // Call the displayStats function if it's defined elsewhere in your code
     displayStats();
-
     // Auto pull 6 laps on page open and start conveyors
     autoPullLapsOnPageOpenAndScreenAwake();
 
+    // Add event listener for visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            autoPullLapsOnPageOpenAndScreenAwake();
+        }
+    });
 });    
 
 function autoPullLapsOnPageOpenAndScreenAwake() {
-    const lapCount = 6;
+        if (lapDeleted) return; // Do not pull laps if a lap has been deleted in this session
 
-    // Retrieve the specified number of laps from Firebase for Conveyor 1
-    pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
-        lapStart1 = Date.now();
-        running1 = true;
-        document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
-        displayStats();
-    });
+        const lapCount = 6;
 
-    // Retrieve the specified number of laps from Firebase for Conveyor 2
-    pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
-        lapStart2 = Date.now();
-        running2 = true;
-        document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
-        displayStats();
-    });
-}
+        // Retrieve the specified number of laps from Firebase for Conveyor 1
+        pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
+            lapStart1 = Date.now();
+            running1 = true;
+            document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
+            displayStats();
+        });
+
+        // Retrieve the specified number of laps from Firebase for Conveyor 2
+        pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
+            lapStart2 = Date.now();
+            running2 = true;
+            document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
+            displayStats();
+        });
+    }
 
 function pullAndDisplay(conveyor, lapTimesArray, count, callback) {
         // Adjust reference based on the conveyor name
