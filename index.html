@@ -555,7 +555,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
             expectedNextDrag1.setMinutes(expectedNextDrag1.getMinutes() - 1);
             expectedNextDrag1.setSeconds(expectedNextDrag1.getSeconds() - 0);
             // Move Next Drag next to Conveyor 1 header, drop the size by 25% and make it black
-            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 1</div>', `Conveyor 1 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag1.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
+            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 1</div>', `Conveyor 1 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Est Next: ${expectedNextDrag1.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
         } else {
             console.error('Invalid time value for newest lap time:', newestLapTime1);
         }
@@ -626,7 +626,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
             expectedNextDrag2.setMinutes(expectedNextDrag2.getMinutes() - 1);
             expectedNextDrag2.setSeconds(expectedNextDrag2.getSeconds() - 0);
             // Move Next Drag next to Conveyor 2 header, drop the size by 25% and make it black
-            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 2</div>', `Conveyor 2 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Next Drag: ${expectedNextDrag2.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
+            statsDiv.innerHTML = statsDiv.innerHTML.replace('Conveyor 2</div>', `Conveyor 2 <span class="black bold" style="font-family: Arial, sans-serif; font-size: 0.6em;">Est Next: ${expectedNextDrag2.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>`);
         } else {
             console.error('Invalid time value for newest lap time:', newestLapTime2);
         }
