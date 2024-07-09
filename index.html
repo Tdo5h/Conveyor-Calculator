@@ -285,21 +285,34 @@ button {
             appId: "1:708197721355:web:234d1d9223b125a657ee0e",
             measurementId: "G-X2REH4L1M5"
         };
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-let database = firebase.database();
+ // Initialize Firebase
+ firebase.initializeApp(firebaseConfig);
+    let database = firebase.database();
 
-let isOnline = true; // Track online/offline status
-let pendingDataToSend = []; // Array to store data when offline
-const localLapList = [/* array of laps */];  // Example local lap list
+    let isOnline = true; // Track online/offline status
+    let pendingDataToSend = []; // Array to store data when offline
+    const localLapList = [/* array of laps */];  // Example local lap list
+    let latestLapTimestamp = null; // Store the timestamp of the latest lap pulled on page load
 
-// Reinitialize Firebase and send any pending data 2 seconds after screen focus
-window.addEventListener('focus', () => {
-    setTimeout(() => {
-        reinitializeFirebase();
-        autoPullLapsOnPageOpenAndScreenAwake();
-    }, 2500); // 2.5 seconds
-});
+    // Reinitialize Firebase and send any pending data 2 seconds after screen focus
+    window.addEventListener('focus', () => {
+        setTimeout(() => {
+            reinitializeFirebase();
+            pullNewerLapsOnScreenWake();
+        }, 2500); // 2.5 seconds
+    });
+
+    // Helper function to validate JSON strings
+    function isValidJSON(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+
 
 function sendDataToFirebase(data, callback) {
     if (isOnline) {
@@ -510,7 +523,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         }
         
 
-function displayStats() {
+        function displayStats() {
     const statsDiv = document.getElementById('stats');
     statsDiv.innerHTML = '';
 
@@ -565,7 +578,8 @@ function displayStats() {
         const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
         const [date, time] = lapData.timeOfDay.split(' ');
         const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
-        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
+        const isAveragedLap = idx < conveyor1AvgLaps; // Check if the lap is part of the average calculation
+        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: ${isAveragedLap ? 'green' : 'purple'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
     });
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -634,7 +648,8 @@ function displayStats() {
         const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
         const [date, time] = lapData.timeOfDay.split(' ');
         const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
-        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em;">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
+        const isAveragedLap = idx < conveyor2AvgLaps; // Check if the lap is part of the average calculation
+        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: ${isAveragedLap ? 'green' : 'purple'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
     });
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
 
@@ -1005,102 +1020,212 @@ document.getElementById('recordLap2').addEventListener('click', () => {
         }
     });
 });    
-
 function autoPullLapsOnPageOpenAndScreenAwake() {
-    const lapCount = 4;
+        const lapCount = 4;
 
-    // Retrieve the specified number of laps from Firebase for Conveyor 1
-    pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
-        lapStart1 = Date.now();
-        running1 = true;
-        document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
-        displayStats();
-    });
+        // Retrieve the specified number of laps from Firebase for Conveyor 1
+        pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
+            lapStart1 = Date.now();
+            running1 = true;
+            document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
+            displayStats();
+        });
 
-    // Retrieve the specified number of laps from Firebase for Conveyor 2
-    pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
-        lapStart2 = Date.now();
-        running2 = true;
-        document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
-        displayStats();
-    });
+        // Retrieve the specified number of laps from Firebase for Conveyor 2
+        pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
+            lapStart2 = Date.now();
+            running2 = true;
+            document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
+            displayStats();
+        });
 
-    // Listen for new laps added to Firebase for Conveyor 1
-    listenForNewLaps('conveyor1', lapTimes1);
+        // Listen for new laps added to Firebase for Conveyor 1
+        listenForNewLaps('conveyor1', lapTimes1);
 
-    // Listen for new laps added to Firebase for Conveyor 2
-    listenForNewLaps('conveyor2', lapTimes2);
-}
+        // Listen for new laps added to Firebase for Conveyor 2
+        listenForNewLaps('conveyor2', lapTimes2);
+    }
 
-function listenForNewLaps(conveyor, lapTimesArray) {
-    const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-    const lapsRef = database.ref(lapsRefName);
+    function pullNewerLapsOnScreenWake() {
+        if (latestLapTimestamp) {
+            // Pull newer laps for Conveyor 1
+            pullNewerLaps('conveyor1', lapTimes1, latestLapTimestamp);
 
-    lapsRef.on('child_added', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            try {
-                const entryData = JSON.parse(data.data);
-                if (entryData.lapTime && entryData.timeOfDay) {
-                    // Skip if the lap is in the deleted laps list
-                    if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
-                        lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
-                        if (lapTimesArray.length > 10) {
-                            lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
-                        }
-                        displayStats();
-                    }
-                } else {
-                    console.error('Entry data is missing lapTime or timeOfDay:', entryData);
-                }
-            } catch (e) {
-                console.error('Error parsing entry data:', data.data, e);
-            }
+            // Pull newer laps for Conveyor 2
+            pullNewerLaps('conveyor2', lapTimes2, latestLapTimestamp);
         }
-    });
-}
+    }
 
-function pullAndDisplay(conveyor, lapTimesArray, count, callback) {
-    // Adjust reference based on the conveyor name
-    const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-    const lapsRef = database.ref(lapsRefName).limitToLast(count);
+    function listenForNewLaps(conveyor, lapTimesArray) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName);
 
-    lapsRef.once('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            lapTimesArray.length = 0; // Clear the existing lap times
-            
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    try {
-                        const entryData = JSON.parse(data[key].data);
-                        if (entryData.lapTime && entryData.timeOfDay) {
-                            // Skip if the lap is in the deleted laps list
-                            if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+        lapsRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (data && isValidJSON(data.data)) {
+                try {
+                    const entryData = JSON.parse(data.data);
+                    if (entryData.lapTime && entryData.timeOfDay) {
+                        // Skip if the lap is in the deleted laps list
+                        if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+                            const lapTimestamp = Date.parse(entryData.timeOfDay.replace(/\//g, '/') + ':00');
+                            if (lapTimestamp > latestLapTimestamp) {
                                 lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
                                 if (lapTimesArray.length > 10) {
                                     lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
                                 }
+                                displayStats();
                             }
-                        } else {
-                            console.error('Entry data is missing lapTime or timeOfDay:', entryData);
                         }
-                    } catch (e) {
-                        console.error('Error parsing entry data:', data[key].data, e);
+                    } else {
+                        console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+                    }
+                } catch (e) {
+                    console.error('Error parsing entry data:', data.data, e);
+                }
+            } else {
+                console.error('Invalid JSON data:', data.data);
+            }
+        });
+    }
+
+    function pullAndDisplay(conveyor, lapTimesArray, count, callback) {
+        // Adjust reference based on the conveyor name
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName).limitToLast(count);
+
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                lapTimesArray.length = 0; // Clear the existing lap times
+                
+                for (const key in data) {
+                    if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
+                        try {
+                            const entryData = JSON.parse(data[key].data);
+                            if (entryData.lapTime && entryData.timeOfDay) {
+                                // Skip if the lap is in the deleted laps list
+                                if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+                                    lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
+                                    if (lapTimesArray.length > 10) {
+                                        lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                                    }
+                                    // Update the latest lap timestamp
+                                    const lapTimestamp = Date.parse(entryData.timeOfDay.replace(/\//g, '/') + ':00');
+                                    if (!latestLapTimestamp || lapTimestamp > latestLapTimestamp) {
+                                        latestLapTimestamp = lapTimestamp;
+                                    }
+                                }
+                            } else {
+                                console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing entry data:', data[key].data, e);
+                        }
+                    } else {
+                        console.error('Invalid JSON data:', data[key].data);
                     }
                 }
+                displayStats();
+                if (callback) callback(); // Call the callback function if provided
+            } else {
+                console.error('No data found in snapshot.');
             }
-            displayStats();
-            if (callback) callback(); // Call the callback function if provided
-        } else {
-            console.error('No data found in snapshot.');
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
+    }
+
+    function pullNewerLaps(conveyor, lapTimesArray, sinceTimestamp) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName).orderByChild('timestamp').startAt(sinceTimestamp + 1);
+
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                for (const key in data) {
+                    if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
+                        try {
+                            const entryData = JSON.parse(data[key].data);
+                            if (entryData.lapTime && entryData.timeOfDay) {
+                                // Skip if the lap is in the deleted laps list
+                                if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+                                    const lapTimestamp = Date.parse(entryData.timeOfDay.replace(/\//g, '/') + ':00');
+                                    if (lapTimestamp > sinceTimestamp) {
+                                        lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
+                                        if (lapTimesArray.length > 10) {
+                                            lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                                        }
+                                        // Update the latest lap timestamp
+                                        if (!latestLapTimestamp || lapTimestamp > latestLapTimestamp) {
+                                            latestLapTimestamp = lapTimestamp;
+                                        }
+                                    }
+                                }
+                            } else {
+                                console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing entry data:', data[key].data, e);
+                        }
+                    } else {
+                        console.error('Invalid JSON data:', data[key].data);
+                    }
+                }
+                displayStats();
+            } else {
+                console.error('No data found in snapshot.');
+            }
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
+    }
+
+    function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
+        // Convert timeOfDay to uppercase
+        timeOfDay = timeOfDay.toUpperCase();
+
+        // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
+        if (lapTime > 900000) {
+            // Send lap time data to Firebase
+            const lapData = {
+                name: conveyor,
+                data: JSON.stringify({ lapTime: lapTime, timeOfDay: timeOfDay }),
+                ttl: 60,
+                published_at: new Date().toISOString(),
+                coreid: "e00fce68038c121e8ce77681"
+            };
+            database.ref(`laps/${conveyor}`).push(lapData);
         }
-    }).catch((error) => {
-        console.error('Error fetching data from Firebase:', error);
+    }
+
+    document.getElementById('recordLap1').addEventListener('click', () => {
+        if (running1) {
+            const lapTime = Date.now() - lapStart1;
+            let timeOfDay = getFormattedTime();
+            timeOfDay = timeOfDay.toUpperCase(); // Convert to uppercase
+            lapTimes1.push({ lapTime: lapTime, timeOfDay: timeOfDay });
+            lapStart1 = Date.now();
+            displayStats();
+
+            // Send lap time data to Firebase
+            sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
+        }
     });
-}
 
+    document.getElementById('recordLap2').addEventListener('click', () => {
+        if (running2) {
+            const lapTime = Date.now() - lapStart2;
+            let timeOfDay = getFormattedTime();
+            timeOfDay = timeOfDay.toUpperCase(); // Convert to uppercase
+            lapTimes2.push({ lapTime: lapTime, timeOfDay: timeOfDay });
+            lapStart2 = Date.now();
+            displayStats();
 
+            // Send lap time data to Firebase
+            sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
+        }
+    });
     </script>
 </body>
 </html>
