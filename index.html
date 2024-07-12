@@ -474,17 +474,81 @@ sendDataToFirebase(dataToSend);
 
     let deletedLaps = { conveyor1: [], conveyor2: [] }; // Store deleted laps
 
-function deleteSelectedLap(conveyor, index) {
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+    function deleteSelectedLap(conveyor, index) {
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
 
-    if (index >= 0 && index < lapTimes.length) {
-        const deletedLap = lapTimes.splice(index, 1)[0]; // Remove and store the deleted lap
-        deletedLaps[conveyor].push(deletedLap); // Add to deleted laps
-        lapDeleted = true; // Set the flag to true
-        displayStats(); // Update statistics
-        openDeleteLapPopup(conveyor); // Update the lap list in the popup
+        if (index >= 0 && index < lapTimes.length) {
+            const deletedLap = lapTimes.splice(index, 1)[0]; // Remove and store the deleted lap
+            moveLapToDeletedFolder(conveyor, deletedLap); // Move to deleted folder
+            lapDeleted = true; // Set the flag to true
+            displayStats(); // Update statistics
+            openDeleteLapPopup(conveyor); // Update the lap list in the popup
+        }
     }
-}
+
+    function moveLapToDeletedFolder(conveyor, lapData) {
+        const deletedLapsRef = database.ref(`deleted/${conveyor}`);
+        deletedLapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            const keys = data ? Object.keys(data) : [];
+            if (keys.length >= 20) {
+                // Delete the oldest lap if there are already 20 laps
+                const oldestKey = keys[0];
+                deletedLapsRef.child(oldestKey).remove();
+            }
+            // Add the new deleted lap
+            deletedLapsRef.push(lapData);
+        });
+    }
+
+    function pullAndDisplay(conveyor, lapTimesArray, lapCount, callback) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName).limitToLast(lapCount);
+
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                lapTimesArray.length = 0; // Clear the existing lap times
+
+                const lapEntries = Object.entries(data);
+                const promises = lapEntries.map(([key, value]) => {
+                    return new Promise((resolve) => {
+                        if (isValidJSON(value.data)) {
+                            const lapData = JSON.parse(value.data);
+                            // Check if the lap is in the deleted laps list
+                            isLapDeleted(conveyor, lapData, (isDeleted) => {
+                                if (!isDeleted) {
+                                    lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                                }
+                                resolve();
+                            });
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+
+                Promise.all(promises).then(() => {
+                    displayStats();
+                    if (callback) callback();
+                });
+            }
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
+    }
+
+    function isLapDeleted(conveyor, lapData, callback) {
+        const deletedLapsRef = database.ref(`deleted/${conveyor}`);
+        deletedLapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            const isDeleted = data && Object.values(data).some(deletedLap => 
+                deletedLap.lapTime === lapData.lapTime && deletedLap.timeOfDay === lapData.timeOfDay
+            );
+            callback(isDeleted);
+        });
+    }
+
 
 
     function formatTime(seconds) {
@@ -1455,159 +1519,118 @@ pullNewerLaps('conveyor2', lapTimes2);
 
 }
 
+
 function pullAndDisplay(conveyor, lapTimesArray, lapCount, callback) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName).limitToLast(lapCount);
 
-const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                lapTimesArray.length = 0; // Clear the existing lap times
 
-const lapsRef = database.ref(lapsRefName).limitToLast(lapCount);
-
-
-lapsRef.once('value', (snapshot) => {
-    const data = snapshot.val();
-
-    if (data) {
-        lapTimesArray.length = 0; // Clear the existing lap times
-
-        const lapEntries = Object.entries(data);
-
-        lapEntries.forEach(([key, value]) => {
-
-            if (isValidJSON(value.data)) {
-
-                const lapData = JSON.parse(value.data);
-
-                lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
-            }
-
-        });
-
-        displayStats();
-
-        if (callback) callback();
-
-    }
-
-}).catch((error) => {
-
-    console.error('Error fetching data from Firebase:', error);
-
-});
-}
-
-
-function pullNewerLaps(conveyor, lapTimesArray) {
-
-const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-
-const lapsRef = database.ref(lapsRefName);
-
-lapsRef.once('value', (snapshot) => {
-
-    const data = snapshot.val();
-
-    if (data) {
-
-        for (const key in data) {
-            if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
-
-                try {
-
-                    const entryData = JSON.parse(data[key].data);
-
-                    if (entryData.lapTime && entryData.timeOfDay) {
-
-                        // Skip if the lap is in the deleted laps list
-
-                        if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
-
-                            lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
-
-                            if (lapTimesArray.length > 10) {
-
-                                lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
-
-                            }
-
+                const lapEntries = Object.entries(data);
+                const promises = lapEntries.map(([key, value]) => {
+                    return new Promise((resolve) => {
+                        if (isValidJSON(value.data)) {
+                            const lapData = JSON.parse(value.data);
+                            // Check if the lap is in the deleted laps list
+                            isLapDeleted(conveyor, lapData, (isDeleted) => {
+                                if (!isDeleted) {
+                                    lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                                }
+                                resolve();
+                            });
+                        } else {
+                            resolve();
                         }
+                    });
+                });
 
-                    } else {
+                Promise.all(promises).then(() => {
+                    displayStats();
+                    if (callback) callback();
+                });
+            }
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
+    }
 
-                        console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+    function pullNewerLaps(conveyor, lapTimesArray) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName);
 
-                    }
+        lapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const lapEntries = Object.entries(data);
+                const promises = lapEntries.map(([key, value]) => {
+                    return new Promise((resolve) => {
+                        if (isValidJSON(value.data)) {
+                            const lapData = JSON.parse(value.data);
+                            // Check if the lap is in the deleted laps list
+                            isLapDeleted(conveyor, lapData, (isDeleted) => {
+                                if (!isDeleted) {
+                                    lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                                    if (lapTimesArray.length > 10) {
+                                        lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                                    }
+                                }
+                                resolve();
+                            });
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
 
-                } catch (e) {
-
-                    console.error('Error parsing entry data:', data[key].data, e);
-
-                }
-
+                Promise.all(promises).then(() => {
+                    displayStats();
+                });
             } else {
-                console.error('Invalid JSON data:', data[key].data);
-
+                console.error('No data found in snapshot.');
             }
-
-        }
-
-        displayStats();
-    } else {
-
-        console.error('No data found in snapshot.');
-
+        }).catch((error) => {
+            console.error('Error fetching data from Firebase:', error);
+        });
     }
 
-}).catch((error) => {
+    function listenForNewLaps(conveyor, lapTimesArray) {
+        const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+        const lapsRef = database.ref(lapsRefName);
 
-    console.error('Error fetching data from Firebase:', error);
-
-});
-
-}
-
-function listenForNewLaps(conveyor, lapTimesArray) {
-
-const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-
-const lapsRef = database.ref(lapsRefName);
-
-
-lapsRef.on('child_added', (snapshot) => {
-
-    const data = snapshot.val();
-
-    if (data && isValidJSON(data.data)) {
-        const lapData = JSON.parse(data.data);
-
-        if (lapData.lapTime && lapData.timeOfDay) {
-
-            lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
-
-            if (lapTimesArray.length > 10) {
-
-                lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
-
+        lapsRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (data && isValidJSON(data.data)) {
+                const lapData = JSON.parse(data.data);
+                // Check if the lap is in the deleted laps list
+                isLapDeleted(conveyor, lapData, (isDeleted) => {
+                    if (!isDeleted) {
+                        lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                        if (lapTimesArray.length > 10) {
+                            lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                        }
+                        displayStats();
+                    }
+                });
+            } else {
+                console.error('Invalid JSON data:', data.data);
             }
-
-            displayStats();
-
-        } else {
-
-            console.error('Lap data is missing lapTime or timeOfDay:', lapData);
-
-        }
-
-    } else {
-
-        console.error('Invalid JSON data:', data.data);
-
+        });
     }
 
-});
-
-}
-
+    function isLapDeleted(conveyor, lapData, callback) {
+        const deletedLapsRef = database.ref(`deleted/${conveyor}`);
+        deletedLapsRef.once('value', (snapshot) => {
+            const data = snapshot.val();
+            const isDeleted = data && Object.values(data).some(deletedLap => 
+                deletedLap.lapTime === lapData.lapTime && deletedLap.timeOfDay === lapData.timeOfDay
+            );
+            callback(isDeleted);
+        });
+    }
 </script>
 
 </body>
-
 </html>
