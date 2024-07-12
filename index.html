@@ -423,7 +423,7 @@ sendDataToFirebase(dataToSend);
 
     // Convert date and time strings to timestamps and create an array of lap objects
     const lapObjects = lapTimes.map((lapData, index) => {
-        const timestamp = lapData.timeOfDay ? Date.parse(lapData.timeOfDay.replace(/\//g, '/') + ':00') : 0;
+        const timestamp = lapData.timeOfDay ? parseDate(lapData.timeOfDay) : 0; // Use parseDate function
         return { index, timestamp, lapData };
     });
 
@@ -548,10 +548,10 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     if (lapTimes1.length > 0) {
         const newestLapTime1 = lapTimes1[lapTimes1.length - 1].timeOfDay; // Access the correct property
         console.log('Newest lap time for conveyor1:', newestLapTime1); // Log the newest lap time
-        const timeSinceNewestLap1 = Date.now() - Date.parse(newestLapTime1) - 3600000; //............................................................................................................................................................Subtract 1 hour (3600000 ms)
+        const timeSinceNewestLap1 = Date.now() - parseDate(newestLapTime1); // Use parseDate function
         if (!isNaN(timeSinceNewestLap1)) {
             statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap1).toISOString().substr(11, 8)} </div>`;
-            const expectedNextDrag1 = new Date(Date.parse(newestLapTime1) + averageTime1 * 1000);
+            const expectedNextDrag1 = new Date(parseDate(newestLapTime1) + averageTime1 * 1000);
             expectedNextDrag1.setMinutes(expectedNextDrag1.getMinutes() - 1);
             expectedNextDrag1.setSeconds(expectedNextDrag1.getSeconds() - 0);
             // Move Next Drag next to Conveyor 1 header, drop the size by 25% and make it black
@@ -619,10 +619,10 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
     if (lapTimes2.length > 0) {
         const newestLapTime2 = lapTimes2[lapTimes2.length - 1].timeOfDay; // Access the correct property
         console.log('Newest lap time for conveyor2:', newestLapTime2); // Log the newest lap time
-        const timeSinceNewestLap2 = Date.now() - Date.parse(newestLapTime2) - 3600000; // .................................................................................................................................................................Subtract 1 hour (3600000 ms)
+        const timeSinceNewestLap2 = Date.now() - parseDate(newestLapTime2); // Use parseDate function
         if (!isNaN(timeSinceNewestLap2)) {
             statsDiv.innerHTML += `<div class="black bold" style="font-family: Arial, sans-serif; font-size: 1em;">Current lap time: ${new Date(timeSinceNewestLap2).toISOString().substr(11, 8)} </div>`;
-            const expectedNextDrag2 = new Date(Date.parse(newestLapTime2) + averageTime2 * 1000);
+            const expectedNextDrag2 = new Date(parseDate(newestLapTime2) + averageTime2 * 1000);
             expectedNextDrag2.setMinutes(expectedNextDrag2.getMinutes() - 1);
             expectedNextDrag2.setSeconds(expectedNextDrag2.getSeconds() - 0);
             // Move Next Drag next to Conveyor 2 header, drop the size by 25% and make it black
@@ -630,6 +630,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
         } else {
             console.error('Invalid time value for newest lap time:', newestLapTime2);
         }
+    
     }
     statsDiv.innerHTML += `<div class="black" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 4 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 4))}</div>`;
     statsDiv.innerHTML += `<div class="green" style="display: none; font-family: Arial, sans-serif; font-size: 1em;">Average Last 2 Laps: ${formatTime(calculateAverageTimeX(lapTimes2, 2))}</div>`;
@@ -718,11 +719,16 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
 
     }
 
-// Function to parse a date string in the format day/month/year
+// Function to parse a date string in the format day/month
 function parseDate(dateString) {
-    const [day, month, year] = dateString.split('/').map(Number);
-    return new Date(year, month - 1, day);
+    const [datePart, timePart, ampm] = dateString.split(' ');
+    const [day, month] = datePart.split('/').map(Number);
+    const now = new Date();
+    const year = now.getFullYear();
+    const formattedDate = `${month}/${day}/${year} ${timePart} ${ampm}`;
+    return Date.parse(formattedDate);
 }
+
 
         function calculateAverageTime(lapTimes) {
         const totalLapTime = lapTimes.reduce((total, lapData) => total + lapData.lapTime, 0);
