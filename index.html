@@ -292,6 +292,70 @@ button {
         }
         return true;
     }
+            // Function to update settings in Firebase
+            function updateSettingsInFirebase(setting, value) {
+            database.ref(`settings/${setting}`).set(value, (error) => {
+                if (error) {
+                    console.error(`Failed to update ${setting} in Firebase:`, error);
+                } else {
+                    console.log(`${setting} updated in Firebase.`);
+                }
+            });
+        }
+
+        // Event listeners for conveyor unit settings
+        document.getElementById('conveyor1Units').addEventListener('change', (event) => {
+            conveyor1Units = parseInt(event.target.value);
+            updateSettingsInFirebase('conveyor1Units', conveyor1Units);
+            displayStats();
+        });
+
+        document.getElementById('conveyor2Units').addEventListener('change', (event) => {
+            conveyor2Units = parseInt(event.target.value);
+            updateSettingsInFirebase('conveyor2Units', conveyor2Units);
+            displayStats();
+        });
+
+        // Event listeners for average laps settings
+        document.getElementById('conveyor1AvgLaps').addEventListener('change', (event) => {
+            conveyor1AvgLaps = parseInt(event.target.value);
+            updateSettingsInFirebase('conveyor1AvgLaps', conveyor1AvgLaps);
+            displayStats();
+        });
+
+        document.getElementById('conveyor2AvgLaps').addEventListener('change', (event) => {
+            conveyor2AvgLaps = parseInt(event.target.value);
+            updateSettingsInFirebase('conveyor2AvgLaps', conveyor2AvgLaps);
+            displayStats();
+        });
+
+        // Function to fetch settings from Firebase on page load
+        function fetchSettingsFromFirebase() {
+            database.ref('settings').once('value').then((snapshot) => {
+                const settings = snapshot.val();
+                if (settings) {
+                    if (settings.conveyor1Units !== undefined) {
+                        conveyor1Units = settings.conveyor1Units;
+                        document.getElementById('conveyor1Units').value = conveyor1Units;
+                    }
+                    if (settings.conveyor2Units !== undefined) {
+                        conveyor2Units = settings.conveyor2Units;
+                        document.getElementById('conveyor2Units').value = conveyor2Units;
+                    }
+                    if (settings.conveyor1AvgLaps !== undefined) {
+                        conveyor1AvgLaps = settings.conveyor1AvgLaps;
+                        document.getElementById('conveyor1AvgLaps').value = conveyor1AvgLaps;
+                    }
+                    if (settings.conveyor2AvgLaps !== undefined) {
+                        conveyor2AvgLaps = settings.conveyor2AvgLaps;
+                        document.getElementById('conveyor2AvgLaps').value = conveyor2AvgLaps;
+                    }
+                    displayStats();
+                }
+            }).catch((error) => {
+                console.error('Error fetching settings from Firebase:', error);
+            });
+        }
 function sendDataToFirebase(data, callback) {
     if (isOnline) {
         database.ref('your_data_path').push(data, (error) => {
@@ -672,6 +736,7 @@ function parseDate(dateString) {
         return numLaps > 0 ? totalLapTime / numLaps / 1000 : 0;
     }
         document.addEventListener('DOMContentLoaded', () => {
+            fetchSettingsFromFirebase();
             // Add event listener for the enable lap buttons
             document.getElementById('enableLapButtons').addEventListener('click', () => {
                 const password = document.getElementById('lapPassword').value;
