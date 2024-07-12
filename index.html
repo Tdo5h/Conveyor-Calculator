@@ -247,7 +247,7 @@ button {
                     <option value="4"selected>4</option>
                     <option value="6">6</option>
                     <option value="8">8</option>
-                    <option value="10" >10</option>
+                    <option value="10" selected>10</option>
                 </select>
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
@@ -803,6 +803,246 @@ function parseDate(dateString) {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Load settings from local storage
+    loadSettingsFromLocalStorage();
+
+    // Add event listener for the enable lap buttons
+    document.getElementById('enableLapButtons').addEventListener('click', () => {
+        const password = document.getElementById('lapPassword').value;
+        const correctPassword = 'W0rdpass'; // Replace with your actual password
+
+        if (password === correctPassword) {
+            document.getElementById('recordLap1').disabled = false;
+            document.getElementById('recordLap2').disabled = false;
+            alert('Lap buttons enabled');
+        } else {
+            alert('Incorrect password');
+        }
+    });
+
+    // Initially disable the lap buttons
+    document.getElementById('recordLap1').disabled = true;
+    document.getElementById('recordLap2').disabled = true;
+
+    // Event listeners for conveyor unit settings
+    document.getElementById('conveyor1Units').addEventListener('change', (event) => {
+        conveyor1Units = parseInt(event.target.value);
+        saveSettingsToLocalStorage();
+        displayStats();
+    });
+
+    document.getElementById('conveyor2Units').addEventListener('change', (event) => {
+        conveyor2Units = parseInt(event.target.value);
+        saveSettingsToLocalStorage();
+        displayStats();
+    });
+
+    // Event listeners for average laps settings
+    document.getElementById('conveyor1AvgLaps').addEventListener('change', (event) => {
+        conveyor1AvgLaps = parseInt(event.target.value);
+        saveSettingsToLocalStorage();
+        displayStats();
+    });
+
+    document.getElementById('conveyor2AvgLaps').addEventListener('change', (event) => {
+        conveyor2AvgLaps = parseInt(event.target.value);
+        saveSettingsToLocalStorage();
+        displayStats();
+    });
+
+    // Event listener for reset laps button
+    document.getElementById('resetLaps').addEventListener('click', () => {
+        const confirmation = window.confirm('Are you sure you want to reset the laps?');
+        if (confirmation) {
+            // Clear the lap times arrays
+            lapTimes1.length = 0;
+            lapTimes2.length = 0;
+            displayStats();
+        }
+    });
+
+    // Call the displayStats function if it's defined elsewhere in your code
+    displayStats();
+    // Auto pull laps on page open
+    pullLapsOnPageOpen();
+
+    // Listen for new laps from Firebase
+    listenForNewLapsFromFirebase();
+
+    // Add event listener for visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            pullNewLapsOnPageWake();
+        }
+    });
+
+    // Update the event listener for Conveyor 2 in a similar manner
+    document.getElementById('startConveyor2').addEventListener('click', () => {
+        const button = document.getElementById('startConveyor2');
+        if (!running2) {
+            lapStart2 = Date.now();
+            running2 = true;
+            button.textContent = "STOP CONVEYOR 2"; // Change button text to "Stop Conveyor 2"
+            startCountdown();
+            displayStats();
+        } else {
+            // Ask for confirmation before stopping Conveyor 2
+            const confirmStop = confirm("Are you sure you want to stop Conveyor 2?");
+            if (confirmStop) {
+                running2 = false;
+                button.textContent = "START CONVEYOR 2"; // Change button text back to "Start Conveyor 2"
+                // Calculate and update work to be done if needed
+                if (timeDifferenceRemaining > 0) {
+                    workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                    displayStats();
+                }
+            }
+        }
+    });
+
+    document.getElementById('recordLap1').addEventListener('click', () => {
+        if (running1) {
+            const lapTime = Date.now() - lapStart1;
+            const timeOfDay = getFormattedTime();
+            lapTimes1.push({ lapTime: lapTime, timeOfDay: timeOfDay });
+            lapStart1 = Date.now();
+            displayStats();
+
+            // Send lap time data to Firebase
+            sendLapDataToFirebase('conveyor1', lapTime, timeOfDay);
+        }
+    });
+
+    document.getElementById('recordLap2').addEventListener('click', () => {
+        if (running2) {
+            const lapTime = Date.now() - lapStart2;
+            const timeOfDay = getFormattedTime();
+            lapTimes2.push({ lapTime: lapTime, timeOfDay: timeOfDay });
+            lapStart2 = Date.now();
+            displayStats();
+
+            // Send lap time data to Firebase
+            sendLapDataToFirebase('conveyor2', lapTime, timeOfDay);
+        }
+    });
+
+    document.getElementById('setTime').addEventListener('click', () => {
+        const timeInput = document.getElementById('timeInput').value;
+        const timeParts = timeInput.split(':');
+        if (timeParts.length === 2) {
+            const hours = parseInt(timeParts[0]);
+            const minutes = parseInt(timeParts[1]);
+            if (!isNaN(hours) && !isNaN(minutes)) {
+                const now = new Date();
+                targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                if (targetTime <= now) {
+                    targetTime.setDate(targetTime.getDate() + 1);
+                }
+                timeDifference = targetTime.getTime() - now.getTime();
+                timeDifferenceRemaining = timeDifference / 1000;
+                // Check if it's after 5:15 PM and adjust timeDifferenceRemaining
+                const fiveFifteenPM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 15);
+                if (now > fiveFifteenPM) {
+                    timeDifferenceRemaining -= 43200; // Subtract 12 hours (43200 seconds)
+                }
+                // Ensure timeDifferenceRemaining never exceeds 12 hours (43200 seconds)
+                if (timeDifferenceRemaining > 43200) {
+                    timeDifferenceRemaining -= 43200;
+                }
+                workToBeDone1 = calculateWorkToBeDone(calculateAverageTime(lapTimes1), timeDifferenceRemaining);
+                workToBeDone2 = calculateWorkToBeDone(calculateAverageTime(lapTimes2), timeDifferenceRemaining);
+                displayStats();
+                startCountdown();
+            }
+        }
+    });
+
+    document.getElementById('pullLaps').addEventListener('click', () => {
+        // Prompt the user to enter the number of laps to pull with a default value of 6
+        const lapCountInput = prompt("Enter the number of laps to pull:", "6");
+
+        if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
+            // Parse the input as an integer
+            const lapCount = parseInt(lapCountInput);
+
+            if (!isNaN(lapCount) && lapCount > 0) {
+                // Retrieve the specified number of laps from Firebase for Conveyor 1
+                const lapsRef1 = database.ref('laps/conveyor1').limitToLast(lapCount);
+
+                lapsRef1.once('value', (snapshot) => {
+                    const data = snapshot.val();
+
+                    if (data) {
+                        lapTimes1.length = 0; // Clear the existing lap times
+
+                        for (const key in data) {
+                            const lapData = JSON.parse(data[key].data);
+                            lapTimes1.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                        }
+
+                        displayStats();
+                    }
+                });
+
+                // Retrieve the specified number of laps from Firebase for Conveyor 2
+                const lapsRef2 = database.ref('laps/conveyor2').limitToLast(lapCount);
+
+                lapsRef2.once('value', (snapshot) => {
+                    const data = snapshot.val();
+
+                    if (data) {
+                        lapTimes2.length = 0; // Clear the existing lap times
+
+                        for (const key in data) {
+                            const lapData = JSON.parse(data[key].data);
+                            lapTimes2.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                        }
+
+                        displayStats();
+                    }
+                });
+            } else {
+                alert("Please enter a valid number of laps greater than 0.");
+            }
+        }
+    });
+});
+
+function saveSettingsToLocalStorage() {
+    localStorage.setItem('conveyor1Units', conveyor1Units);
+    localStorage.setItem('conveyor2Units', conveyor2Units);
+    localStorage.setItem('conveyor1AvgLaps', conveyor1AvgLaps);
+    localStorage.setItem('conveyor2AvgLaps', conveyor2AvgLaps);
+}
+
+function loadSettingsFromLocalStorage() {
+    const savedConveyor1Units = localStorage.getItem('conveyor1Units');
+    const savedConveyor2Units = localStorage.getItem('conveyor2Units');
+    const savedConveyor1AvgLaps = localStorage.getItem('conveyor1AvgLaps');
+    const savedConveyor2AvgLaps = localStorage.getItem('conveyor2AvgLaps');
+
+    if (savedConveyor1Units !== null) {
+        conveyor1Units = parseInt(savedConveyor1Units);
+        document.getElementById('conveyor1Units').value = conveyor1Units;
+    }
+
+    if (savedConveyor2Units !== null) {
+        conveyor2Units = parseInt(savedConveyor2Units);
+        document.getElementById('conveyor2Units').value = conveyor2Units;
+    }
+
+    if (savedConveyor1AvgLaps !== null) {
+        conveyor1AvgLaps = parseInt(savedConveyor1AvgLaps);
+        document.getElementById('conveyor1AvgLaps').value = conveyor1AvgLaps;
+    }
+
+    if (savedConveyor2AvgLaps !== null) {
+        conveyor2AvgLaps = parseInt(savedConveyor2AvgLaps);
+        document.getElementById('conveyor2AvgLaps').value = conveyor2AvgLaps;
+    }
+}
 
 // Update the event listener for Conveyor 2 in a similar manner
 document.getElementById('startConveyor2').addEventListener('click', () => {
