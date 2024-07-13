@@ -454,7 +454,6 @@ sendDataToFirebase(dataToSend);
         return { index, timestamp, lapData };
     });
 
-  
     // Sort lap objects by timestamp in ascending order
     lapObjects.sort((a, b) => a.timestamp - b.timestamp);
     // Reverse the order to have the newest lap at the top
@@ -466,10 +465,11 @@ sendDataToFirebase(dataToSend);
         const lapDateStr = lapData.timeOfDay ? lapData.timeOfDay : 'N/A';
         const isLongLap = lapData.lapTime > 1.5 * averageLapTime * 1000; // Check if lap time is more than 1.5 times the average
         const isVeryLongLap = lapData.lapTime > 2 * averageLapTime * 1000; // Check if lap time is more than 2 times the average
+        const isShortLap = lapData.lapTime < 0.5 * averageLapTime * 1000; // Check if lap time is 100% shorter than the average
         lapListDiv.innerHTML += `
             <div>
                 <button style="color: black; background-color: ${isVeryLongLap ? 'red' : isLongLap ? 'yellow' : 'white'}; border: 1px solid black; border-radius: 5px;" onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
-                    ${lapObjects.length - idx}. Delete Lap (${lapDateStr}) - ${lapTimeStr}
+                    ${lapObjects.length - idx}. Delete Lap (${lapDateStr}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}
                 </button>
             </div>
         `;
@@ -548,9 +548,10 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
 function clearIrregularLaps(lapTimes, conveyor) {
     const averageTime = calculateAverageTime(lapTimes);
     const threshold100 = 2 * averageTime * 1000;
+    const threshold50 = 0.5 * averageTime * 1000; // 100% shorter than average
 
     for (let i = lapTimes.length - 1; i >= 0; i--) {
-        if (lapTimes[i].lapTime > threshold100) {
+        if (lapTimes[i].lapTime > threshold100 || lapTimes[i].lapTime < threshold50) {
             const lapData = lapTimes.splice(i, 1)[0];
             moveLapToDeletedFolder(conveyor, lapData);
         }
@@ -667,12 +668,13 @@ function setIrregularsFlag() {
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
-        const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
-        const [date, time] = lapData.timeOfDay.split(' ');
-        const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
-        const isAveragedLap = idx < conveyor1AvgLaps; // Check if the lap is part of the average calculation
-        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
-    });
+    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+    const [date, time] = lapData.timeOfDay.split(' ');
+    const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
+    const isShortLap = lapData.lapTime < 0.5 * averageTime1 * 1000; // Check if lap time is 100% shorter than the average
+    const isAveragedLap = idx < conveyor1AvgLaps; // Check if the lap is part of the average calculation
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+});
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     // Display load lift information at all times
     const averageTimeAll1 = calculateAverageTime(lapTimes1);
@@ -738,12 +740,13 @@ function setIrregularsFlag() {
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
-        const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
-        const [date, time] = lapData.timeOfDay.split(' ');
-        const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
-        const isAveragedLap = idx < conveyor2AvgLaps; // Check if the lap is part of the average calculation
-        statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''}</div>`;
-    });
+    const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
+    const [date, time] = lapData.timeOfDay.split(' ');
+    const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
+    const isShortLap = lapData.lapTime < 0.5 * averageTime2 * 1000; // Check if lap time is 100% shorter than the average
+    const isAveragedLap = idx < conveyor2AvgLaps; // Check if the lap is part of the average calculation
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+});
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     // Display load lift information at all times for Conveyor 2
     const averageTimeAll2 = calculateAverageTime(lapTimes2);
