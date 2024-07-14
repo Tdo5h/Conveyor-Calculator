@@ -1191,49 +1191,34 @@ function pullNewerLaps(conveyor, lapTimesArray) {
         const data = snapshot.val();
         if (data) {
             for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    const jsonData = data[key].data;
-                    if (isValidJSON(jsonData)) {
-                        try {
-                            const entryData = JSON.parse(jsonData);
-                            if (entryData.lapTime && entryData.timeOfDay) {
-                                // Skip if the lap is in the deleted laps list
-                                if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
-                                    // Convert date format from DD:MM:YY to the required format
-                                    const [day, month, year] = entryData.timeOfDay.split('/').map(Number);
-                                    const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
-                                    lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: formattedDate });
-                                    if (lapTimesArray.length > 10) {
-                                        lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
-                                    }
-                                }
-                            } else {
-                                console.error('Entry data is missing lapTime or timeOfDay:', entryData);
-                            }
-                        } catch (e) {
-                            console.error('Error parsing entry data:', jsonData, e);
-                        }
-                    } else {
-                        console.error('Invalid JSON data:', jsonData);
-                    }
+                if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
+                    try {
+                        const entryData = JSON.parse(data[key].data);
+        if (entryData.lapTime && entryData.timeOfDay) {
+            // Skip if the lap is in the deleted laps list
+            if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+                lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
+                if (lapTimesArray.length > 10) {
+                    lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
                 }
             }
-            displayStats();
         } else {
-            console.error('No data found in snapshot.');
+            console.error('Entry data is missing lapTime or timeOfDay:', entryData);
         }
-    }).catch((error) => {
-        console.error('Error fetching data from Firebase:', error);
-    });
-}
-
-function isValidJSON(data) {
-    try {
-        JSON.parse(data);
-        return true;
     } catch (e) {
-        return false;
+        console.error('Error parsing entry data:', data[key].data, e);
     }
+} else {
+    console.error('Invalid JSON data:', data[key].data);
+}
+}
+displayStats();
+} else {
+console.error('No data found in snapshot.');
+}
+}).catch((error) => {
+console.error('Error fetching data from Firebase:', error);
+});
 }
 
 function listenForNewLaps(conveyor, lapTimesArray) {
