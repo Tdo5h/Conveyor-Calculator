@@ -195,7 +195,7 @@ button {
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting conveyor units -->
             <div class="black" style="margin-top: 20px; font-size: 1.1em;">
-                <div>Set Conveyor Units</div>
+                
             </div>
             <div class="black" style="margin-top: 10px; font-size: 1.1em;">
                 <label for="conveyor1Units">Conveyor 1 Units:</label>
@@ -216,7 +216,7 @@ button {
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting average laps -->
             <div class="black" style="margin-top: 20px; font-size: 1.1em;">
-                <div>Set Average Laps</div>
+                
             </div>
             <div class="black" style="margin-top: 10px;">
                 <label for="conveyor1AvgLaps">Conveyor 1 Avg Laps:</label>
@@ -240,7 +240,8 @@ button {
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New button to reset laps -->
-           
+            <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Flash Reminder</button>
+
 <div class="black" style="margin-top: 20px;">
     <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Turn Off Screen</button>
     <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red; font-weight: bold;">? Refresh Screen</span></button>
@@ -840,6 +841,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initially disable the lap buttons
     document.getElementById('recordLap1').disabled = true;
     document.getElementById('recordLap2').disabled = true;
+});
+
+// Event listener for the new Flash Reminder button
+const toggleFlashReminderButton = document.getElementById('toggleFlashReminder');
+let flashReminderState = false; // Default state is off
+
+toggleFlashReminderButton.addEventListener('click', () => {
+    flashReminderState = !flashReminderState; // Toggle the state
+    const newValue = flashReminderState ? 1 : 0;
+    const newLabel = flashReminderState ? 'Flash On' : 'Flash Reminder';
+    toggleFlashReminderButton.textContent = newLabel;
+
+    // Send the new value to Firebase
+    const flashRef = database.ref('settings/Flash');
+    flashRef.set(newValue, (error) => {
+        if (error) {
+            console.error('Failed to update Flash in Firebase:', error);
+        } else {
+            console.log(`Flash set to ${newValue} in Firebase.`);
+        }
+    });
 });
 
 function calculateAverageTimeX2(lapTimes) {
