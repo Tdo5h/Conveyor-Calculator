@@ -243,7 +243,7 @@ button {
            
 <div class="black" style="margin-top: 20px;">
     <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Turn Off Screen</button>
-    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red; font-weight: bold;">?</span></button>
+    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red; font-weight: bold;">? Refresh Screen</span></button>
 </div>
 <div class="black" style="margin-top: 10px;"></div>
             <div style="margin-top: 20px;">
@@ -551,7 +551,7 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
 function clearIrregularLaps(lapTimes, conveyor) {
     const averageTime = calculateAverageTime(lapTimes);
     const threshold100 = 2 * averageTime * 1000;
-    //const threshold50 = 0.5 * averageTime * 1000; // 100% shorter than average
+    const threshold50 = 0.5 * averageTime * 1000; // 100% shorter than average
 
     for (let i = lapTimes.length - 1; i >= 0; i--) {
         if (lapTimes[i].lapTime > threshold100 || lapTimes[i].lapTime < threshold50) {
