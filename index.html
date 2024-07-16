@@ -244,7 +244,7 @@ button {
 
 <div class="black" style="margin-top: 20px;">
     <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Turn Off Screen</button>
-    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red; font-weight: bold;">? Refresh Screen</span></button>
+    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red;">?</span> Refresh Screen</button>
 </div>
 <div class="black" style="margin-top: 10px;"></div>
             <div style="margin-top: 20px;">
@@ -445,43 +445,43 @@ sendDataToFirebase(dataToSend);
    
    
         function openDeleteLapPopup(conveyor) {
-    const lapListDiv = document.getElementById('lapList');
-    lapListDiv.innerHTML = ''; // Clear previous lap list
-    // Get the lap times for the selected conveyor
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
-    // Calculate the average lap time
-    const averageLapTime = calculateAverageTime(lapTimes);
+        const lapListDiv = document.getElementById('lapList');
+        lapListDiv.innerHTML = ''; // Clear previous lap list
+        // Get the lap times for the selected conveyor
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+        // Calculate the average lap time
+        const averageLapTime = calculateAverageTime(lapTimes);
 
-    // Convert date and time strings to timestamps and create an array of lap objects
-    const lapObjects = lapTimes.map((lapData, index) => {
-        const timestamp = lapData.timeOfDay ? parseDate(lapData.timeOfDay) : 0; // Use parseDate function
-        return { index, timestamp, lapData };
-    });
+        // Convert date and time strings to timestamps and create an array of lap objects
+        const lapObjects = lapTimes.map((lapData, index) => {
+            const timestamp = lapData.timeOfDay ? parseDate(lapData.timeOfDay) : 0; // Use parseDate function
+            return { index, timestamp, lapData };
+        });
 
-    // Sort lap objects by timestamp in ascending order
-    lapObjects.sort((a, b) => a.timestamp - b.timestamp);
-    // Reverse the order to have the newest lap at the top
-    lapObjects.reverse();
-    // Display the list of laps with delete buttons
-    lapObjects.forEach((lapObj, idx) => {
-        const lapData = lapObj.lapData;
-        const lapTimeStr = lapData.lapTime ? formatTime(Math.floor(lapData.lapTime / 1000)) : 'N/A';
-        const lapDateStr = lapData.timeOfDay ? lapData.timeOfDay : 'N/A';
-        const isLongLap = lapData.lapTime > 1.5 * averageLapTime * 1000; // Check if lap time is more than 1.5 times the average
-        const isVeryLongLap = lapData.lapTime > 2 * averageLapTime * 1000; // Check if lap time is more than 2 times the average
-        const isShortLap = lapData.lapTime < 0.5 * averageLapTime * 1000; // Check if lap time is 100% shorter than the average
-        lapListDiv.innerHTML += `
-            <div>
-                <button style="color: black; background-color: ${isVeryLongLap ? 'red' : isLongLap ? 'yellow' : 'white'}; border: 1px solid black; border-radius: 5px;" onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
-                    ${lapObjects.length - idx}. Delete Lap (${lapDateStr}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}
-                </button>
-            </div>
-        `;
-    });
-    // Show the lap selection pop-up
-    const deleteLapPopup = document.getElementById('deleteLapPopup');
-    deleteLapPopup.style.display = 'block';
-}
+        // Sort lap objects by timestamp in ascending order
+        lapObjects.sort((a, b) => a.timestamp - b.timestamp);
+        // Reverse the order to have the newest lap at the top
+        lapObjects.reverse();
+        // Display the list of laps with delete buttons
+        lapObjects.forEach((lapObj, idx) => {
+            const lapData = lapObj.lapData;
+            const lapTimeStr = lapData.lapTime ? formatTime(Math.floor(lapData.lapTime / 1000)) : 'N/A';
+            const lapDateStr = lapData.timeOfDay ? lapData.timeOfDay : 'N/A';
+            const isLongLap = lapData.lapTime > 1.5 * averageLapTime * 1000; // Check if lap time is more than 1.5 times the average
+            const isVeryLongLap = lapData.lapTime > 2 * averageLapTime * 1000; // Check if lap time is more than 2 times the average
+            const isShortLap = lapData.lapTime < 0.5 * averageLapTime * 1000; // Check if lap time is 50% shorter than the average
+            lapListDiv.innerHTML += `
+                <div>
+                    <button style="color: black; background-color: ${isVeryLongLap ? 'red' : isLongLap ? 'yellow' : 'white'}; border: 1px solid black; border-radius: 5px;" onclick="deleteSelectedLap('${conveyor}', ${lapObj.index})">
+                        ${lapObjects.length - idx}. Delete Lap (${lapDateStr}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">???</span>' : ''} ${isShortLap ? '<span style="color: yellow;">?</span>' : ''}
+                    </button>
+                </div>
+            `;
+        });
+        // Show the lap selection pop-up
+        const deleteLapPopup = document.getElementById('deleteLapPopup');
+        deleteLapPopup.style.display = 'block';
+    }
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -550,17 +550,16 @@ document.getElementById('subtractLoad2').addEventListener('input', () => {
 });
 
 function clearIrregularLaps(lapTimes, conveyor) {
-    const averageTime = calculateAverageTime(lapTimes);
-    const threshold100 = 2 * averageTime * 1000;
-    const threshold50 = 0.5 * averageTime * 1000; // 100% shorter than average
+        const averageTime = calculateAverageTime(lapTimes);
+        const threshold100 = 2 * averageTime * 1000;
 
-    for (let i = lapTimes.length - 1; i >= 0; i--) {
-        if (lapTimes[i].lapTime > threshold100 || lapTimes[i].lapTime < threshold50) {
-            const lapData = lapTimes.splice(i, 1)[0];
-            moveLapToDeletedFolder(conveyor, lapData);
+        for (let i = lapTimes.length - 1; i >= 0; i--) {
+            if (lapTimes[i].lapTime > threshold100) {
+                const lapData = lapTimes.splice(i, 1)[0];
+                moveLapToDeletedFolder(conveyor, lapData);
+            }
         }
     }
-}
 
 function moveLapToDeletedFolder(conveyor, lapData) {
     const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
@@ -677,7 +676,7 @@ function setIrregularsFlag() {
     const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
     const isShortLap = lapData.lapTime < 0.5 * averageTime1 * 1000; // Check if lap time is 100% shorter than the average
     const isAveragedLap = idx < conveyor1AvgLaps; // Check if the lap is part of the average calculation
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: yellow;">?</span>' : ''}</div>`;
 });
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     // Display load lift information at all times
@@ -749,7 +748,7 @@ function setIrregularsFlag() {
     const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
     const isShortLap = lapData.lapTime < 0.5 * averageTime2 * 1000; // Check if lap time is 100% shorter than the average
     const isAveragedLap = idx < conveyor2AvgLaps; // Check if the lap is part of the average calculation
-    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: red;">?</span>' : ''}</div>`;
+    statsDiv.innerHTML += `<div class="purple" style="font-family: Arial, sans-serif; font-size: 1em; color: #800080; font-weight: ${isAveragedLap ? 'bold' : 'normal'};">${arr.length - idx}.(${lapData.timeOfDay}) - ${lapTimeStr} ${isVeryLongLap ? '<span style="color: red;">?</span>' : ''} ${isShortLap ? '<span style="color: yellow;">?</span>' : ''}</div>`;
 });
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
     // Display load lift information at all times for Conveyor 2
