@@ -190,24 +190,24 @@ button {
             <div class="black" style="margin-top: 20px; display: none;">
                 Set Time
                 <input type="time" id="timeInput" class="input-small" style="border: 1px solid black;margin-top: 10px;color: black; background-color: white;border-radius: 5px; margin-right: 0px; padding: 0;" value="17:15">
-            <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 10px; padding: 6;">Set</button>            
+            <button id="setTime" style="border: 1px solid black; display: none; border-radius: 5px; margin-left: 2px;margin-top: 5px; padding: 6;">Set</button>            
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting conveyor units -->
             <div class="black" style="margin-top: 20px; font-size: 1.1em;">
                 
             </div>
-            <div class="black" style="margin-top: 10px; font-size: 1.1em;">
+            <div class="black" style="margin-top: 5px; font-size: 1.1em;">
                 <label for="conveyor1Units">Conveyor 1 Units:</label>
-                <select id="conveyor1Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px; color: black;">
+                <select id="conveyor1Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 5px; color: black;">
                     <option value="10" selected>10</option>
                     <option value="8">8</option>
                     <option value="9">9</option>
                 </select>
             </div>
-            <div class="black" style="margin-top: 10px; font-size: 1.1em;">
+            <div class="black" style="margin-top: 5px; font-size: 1.1em;">
                 <label for="conveyor2Units">Conveyor 2 Units:</label>
-                <select id="conveyor2Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px; color: black;">
+                <select id="conveyor2Units" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 5px; color: black;">
                     <option value="10" selected>10</option>
                     <option value="8">8</option>
                     <option value="9">9</option>
@@ -215,12 +215,12 @@ button {
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New div for setting average laps -->
-            <div class="black" style="margin-top: 20px; font-size: 1.1em;">
+            <div class="black" style="margin-top: 5px; font-size: 1.1em;">
                 
             </div>
             <div class="black" style="margin-top: 10px;">
                 <label for="conveyor1AvgLaps">Conveyor 1 Avg Laps:</label>
-                <select id="conveyor1AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px; color: black;">
+                <select id="conveyor1AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 5px; color: black;">
                     <option value="2">2</option>
                     <option value="4">4</option>
                     <option value="6">6</option>
@@ -230,7 +230,7 @@ button {
             </div>
             <div class="black" style="margin-top: 10px;">
                 <label for="conveyor2AvgLaps">Conveyor 2 Avg Laps:</label>
-                <select id="conveyor2AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 10px; color: black;">
+                <select id="conveyor2AvgLaps" class="input-small" style="border: 1px solid black; border-radius: 5px; margin-top: 5px; color: black;">
                     <option value="2">2</option>
                     <option value="4"selected>4</option>
                     <option value="6">6</option>
@@ -240,19 +240,26 @@ button {
             </div>
             <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
             <!-- New button to reset laps -->
-            <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Flash Reminder</button>
-
-<div class="black" style="margin-top: 20px;">
-    <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1);">Turn Off Screen</button>
-    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; margin-left: auto; display: block; float: right; transform: scale(1.1);">Clear <span style="color: red;">?</span> Refresh Screen</button>
-</div>
-<div class="black" style="margin-top: 10px;"></div>
-            <div style="margin-top: 20px;">
-                <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px;">
-                <button id="enableLapButtons" style="border: 1px solid black; border-radius: 5px; margin-left: 10px;">Enable Lap Buttons</button>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Blynk Notifier</button>
+                    <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Sound Notifier</button>
+                    <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Black Out Screen</button>
+                    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Clear <span style="color: red;">?</span> Refresh Screen</button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                    <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 5px; width: 100px;">
+                    <button id="enableLapButtons" style="border: 1px solid black; border-radius: 5px; margin: 5px; width: auto;">Enable Lap Buttons</button>
+                    <select id="timerSelect" style="border: 1px solid black; border-radius: 5px; margin: 5px; width: auto;">
+                        <option value="5">5 min</option>
+                        <option value="10">10 min</option>
+                        <option value="15">15 min</option>
+                        <option value="20">20 min</option>
+                    </select>
+                </div>
             </div>
+            <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 5px 10px; font-size: 20px; position: absolute; margin-top: 1px; left: 50%; transform: translate(-50%, -50%);">Done</button>
         </div>
-        <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 10px 20px; font-size: 20px; position: absolute; margin-top: 1px; left: 50%; transform: translate(-50%, -50%);">Done</button>
     </div>
 </div>
 <div id="stats" class="content">
@@ -934,7 +941,46 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         }
     }
 });
+ // Toggle Sound Notifier
+ document.getElementById('toggleSoundNotifier').addEventListener('click', function() {
+        const button = this;
+        const currentText = button.innerText;
+        const newValue = currentText === 'Sound Notifier' ? 1 : 0;
+        const newText = newValue === 1 ? 'Sound On' : 'Sound Notifier';
 
+        // Update button text
+        button.innerText = newText;
+
+        // Send value to Firebase
+        database.ref('settings/sound').set(newValue, function(error) {
+            if (error) {
+                console.error('Failed to update sound setting in Firebase:', error);
+            } else {
+                console.log('Sound setting updated in Firebase.');
+            }
+        });
+    });
+
+    // Reset sound setting at 5:15 AM and PM
+    function resetSoundSetting() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+
+        if ((hours === 5 || hours === 17) && minutes === 15) {
+            database.ref('settings/sound').set(0, function(error) {
+                if (error) {
+                    console.error('Failed to reset sound setting in Firebase:', error);
+                } else {
+                    console.log('Sound setting reset in Firebase.');
+                    document.getElementById('toggleSoundNotifier').innerText = 'Sound Notifier';
+                }
+            });
+        }
+    }
+
+    // Check every minute
+    setInterval(resetSoundSetting, 60000);
 // Event listener for the new on/off button
 const toggleIrregularsButton = document.getElementById('toggleIrregulars');
 let irregularsState = false; // Track the state of the button
@@ -942,7 +988,7 @@ let irregularsState = false; // Track the state of the button
 toggleIrregularsButton.addEventListener('click', () => {
     irregularsState = !irregularsState; // Toggle the state
     const newValue = irregularsState ? 1 : 0;
-    const newLabel = irregularsState ? 'Turn On Screen' : 'Turn Off Screen';
+    const newLabel = irregularsState ? ' Screen On' : 'Turn Off Screen';
     toggleIrregularsButton.textContent = newLabel;
 
     // Send the new value to Firebase
@@ -970,7 +1016,34 @@ function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
         database.ref(`laps/${conveyor}`).push(lapData);
     }
 }
+ // Update timer setting in Firebase
+document.getElementById('timerSelect').addEventListener('change', function() {
+    const selectedTimeInMinutes = parseInt(this.value);
+    const selectedTimeInSeconds = selectedTimeInMinutes * 60; // Convert minutes to seconds
+    database.ref('settings/timer').set(selectedTimeInSeconds, function(error) {
+        if (error) {
+            console.error('Failed to update timer setting in Firebase:', error);
+        } else {
+            console.log('Timer setting updated in Firebase.');
+        }
+    });
+});
 
+// Fetch timer setting from Firebase on page load
+function fetchTimerSetting() {
+    database.ref('settings/timer').once('value').then(function(snapshot) {
+        const timerValueInSeconds = snapshot.val();
+        if (timerValueInSeconds !== null) {
+            const timerValueInMinutes = timerValueInSeconds / 60; // Convert seconds to minutes
+            document.getElementById('timerSelect').value = timerValueInMinutes;
+        }
+    }).catch(function(error) {
+        console.error('Error fetching timer setting from Firebase:', error);
+    });
+}
+
+    // Call fetchTimerSetting on page load
+    window.onload = fetchTimerSetting;
 document.getElementById('recordLap1').addEventListener('click', () => {
     if (running1) {
         const lapTime = Date.now() - lapStart1;
