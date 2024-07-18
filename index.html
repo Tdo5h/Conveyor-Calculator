@@ -242,10 +242,10 @@ button {
             <!-- New button to reset laps -->
             <div style="display: flex; justify-content: space-between;">
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Blynk Notifier</button>
-                    <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Sound Notifier</button>
-                    <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Black Out Screen</button>
-                    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto;">Clear <span style="color: red;">?</span> Refresh Screen</button>
+                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Sound1 Notifier</button>
+<button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Sound2 Notifier</button>
+<button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
+<button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 5px; width: 100px;">
@@ -849,26 +849,49 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('recordLap2').disabled = true;
 });
 
-// Event listener for the new Flash Reminder button
-const toggleFlashReminderButton = document.getElementById('toggleFlashReminder');
-let flashReminderState = false; // Default state is off
+   // Function to initialize the state of the Flash Reminder button
+   function initializeFlashReminderButton() {
+        const button = document.getElementById('toggleFlashReminder');
+        database.ref('settings/sound/con1').once('value').then(snapshot => {
+            const value = snapshot.val();
+            if (value === 1) {
+                button.innerText = 'Reminder1 On';
+                flashReminderState = true;
+            } else {
+                button.innerText = 'Reminder1 Off';
+                flashReminderState = false;
+            }
+        }).catch(error => {
+            console.error('Error fetching flash reminder setting from Firebase:', error);
+        });
+    }
 
-toggleFlashReminderButton.addEventListener('click', () => {
-    flashReminderState = !flashReminderState; // Toggle the state
-    const newValue = flashReminderState ? 1 : 0;
-    const newLabel = flashReminderState ? 'Flash On' : 'Flash Reminder';
-    toggleFlashReminderButton.textContent = newLabel;
+    // Event listener for the Flash Reminder button
+    const toggleFlashReminderButton = document.getElementById('toggleFlashReminder');
+    let flashReminderState = false; // Default state is off
 
-    // Send the new value to Firebase
-    const flashRef = database.ref('settings/Flash');
-    flashRef.set(newValue, (error) => {
-        if (error) {
-            console.error('Failed to update Flash in Firebase:', error);
-        } else {
-            console.log(`Flash set to ${newValue} in Firebase.`);
-        }
+    toggleFlashReminderButton.addEventListener('click', () => {
+        flashReminderState = !flashReminderState; // Toggle the state
+        const newValue = flashReminderState ? 1 : 0;
+        const newLabel = flashReminderState ? 'Reminder1 On' : 'Reminder1 Off';
+        toggleFlashReminderButton.textContent = newLabel;
+
+        // Send the new value to Firebase
+        const flashRef = database.ref('settings/sound/con1');
+        flashRef.set(newValue, (error) => {
+            if (error) {
+                console.error('Failed to update Flash in Firebase:', error);
+            } else {
+                console.log(`Flash set to ${newValue} in Firebase.`);
+            }
+        });
     });
-});
+
+    // Initialize the button state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeFlashReminderButton();
+    });
+
 
 function calculateAverageTimeX2(lapTimes) {
     const lastTwoLaps = lapTimes.slice(-2);
@@ -941,18 +964,33 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         }
     }
 });
- // Toggle Sound Notifier
- document.getElementById('toggleSoundNotifier').addEventListener('click', function() {
+   // Function to initialize the state of the Sound Notifier button
+   function initializeSoundNotifierButton() {
+        const button = document.getElementById('toggleSoundNotifier');
+        database.ref('settings/sound/con2').once('value').then(snapshot => {
+            const value = snapshot.val();
+            if (value === 1) {
+                button.innerText = 'Reminder2 On';
+            } else {
+                button.innerText = 'Reminder2 Off';
+            }
+        }).catch(error => {
+            console.error('Error fetching sound setting from Firebase:', error);
+        });
+    }
+
+    // Toggle Sound Notifier
+    document.getElementById('toggleSoundNotifier').addEventListener('click', function() {
         const button = this;
         const currentText = button.innerText;
-        const newValue = currentText === 'Sound Notifier' ? 1 : 0;
-        const newText = newValue === 1 ? 'Sound On' : 'Sound Notifier';
+        const newValue = currentText === 'Reminder2 Off' ? 1 : 0;
+        const newText = newValue === 1 ? 'Reminder2 On' : 'Reminder2 Off';
 
         // Update button text
         button.innerText = newText;
 
         // Send value to Firebase
-        database.ref('settings/sound').set(newValue, function(error) {
+        database.ref('settings/sound/con2').set(newValue, function(error) {
             if (error) {
                 console.error('Failed to update sound setting in Firebase:', error);
             } else {
@@ -961,19 +999,48 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         });
     });
 
-    // Reset sound setting at 5:15 AM and PM
+    // Initialize the button state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeSoundNotifierButton();
+    });
+
+   // Reset sound settings at 5:15 AM and PM
     function resetSoundSetting() {
         const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
 
         if ((hours === 5 || hours === 17) && minutes === 15) {
-            database.ref('settings/sound').set(0, function(error) {
+            // Reset sound settings for con1 and con2 to 0
+            const soundCon1Ref = database.ref('settings/sound/con1');
+            const soundCon2Ref = database.ref('settings/sound/con2');
+            const toggleSwitchRef = database.ref('settings/toggleSwitch');
+
+            soundCon1Ref.set(0, function(error) {
                 if (error) {
-                    console.error('Failed to reset sound setting in Firebase:', error);
+                    console.error('Failed to reset sound setting for con1 in Firebase:', error);
                 } else {
-                    console.log('Sound setting reset in Firebase.');
-                    document.getElementById('toggleSoundNotifier').innerText = 'Sound Notifier';
+                    console.log('Sound setting for con1 reset in Firebase.');
+                    document.getElementById('toggleFlashReminder').innerText = 'Reminder1 Off';
+                }
+            });
+
+            soundCon2Ref.set(0, function(error) {
+                if (error) {
+                    console.error('Failed to reset sound setting for con2 in Firebase:', error);
+                } else {
+                    console.log('Sound setting for con2 reset in Firebase.');
+                    document.getElementById('toggleSoundNotifier').innerText = 'Reminder2 Off';
+                }
+            });
+
+            // Set blackout screen to 1
+            toggleSwitchRef.set(1, function(error) {
+                if (error) {
+                    console.error('Failed to set blackout screen in Firebase:', error);
+                } else {
+                    console.log('Blackout screen set in Firebase.');
+                    document.getElementById('toggleIrregulars').innerText = 'Turn Screen On';
                 }
             });
         }
@@ -981,26 +1048,52 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
 
     // Check every minute
     setInterval(resetSoundSetting, 60000);
-// Event listener for the new on/off button
-const toggleIrregularsButton = document.getElementById('toggleIrregulars');
-let irregularsState = false; // Track the state of the button
 
-toggleIrregularsButton.addEventListener('click', () => {
-    irregularsState = !irregularsState; // Toggle the state
-    const newValue = irregularsState ? 1 : 0;
-    const newLabel = irregularsState ? ' Screen On' : 'Turn Off Screen';
-    toggleIrregularsButton.textContent = newLabel;
 
-    // Send the new value to Firebase
-    const irregularsRef = database.ref('settings/toggleSwitch');
-    irregularsRef.set(newValue, (error) => {
-        if (error) {
-            console.error('Failed to update Irregulars in Firebase:', error);
-        } else {
-            console.log(`Irregulars set to ${newValue} in Firebase.`);
-        }
+   
+ // Function to initialize the state of the Irregulars button
+ function initializeIrregularsButton() {
+        const button = document.getElementById('toggleIrregulars');
+        database.ref('settings/toggleSwitch').once('value').then(snapshot => {
+            const value = snapshot.val();
+            if (value === 1) {
+                button.innerText = 'Turn Screen On';
+                irregularsState = true;
+            } else {
+                button.innerText = 'Black Out Screen';
+                irregularsState = false;
+            }
+        }).catch(error => {
+            console.error('Error fetching irregulars setting from Firebase:', error);
+        });
+    }
+
+    // Event listener for the new on/off button
+    const toggleIrregularsButton = document.getElementById('toggleIrregulars');
+    let irregularsState = false; // Track the state of the button
+
+    toggleIrregularsButton.addEventListener('click', () => {
+        irregularsState = !irregularsState; // Toggle the state
+        const newValue = irregularsState ? 1 : 0;
+        const newLabel = irregularsState ? 'Turn Screen On' : 'Black Out Screen';
+        toggleIrregularsButton.textContent = newLabel;
+
+        // Send the new value to Firebase
+        const irregularsRef = database.ref('settings/toggleSwitch');
+        irregularsRef.set(newValue, (error) => {
+            if (error) {
+                console.error('Failed to update Irregulars in Firebase:', error);
+            } else {
+                console.log(`Irregulars set to ${newValue} in Firebase.`);
+            }
+        });
     });
-});
+
+    // Initialize the button state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeIrregularsButton();
+    });
+
 
 function sendLapDataToFirebase(conveyor, lapTime, timeOfDay) {
     // Check if the lap time is greater than 15 minutes (900,000 milliseconds)
