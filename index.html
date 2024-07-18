@@ -246,7 +246,8 @@ button {
 <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Sound2 Notifier</button>
 <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
 <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
-                </div>
+<button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
+            </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 5px; width: 100px;">
                     <button id="enableLapButtons" style="border: 1px solid black; border-radius: 5px; margin: 5px; width: auto;">Enable Lap Buttons</button>
@@ -889,10 +890,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize the button state on page load
     document.addEventListener('DOMContentLoaded', () => {
-        initializeFlashReminderButton();
+        initializeTTSCButton();
     });
 
+   // Function to initialize the state of the TTSC button
+   function initializeTTSCButton() {
+        const button = document.getElementById('TTSC');
+        database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
+            const value = snapshot.val();
+            if (value === 1) {
+                button.innerText = 'TTSC On';
+            } else {
+                button.innerText = 'TTSC Off';
+            }
+        }).catch(error => {
+            console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
+        });
+    }
 
+    // Event listener for the TTSC button
+    const toggleTTSCButton = document.getElementById('TTSC');
+    toggleTTSCButton.addEventListener('click', () => {
+        database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
+            const currentValue = snapshot.val();
+            const newValue = currentValue === 1 ? 0 : 1;
+            const newLabel = newValue === 1 ? 'TTSC On' : 'TTSC Off';
+            toggleTTSCButton.textContent = newLabel;
+
+            // Update the value in Firebase
+            database.ref('settings/TimeToShiftEnd').set(newValue, (error) => {
+                if (error) {
+                    console.error('Failed to update TimeToShiftEnd in Firebase:', error);
+                } else {
+                    console.log(`TimeToShiftEnd set to ${newValue} in Firebase.`);
+                }
+            });
+        }).catch(error => {
+            console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
+        });
+    });
+    
 function calculateAverageTimeX2(lapTimes) {
     const lastTwoLaps = lapTimes.slice(-2);
     const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData.lapTime, 0);
