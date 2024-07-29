@@ -244,11 +244,12 @@ button {
             <!-- New button to reset laps -->
             <div style="display: flex; justify-content: space-between;">
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Sound1 Notifier</button>
-<button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Sound2 Notifier</button>
-<button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
-<button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
-<button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
+                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
+                    <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
+                    <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
+                    <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
+                    <button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
+                </div>
             </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 5px; width: 100px;">
@@ -687,7 +688,7 @@ function setIrregularsFlag() {
     }
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-    lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
+    lapTimes1.slice(-50).reverse().forEach((lapData, idx, arr) => {
     const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
     const [date, time] = lapData.timeOfDay.split(' ');
     const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
@@ -759,7 +760,7 @@ function setIrregularsFlag() {
     }
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-    lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
+    lapTimes2.slice(-50).reverse().forEach((lapData, idx, arr) => {
     const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
     const [date, time] = lapData.timeOfDay.split(' ');
     const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
@@ -859,86 +860,103 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('recordLap2').disabled = true;
 });
 
-   // Function to initialize the state of the Flash Reminder button
-   function initializeFlashReminderButton() {
-        const button = document.getElementById('toggleFlashReminder');
-        database.ref('settings/sound/con1').once('value').then(snapshot => {
-            const value = snapshot.val();
-            if (value === 1) {
-                button.innerText = 'Reminder1 On';
-                flashReminderState = true;
-            } else {
-                button.innerText = 'Reminder1 Off';
-                flashReminderState = false;
-            }
-        }).catch(error => {
-            console.error('Error fetching flash reminder setting from Firebase:', error);
-        });
+// Function to initialize the state of the Flash Reminder button
+function initializeFlashReminderButton() {
+    const button = document.getElementById('toggleFlashReminder');
+    database.ref('settings/sound/con1').once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value === 1) {
+            button.innerText = 'Notifier On';
+            flashReminderState = true;
+        } else if (value === 2) {
+            button.innerText = 'Notifier Next';
+            flashReminderState = true;
+        } else {
+            button.innerText = 'Notifier Off';
+            flashReminderState = false;
+        }
+    }).catch(error => {
+        console.error('Error fetching flash reminder setting from Firebase:', error);
+    });
+}
+
+// Event listener for the Flash Reminder button
+const toggleFlashReminderButton = document.getElementById('toggleFlashReminder');
+let flashReminderState = false; // Default state is off
+
+toggleFlashReminderButton.addEventListener('click', () => {
+    flashReminderState = !flashReminderState; // Toggle the state
+    const currentText = toggleFlashReminderButton.innerText;
+    let newValue;
+    let newLabel;
+
+    if (currentText === 'Notifier Off') {
+        newValue = 1;
+        newLabel = 'Notifier On';
+    } else if (currentText === 'Notifier On') {
+        newValue = 2;
+        newLabel = 'Notifier Next';
+    } else {
+        newValue = 0;
+        newLabel = 'Notifier Off';
     }
 
-    // Event listener for the Flash Reminder button
-    const toggleFlashReminderButton = document.getElementById('toggleFlashReminder');
-    let flashReminderState = false; // Default state is off
+    toggleFlashReminderButton.textContent = newLabel;
 
-    toggleFlashReminderButton.addEventListener('click', () => {
-        flashReminderState = !flashReminderState; // Toggle the state
-        const newValue = flashReminderState ? 1 : 0;
-        const newLabel = flashReminderState ? 'Reminder1 On' : 'Reminder1 Off';
-        toggleFlashReminderButton.textContent = newLabel;
+    // Send the new value to Firebase
+    const flashRef = database.ref('settings/sound/con1');
+    flashRef.set(newValue, (error) => {
+        if (error) {
+            console.error('Failed to update Flash in Firebase:', error);
+        } else {
+            console.log(`Flash set to ${newValue} in Firebase.`);
+        }
+    });
+});
 
-        // Send the new value to Firebase
-        const flashRef = database.ref('settings/sound/con1');
-        flashRef.set(newValue, (error) => {
+// Initialize the button state on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTTSCButton();
+    initializeFlashReminderButton();
+});
+
+// Function to initialize the state of the TTSC button
+function initializeTTSCButton() {
+    const button = document.getElementById('TTSC');
+    database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value === 1) {
+            button.innerText = 'TTSC On';
+        } else {
+            button.innerText = 'TTSC Off';
+        }
+    }).catch(error => {
+        console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
+    });
+}
+
+// Event listener for the TTSC button
+const toggleTTSCButton = document.getElementById('TTSC');
+toggleTTSCButton.addEventListener('click', () => {
+    database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
+        const currentValue = snapshot.val();
+        const newValue = currentValue === 1 ? 0 : 1;
+        const newLabel = newValue === 1 ? 'TTSC On' : 'TTSC Off';
+        toggleTTSCButton.textContent = newLabel;
+
+        // Update the value in Firebase
+        database.ref('settings/TimeToShiftEnd').set(newValue, (error) => {
             if (error) {
-                console.error('Failed to update Flash in Firebase:', error);
+                console.error('Failed to update TimeToShiftEnd in Firebase:', error);
             } else {
-                console.log(`Flash set to ${newValue} in Firebase.`);
+                console.log(`TimeToShiftEnd set to ${newValue} in Firebase.`);
             }
         });
+    }).catch(error => {
+        console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
     });
+});
 
-    // Initialize the button state on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeTTSCButton();
-    });
-
-   // Function to initialize the state of the TTSC button
-   function initializeTTSCButton() {
-        const button = document.getElementById('TTSC');
-        database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
-            const value = snapshot.val();
-            if (value === 1) {
-                button.innerText = 'TTSC On';
-            } else {
-                button.innerText = 'TTSC Off';
-            }
-        }).catch(error => {
-            console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
-        });
-    }
-
-    // Event listener for the TTSC button
-    const toggleTTSCButton = document.getElementById('TTSC');
-    toggleTTSCButton.addEventListener('click', () => {
-        database.ref('settings/TimeToShiftEnd').once('value').then(snapshot => {
-            const currentValue = snapshot.val();
-            const newValue = currentValue === 1 ? 0 : 1;
-            const newLabel = newValue === 1 ? 'TTSC On' : 'TTSC Off';
-            toggleTTSCButton.textContent = newLabel;
-
-            // Update the value in Firebase
-            database.ref('settings/TimeToShiftEnd').set(newValue, (error) => {
-                if (error) {
-                    console.error('Failed to update TimeToShiftEnd in Firebase:', error);
-                } else {
-                    console.log(`TimeToShiftEnd set to ${newValue} in Firebase.`);
-                }
-            });
-        }).catch(error => {
-            console.error('Error fetching TimeToShiftEnd setting from Firebase:', error);
-        });
-    });
-    
 function calculateAverageTimeX2(lapTimes) {
     const lastTwoLaps = lapTimes.slice(-2);
     const totalLapTime = lastTwoLaps.reduce((total, lapData) => total + lapData.lapTime, 0);
@@ -1010,87 +1028,101 @@ document.getElementById('startConveyor2').addEventListener('click', () => {
         }
     }
 });
-   // Function to initialize the state of the Sound Notifier button
-   function initializeSoundNotifierButton() {
-        const button = document.getElementById('toggleSoundNotifier');
-        database.ref('settings/sound/con2').once('value').then(snapshot => {
-            const value = snapshot.val();
-            if (value === 1) {
-                button.innerText = 'Reminder2 On';
-            } else {
-                button.innerText = 'Reminder2 Off';
-            }
-        }).catch(error => {
-            console.error('Error fetching sound setting from Firebase:', error);
-        });
-    }
 
-    // Toggle Sound Notifier
-    document.getElementById('toggleSoundNotifier').addEventListener('click', function() {
-        const button = this;
-        const currentText = button.innerText;
-        const newValue = currentText === 'Reminder2 Off' ? 1 : 0;
-        const newText = newValue === 1 ? 'Reminder2 On' : 'Reminder2 Off';
-
-        // Update button text
-        button.innerText = newText;
-
-        // Send value to Firebase
-        database.ref('settings/sound/con2').set(newValue, function(error) {
-            if (error) {
-                console.error('Failed to update sound setting in Firebase:', error);
-            } else {
-                console.log('Sound setting updated in Firebase.');
-            }
-        });
-    });
-
-    // Initialize the button state on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeSoundNotifierButton();
-    });
-
-   // Reset sound settings at 5:15 AM and PM
-    function resetSoundSetting() {
-        const now = new Date();
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-
-        if ((hours === 5 || hours === 17) && minutes === 15) {
-            // Reset sound settings for con1 and con2 to 0
-            const soundCon1Ref = database.ref('settings/sound/con1');
-            const soundCon2Ref = database.ref('settings/sound/con2');
-            const toggleSwitchRef = database.ref('settings/toggleSwitch');
-
-            soundCon1Ref.set(0, function(error) {
-                if (error) {
-                    console.error('Failed to reset sound setting for con1 in Firebase:', error);
-                } else {
-                    console.log('Sound setting for con1 reset in Firebase.');
-                    document.getElementById('toggleFlashReminder').innerText = 'Reminder1 Off';
-                }
-            });
-
-            soundCon2Ref.set(0, function(error) {
-                if (error) {
-                    console.error('Failed to reset sound setting for con2 in Firebase:', error);
-                } else {
-                    console.log('Sound setting for con2 reset in Firebase.');
-                    document.getElementById('toggleSoundNotifier').innerText = 'Reminder2 Off';
-                }
-            });
-
-            // Set blackout screen to 1
-            toggleSwitchRef.set(1, function(error) {
-                if (error) {
-                    console.error('Failed to set blackout screen in Firebase:', error);
-                } else {
-                    console.log('Blackout screen set in Firebase.');
-                    document.getElementById('toggleIrregulars').innerText = 'Turn Screen On';
-                }
-            });
+// Function to initialize the state of the Sound Notifier button
+function initializeSoundNotifierButton() {
+    const button = document.getElementById('toggleSoundNotifier');
+    database.ref('settings/sound/con2').once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value === 1) {
+            button.innerText = 'Notifier On';
+        } else if (value === 2) {
+            button.innerText = 'Notifier Next';
+        } else {
+            button.innerText = 'Notifier Off';
         }
+    }).catch(error => {
+        console.error('Error fetching sound setting from Firebase:', error);
+    });
+}
+
+// Toggle Sound Notifier
+document.getElementById('toggleSoundNotifier').addEventListener('click', function() {
+    const button = this;
+    const currentText = button.innerText;
+    let newValue;
+    let newText;
+
+    if (currentText === 'Notifier Off') {
+        newValue = 1;
+        newText = 'Notifier On';
+    } else if (currentText === 'Notifier On') {
+        newValue = 2;
+        newText = 'Notifier Next';
+    } else {
+        newValue = 0;
+        newText = 'Notifier Off';
     }
+
+    // Update button text
+    button.innerText = newText;
+
+    // Send value to Firebase
+    database.ref('settings/sound/con2').set(newValue, function(error) {
+        if (error) {
+            console.error('Failed to update sound setting in Firebase:', error);
+        } else {
+            console.log('Sound setting updated in Firebase.');
+        }
+    });
+});
+
+// Initialize the button state on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeSoundNotifierButton();
+});
+
+// Reset sound settings at 5:15 AM and PM
+function resetSoundSetting() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    if ((hours === 5 || hours === 17) && minutes === 15) {
+        // Reset sound settings for con1 and con2 to 0
+        const soundCon1Ref = database.ref('settings/sound/con1');
+        const soundCon2Ref = database.ref('settings/sound/con2');
+        const toggleSwitchRef = database.ref('settings/toggleSwitch');
+
+        soundCon1Ref.set(0, function(error) {
+            if (error) {
+                console.error('Failed to reset sound setting for con1 in Firebase:', error);
+            } else {
+                console.log('Sound setting for con1 reset in Firebase.');
+                document.getElementById('toggleFlashReminder').innerText = 'Notifier Off';
+            }
+        });
+
+        soundCon2Ref.set(0, function(error) {
+            if (error) {
+                console.error('Failed to reset sound setting for con2 in Firebase:', error);
+            } else {
+                console.log('Sound setting for con2 reset in Firebase.');
+                document.getElementById('toggleSoundNotifier').innerText = 'Notifier Off';
+            }
+        });
+
+        // Set blackout screen to 1
+        toggleSwitchRef.set(1, function(error) {
+            if (error) {
+                console.error('Failed to set blackout screen in Firebase:', error);
+            } else {
+                console.log('Blackout screen set in Firebase.');
+                document.getElementById('toggleIrregulars').innerText = 'Turn Screen On';
+            }
+        });
+    }
+}
 
     // Check every minute
     setInterval(resetSoundSetting, 60000);
@@ -1252,37 +1284,19 @@ document.getElementById('setTime').addEventListener('click', () => {
 });
 
 document.getElementById('pullLaps').addEventListener('click', () => {
-    // Prompt the user to enter the number of laps to pull with a default value of 6
-    const lapCountInput = prompt("Enter the number of laps to pull:", "6");
+    // Prompt the user to enter the number of laps to pull with a default value of 50
+    const lapCountInput = prompt("Enter the number of laps to pull:", "50");
     if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
         // Parse the input as an integer
         const lapCount = parseInt(lapCountInput);
         if (!isNaN(lapCount) && lapCount > 0) {
             // Retrieve the specified number of laps from Firebase for Conveyor 1
-            const lapsRef1 = database.ref('laps/conveyor1').limitToLast(lapCount);
-            lapsRef1.once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    lapTimes1.length = 0; // Clear the existing lap times
-                    for (const key in data) {
-                        const lapData = JSON.parse(data[key].data);
-                        lapTimes1.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
-                    }
-                    displayStats();
-                }
+            pullAndDisplay('conveyor1', lapTimes1, lapCount, () => {
+                displayStats(lapTimes1);
             });
             // Retrieve the specified number of laps from Firebase for Conveyor 2
-            const lapsRef2 = database.ref('laps/conveyor2').limitToLast(lapCount);
-            lapsRef2.once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    lapTimes2.length = 0; // Clear the existing lap times
-                    for (const key in data) {
-                        const lapData = JSON.parse(data[key].data);
-                        lapTimes2.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
-                    }
-                    displayStats();
-                }
+            pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
+                displayStats(lapTimes2);
             });
         } else {
             alert("Please enter a valid number of laps greater than 0.");
@@ -1339,25 +1353,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners for conveyor unit settings
     document.getElementById('conveyor1Units').addEventListener('change', (event) => {
         conveyor1Units = parseInt(event.target.value);
-        displayStats();
+        displayStats(lapTimes1, lapTimes2);
     });
     document.getElementById('conveyor2Units').addEventListener('change', (event) => {
         conveyor2Units = parseInt(event.target.value);
-        displayStats();
+        displayStats(lapTimes1, lapTimes2);
     });
-   
    
     // Event listeners for average laps settings
     document.getElementById('conveyor1AvgLaps').addEventListener('change', (event) => {
         conveyor1AvgLaps = parseInt(event.target.value);
-        displayStats();
+        displayStats(lapTimes1, lapTimes2);
     });
     document.getElementById('conveyor2AvgLaps').addEventListener('change', (event) => {
         conveyor2AvgLaps = parseInt(event.target.value);
-        displayStats();
+        displayStats(lapTimes1, lapTimes2);
     });
     // Call the displayStats function if it's defined elsewhere in your code
-    displayStats();
+    displayStats(lapTimes1, lapTimes2);
     // Auto pull laps on page open
     pullLapsOnPageOpen();
     // Listen for new laps from Firebase
@@ -1381,14 +1394,14 @@ function pullLapsOnPageOpen() {
             lapStart1 = Date.now();
             running1 = true;
             document.getElementById('startConveyor1').textContent = "STOP CONVEYOR 1";
-            displayStats();
+            displayStats(lapTimes1, lapTimes2);
         });
         // Retrieve the specified number of laps from Firebase for Conveyor 2
         pullAndDisplay('conveyor2', lapTimes2, lapCount, () => {
             lapStart2 = Date.now();
             running2 = true;
             document.getElementById('startConveyor2').textContent = "STOP CONVEYOR 2";
-            displayStats();
+            displayStats(lapTimes1, lapTimes2);
         });
         initialLapsPulled = true; // Set the flag to true after pulling initial laps
     }
@@ -1403,9 +1416,9 @@ function listenForNewLapsFromFirebase() {
 
 function pullNewLapsOnPageWake() {
     // Pull newer laps for Conveyor 1
-    pullNewerLaps('conveyor1', lapTimes1);
+    pullNewerLaps('conveyor1', lapTimes1, 10);
     // Pull newer laps for Conveyor 2
-    pullNewerLaps('conveyor2', lapTimes2);
+    pullNewerLaps('conveyor2', lapTimes2, 10);
 }
 
 function pullAndDisplay(conveyor, lapTimesArray, lapCount, callback) {
@@ -1422,7 +1435,6 @@ function pullAndDisplay(conveyor, lapTimesArray, lapCount, callback) {
                     lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
                 }
             });
-            displayStats();
             if (callback) callback();
         }
     }).catch((error) => {
@@ -1430,64 +1442,59 @@ function pullAndDisplay(conveyor, lapTimesArray, lapCount, callback) {
     });
 }
 
-function pullNewerLaps(conveyor, lapTimesArray) {
+function pullNewerLaps(conveyor, lapTimesArray, lapCount) {
     const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-    const lapsRef = database.ref(lapsRefName);
+    const lapsRef = database.ref(lapsRefName).limitToLast(lapCount);
     lapsRef.once('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
+            lapTimesArray.length = 0; // Clear the existing lap times
             for (const key in data) {
                 if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
                     try {
                         const entryData = JSON.parse(data[key].data);
-        if (entryData.lapTime && entryData.timeOfDay) {
-            // Skip if the lap is in the deleted laps list
-            if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
-                lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
-                if (lapTimesArray.length > 10) {
-                    lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+                        if (entryData.lapTime && entryData.timeOfDay) {
+                            // Skip if the lap is in the deleted laps list
+                            if (!deletedLaps[conveyor].some(lap => lap.lapTime === entryData.lapTime && lap.timeOfDay === entryData.timeOfDay)) {
+                                lapTimesArray.push({ lapTime: entryData.lapTime, timeOfDay: entryData.timeOfDay });
+                            }
+                        } else {
+                            console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing entry data:', data[key].data, e);
+                    }
+                } else {
+                    console.error('Invalid JSON data:', data[key].data);
                 }
             }
+            displayStats(lapTimes1, lapTimes2);
         } else {
-            console.error('Entry data is missing lapTime or timeOfDay:', entryData);
+            console.error('No data found in snapshot.');
         }
-    } catch (e) {
-        console.error('Error parsing entry data:', data[key].data, e);
-    }
-} else {
-    console.error('Invalid JSON data:', data[key].data);
-}
-}
-displayStats();
-} else {
-console.error('No data found in snapshot.');
-}
-}).catch((error) => {
-console.error('Error fetching data from Firebase:', error);
-});
+    }).catch((error) => {
+        console.error('Error fetching data from Firebase:', error);
+    });
 }
 
 function listenForNewLaps(conveyor, lapTimesArray) {
-const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
-const lapsRef = database.ref(lapsRefName);
-lapsRef.on('child_added', (snapshot) => {
-const data = snapshot.val();
-if (data && isValidJSON(data.data)) {
-const lapData = JSON.parse(data.data);
-if (lapData.lapTime && lapData.timeOfDay) {
-lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
-if (lapTimesArray.length > 10) {
-lapTimesArray.shift(); // Remove the oldest lap if more than 10 laps
+    const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+    const lapsRef = database.ref(lapsRefName);
+    lapsRef.on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        if (data && isValidJSON(data.data)) {
+            const lapData = JSON.parse(data.data);
+            if (lapData.lapTime && lapData.timeOfDay) {
+                lapTimesArray.push({ lapTime: lapData.lapTime, timeOfDay: lapData.timeOfDay });
+                displayStats(lapTimes1, lapTimes2);
+            } else {
+                console.error('Lap data is missing lapTime or timeOfDay:', lapData);
+            }
+        } else {
+            console.error('Invalid JSON data:', data.data);
+        }
+    });
 }
-displayStats();
-} else {
-console.error('Lap data is missing lapTime or timeOfDay:', lapData);
-}
-} else {
-console.error('Invalid JSON data:', data.data);
-}
-});
-}  
 </script>
 </body>
 </html>
