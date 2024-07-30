@@ -240,21 +240,18 @@ button {
                     <option value="10" >10</option>
                 </select>
             </div>
-            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
-            <!-- New button to reset laps -->
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line at the top -->
             <div style="display: flex; justify-content: space-between;">
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
                     <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
                     <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
                     <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
                     <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
-                    <button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
                 </div>
-            </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
-                    <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 5px; width: 100px;">
-                    <button id="enableLapButtons" style="border: 1px solid black; border-radius: 5px; margin: 5px; width: auto;">Enable Lap Buttons</button>
-                    <select id="timerSelect" style="border: 1px solid black; border-radius: 5px; margin: 5px; width: auto;">
+                    <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 2px; width: 100px;">
+                    <button id="enableLapButtons" style="border: 1px solid black; border-radius: 5px; margin: 2px; width: auto;">Enable Lap Buttons</button>
+                    <select id="timerSelect" style="border: 1px solid black; border-radius: 5px; margin: 2px; width: auto;">
                         <option value="5">5 min</option>
                         <option value="6">6 min</option>
                         <option value="7">7 min</option>
@@ -267,6 +264,7 @@ button {
                         <option value="14">14 min</option>
                         <option value="15">15 min</option>
                     </select>
+                    <button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-top: 2px;">TTSC</button>
                 </div>
             </div>
             <button id="closeSettings" style="border: 1px solid black; border-radius: 10px; background-color: white; color: black; padding: 5px 10px; font-size: 20px; position: absolute; margin-top: 1px; left: 50%; transform: translate(-50%, -50%);">Done</button>
