@@ -864,13 +864,13 @@ function initializeFlashReminderButton() {
     database.ref('settings/sound/con1').once('value').then(snapshot => {
         const value = snapshot.val();
         if (value === 1) {
-            button.innerText = 'Notifier On';
+            button.innerText = 'Notifier 1 On';
             flashReminderState = true;
         } else if (value === 2) {
-            button.innerText = 'Notifier Next';
+            button.innerText = 'Notifier 1 Next';
             flashReminderState = true;
         } else {
-            button.innerText = 'Notifier Off';
+            button.innerText = 'Notifier 1 Off';
             flashReminderState = false;
         }
     }).catch(error => {
@@ -888,15 +888,15 @@ toggleFlashReminderButton.addEventListener('click', () => {
     let newValue;
     let newLabel;
 
-    if (currentText === 'Notifier Off') {
+    if (currentText === 'Notifier 1 Off') {
         newValue = 1;
-        newLabel = 'Notifier On';
-    } else if (currentText === 'Notifier On') {
+        newLabel = 'Notifier 1 On';
+    } else if (currentText === 'Notifier 1 Next') {
         newValue = 2;
-        newLabel = 'Notifier Next';
+        newLabel = 'Notifier 1 Next';
     } else {
         newValue = 0;
-        newLabel = 'Notifier Off';
+        newLabel = 'Notifier 1 Off';
     }
 
     toggleFlashReminderButton.textContent = newLabel;
@@ -1033,11 +1033,11 @@ function initializeSoundNotifierButton() {
     database.ref('settings/sound/con2').once('value').then(snapshot => {
         const value = snapshot.val();
         if (value === 1) {
-            button.innerText = 'Notifier On';
+            button.innerText = 'Notifier 2 On';
         } else if (value === 2) {
-            button.innerText = 'Notifier Next';
+            button.innerText = 'Notifier 2 Next';
         } else {
-            button.innerText = 'Notifier Off';
+            button.innerText = 'Notifier 2 Off';
         }
     }).catch(error => {
         console.error('Error fetching sound setting from Firebase:', error);
@@ -1051,15 +1051,15 @@ document.getElementById('toggleSoundNotifier').addEventListener('click', functio
     let newValue;
     let newText;
 
-    if (currentText === 'Notifier Off') {
+    if (currentText === 'Notifier 2 Off') {
         newValue = 1;
-        newText = 'Notifier On';
-    } else if (currentText === 'Notifier On') {
+        newText = 'Notifier 2 On';
+    } else if (currentText === 'Notifier 2 Next') {
         newValue = 2;
-        newText = 'Notifier Next';
+        newText = 'Notifier 2 Next';
     } else {
         newValue = 0;
-        newText = 'Notifier Off';
+        newText = 'Notifier 2 Off';
     }
 
     // Update button text
@@ -1097,7 +1097,7 @@ function resetSoundSetting() {
                 console.error('Failed to reset sound setting for con1 in Firebase:', error);
             } else {
                 console.log('Sound setting for con1 reset in Firebase.');
-                document.getElementById('toggleFlashReminder').innerText = 'Notifier Off';
+                document.getElementById('toggleFlashReminder').innerText = 'Notifier 1 Off';
             }
         });
 
@@ -1106,7 +1106,7 @@ function resetSoundSetting() {
                 console.error('Failed to reset sound setting for con2 in Firebase:', error);
             } else {
                 console.log('Sound setting for con2 reset in Firebase.');
-                document.getElementById('toggleSoundNotifier').innerText = 'Notifier Off';
+                document.getElementById('toggleSoundNotifier').innerText = 'Notifier 2 Off';
             }
         });
 
@@ -1124,7 +1124,6 @@ function resetSoundSetting() {
 
     // Check every minute
     setInterval(resetSoundSetting, 60000);
-
 
    
  // Function to initialize the state of the Irregulars button
