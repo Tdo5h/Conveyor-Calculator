@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1100,7 +1101,6 @@ function resetSoundSetting() {
         // Reset sound settings for con1 and con2 to 0
         const soundCon1Ref = database.ref('settings/sound/con1');
         const soundCon2Ref = database.ref('settings/sound/con2');
-        const toggleSwitchRef = database.ref('settings/toggleSwitch');
 
         soundCon1Ref.set(0, function(error) {
             if (error) {
@@ -1120,15 +1120,16 @@ function resetSoundSetting() {
             }
         });
 
-        // Set blackout screen to 1
-        toggleSwitchRef.set(1, function(error) {
-            if (error) {
-                console.error('Failed to set blackout screen in Firebase:', error);
-            } else {
-                console.log('Blackout screen set in Firebase.');
-                document.getElementById('toggleIrregulars').innerText = 'Turn Screen On';
-            }
-        });
+        // Commented out the blackout screen setting
+        // const toggleSwitchRef = database.ref('settings/toggleSwitch');
+        // toggleSwitchRef.set(1, function(error) {
+        //     if (error) {
+        //         console.error('Failed to set blackout screen in Firebase:', error);
+        //     } else {
+        //         console.log('Blackout screen set in Firebase.');
+        //         document.getElementById('toggleIrregulars').innerText = 'Turn Screen On';
+        //     }
+        // });
     }
 }
 
