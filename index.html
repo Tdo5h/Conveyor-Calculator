@@ -240,13 +240,23 @@ button {
                     <option value="10" >10</option>
                 </select>
             </div>
-            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line at the top -->
+            <div style="border-top: 2px solid black; margin: 10px 0;"></div> <!-- Black line between sections -->
+            <!-- New button to reset laps -->
             <div style="display: flex; justify-content: space-between;">
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
-                    <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
-                    <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
+                    <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="color: black; font-weight: bold;margin-bottom: 10px; margin-right: 5px;">1=</span>
+                            <button id="toggleFlashReminder" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="color: black; font-weight: bold;margin-bottom: 10px; margin-right: 5px;">2=</span>
+                            <button id="toggleSoundNotifier" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Notifier Off</button>
+                        </div>
+                    </div>
                     <button id="toggleIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Black Out Screen</button>
                     <button id="clearIrregulars" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Clear <span style="color: red;">?</span> Refresh Screen</button>
+                    <button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
                     <input type="password" id="lapPassword" placeholder="Enter password" style="border: 1px solid black; border-radius: 5px; padding: 5px; margin: 2px; width: 100px;">
@@ -864,13 +874,13 @@ function initializeFlashReminderButton() {
     database.ref('settings/sound/con1').once('value').then(snapshot => {
         const value = snapshot.val();
         if (value === 1) {
-            button.innerText = 'Notifier 1 On';
+            button.innerText = 'Notifier On';
             flashReminderState = true;
         } else if (value === 2) {
-            button.innerText = 'Notifier 1 Next';
+            button.innerText = 'Notifier Next';
             flashReminderState = true;
         } else {
-            button.innerText = 'Notifier 1 Off';
+            button.innerText = 'Notifier Off';
             flashReminderState = false;
         }
     }).catch(error => {
@@ -888,15 +898,15 @@ toggleFlashReminderButton.addEventListener('click', () => {
     let newValue;
     let newLabel;
 
-    if (currentText === 'Notifier 1 Off') {
+    if (currentText === 'Notifier Off') {
         newValue = 1;
-        newLabel = 'Notifier 1 On';
-    } else if (currentText === 'Notifier 1 Next') {
+        newLabel = 'Notifier On';
+    } else if (currentText === 'Notifier On') {
         newValue = 2;
-        newLabel = 'Notifier 1 Next';
+        newLabel = 'Notifier Next';
     } else {
         newValue = 0;
-        newLabel = 'Notifier 1 Off';
+        newLabel = 'Notifier Off';
     }
 
     toggleFlashReminderButton.textContent = newLabel;
@@ -1033,11 +1043,11 @@ function initializeSoundNotifierButton() {
     database.ref('settings/sound/con2').once('value').then(snapshot => {
         const value = snapshot.val();
         if (value === 1) {
-            button.innerText = 'Notifier 2 On';
+            button.innerText = 'Notifier On';
         } else if (value === 2) {
-            button.innerText = 'Notifier 2 Next';
+            button.innerText = 'Notifier Next';
         } else {
-            button.innerText = 'Notifier 2 Off';
+            button.innerText = 'Notifier Off';
         }
     }).catch(error => {
         console.error('Error fetching sound setting from Firebase:', error);
@@ -1051,15 +1061,15 @@ document.getElementById('toggleSoundNotifier').addEventListener('click', functio
     let newValue;
     let newText;
 
-    if (currentText === 'Notifier 2 Off') {
+    if (currentText === 'Notifier Off') {
         newValue = 1;
-        newText = 'Notifier 2 On';
-    } else if (currentText === 'Notifier 2 Next') {
+        newText = 'Notifier On';
+    } else if (currentText === 'Notifier On') {
         newValue = 2;
-        newText = 'Notifier 2 Next';
+        newText = 'Notifier Next';
     } else {
         newValue = 0;
-        newText = 'Notifier 2 Off';
+        newText = 'Notifier Off';
     }
 
     // Update button text
@@ -1097,7 +1107,7 @@ function resetSoundSetting() {
                 console.error('Failed to reset sound setting for con1 in Firebase:', error);
             } else {
                 console.log('Sound setting for con1 reset in Firebase.');
-                document.getElementById('toggleFlashReminder').innerText = 'Notifier 1 Off';
+                document.getElementById('toggleFlashReminder').innerText = 'Notifier Off';
             }
         });
 
@@ -1106,7 +1116,7 @@ function resetSoundSetting() {
                 console.error('Failed to reset sound setting for con2 in Firebase:', error);
             } else {
                 console.log('Sound setting for con2 reset in Firebase.');
-                document.getElementById('toggleSoundNotifier').innerText = 'Notifier 2 Off';
+                document.getElementById('toggleSoundNotifier').innerText = 'Notifier Off';
             }
         });
 
@@ -1124,6 +1134,7 @@ function resetSoundSetting() {
 
     // Check every minute
     setInterval(resetSoundSetting, 60000);
+
 
    
  // Function to initialize the state of the Irregulars button
