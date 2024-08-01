@@ -276,6 +276,7 @@ button {
                         <option value="15">15 min</option>
                     </select>
                      <button id="TTSC" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">TTSC</button>  
+                     <button id="toggleBarGraphs" style="border: 1px solid black; border-radius: 5px; transform: scale(1.1); width: auto; margin-bottom: 10px;">Bar Graphs Off</button>
                 </div>
             </div>
         </div>
@@ -922,11 +923,67 @@ toggleFlashReminderButton.addEventListener('click', () => {
         }
     });
 });
+function initializeBarGraphsButton() {
+    const button = document.getElementById('toggleBarGraphs');
+    const barGraphsRef = database.ref('settings/barg');
 
+    // Set up a real-time listener for the Bar Graphs setting
+    barGraphsRef.on('value', (snapshot) => {
+        const value = snapshot.val();
+        if (value === 1) {
+            button.innerText = 'Bar Graphs On';
+        } else {
+            button.innerText = 'Bar Graphs Off';
+        }
+    });
+
+    // Initial fetch to set the button state
+    barGraphsRef.once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value === 1) {
+            button.innerText = 'Bar Graphs On';
+        } else {
+            button.innerText = 'Bar Graphs Off';
+        }
+    }).catch(error => {
+        console.error('Error fetching Bar Graphs setting from Firebase:', error);
+    });
+}
+
+document.getElementById('toggleBarGraphs').addEventListener('click', () => {
+    const button = document.getElementById('toggleBarGraphs');
+    const currentText = button.innerText;
+    const newValue = currentText === 'Bar Graphs Off' ? 1 : 0;
+    const newLabel = newValue === 1 ? 'Bar Graphs On' : 'Bar Graphs Off';
+
+    button.innerText = newLabel;
+
+    // Update Bar Graphs setting in Firebase
+    database.ref('settings/barg').set(newValue, (error) => {
+        if (error) {
+            console.error('Failed to update Bar Graphs setting in Firebase:', error);
+        } else {
+            console.log(`Bar Graphs set to ${newValue} in Firebase.`);
+        }
+    });
+
+    // Turn off TTSC if Bar Graphs is turned on
+    if (newValue === 1) {
+        database.ref('settings/TimeToShiftEnd').set(0, (error) => {
+            if (error) {
+                console.error('Failed to turn off TTSC in Firebase:', error);
+            } else {
+                console.log('TTSC turned off in Firebase.');
+                document.getElementById('TTSC').innerText = 'TTSC Off';
+            }
+        });
+    }
+});
 // Initialize the button state on page load
 document.addEventListener('DOMContentLoaded', () => {
     initializeTTSCButton();
     initializeFlashReminderButton();
+    initializeBarGraphsButton();
 });
 
 // Function to initialize the state of the TTSC button
