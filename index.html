@@ -470,9 +470,19 @@ sendDataToFirebase(dataToSend);
         let conveyor2Units = 10; // Default value for Conveyor 2 units
         let conveyor1AvgLaps = 10; // Default value for Conveyor 1 average laps
         let conveyor2AvgLaps = 10; // Default value for Conveyor 2 average laps
-   
-   
-        function openDeleteLapPopup(conveyor) {
+        let isPasswordUnlocked = false; // Flag to track password status
+
+    function openDeleteLapPopup(conveyor) {
+        if (!isPasswordUnlocked) {
+            const password = prompt("Enter password to delete laps:");
+            const correctPassword = 'nzguest'; // Replace with your actual password
+            if (password !== correctPassword) {
+                alert('Incorrect password');
+                return;
+            }
+            isPasswordUnlocked = true; // Set the flag to true upon successful password entry
+        }
+
         const lapListDiv = document.getElementById('lapList');
         lapListDiv.innerHTML = ''; // Clear previous lap list
         // Get the lap times for the selected conveyor
@@ -523,16 +533,55 @@ sendDataToFirebase(dataToSend);
         deleteLapPopup.style.display = 'none';
     }
     let deletedLaps = { conveyor1: [], conveyor2: [] }; // Store deleted laps
-function deleteSelectedLap(conveyor, index) {
-    const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
-    if (index >= 0 && index < lapTimes.length) {
-        const deletedLap = lapTimes.splice(index, 1)[0]; // Remove and store the deleted lap
-        deletedLaps[conveyor].push(deletedLap); // Add to deleted laps
-        lapDeleted = true; // Set the flag to true
-        displayStats(); // Update statistics
-        openDeleteLapPopup(conveyor); // Update the lap list in the popup
+    function deleteSelectedLap(conveyor, index) {
+        const lapTimes = conveyor === 'conveyor1' ? lapTimes1 : lapTimes2;
+        if (index >= 0 && index < lapTimes.length) {
+            const deletedLap = lapTimes.splice(index, 1)[0]; // Remove and store the deleted lap
+            deletedLaps[conveyor].push(deletedLap); // Add to deleted laps
+
+            // Move the deleted lap to the "deleted" folder in Firebase
+            const lapsRefName = conveyor === 'conveyor1' ? 'laps/conveyor1' : 'laps/conveyor2';
+            const deletedRefName = conveyor === 'conveyor1' ? 'deleted/conveyor1' : 'deleted/conveyor2';
+            const lapsRef = database.ref(lapsRefName);
+            const deletedRef = database.ref(deletedRefName);
+
+            lapsRef.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key) && isValidJSON(data[key].data)) {
+                            const entryData = JSON.parse(data[key].data);
+                            if (entryData.lapTime === deletedLap.lapTime && entryData.timeOfDay === deletedLap.timeOfDay) {
+                                // Move the lap to the deleted folder
+                                deletedRef.push(data[key], (error) => {
+                                    if (error) {
+                                        console.error('Failed to move lap to deleted folder in Firebase:', error);
+                                    } else {
+                                        console.log('Lap moved to deleted folder in Firebase:', deletedLap);
+                                        // Remove the lap from the original folder
+                                        lapsRef.child(key).remove((error) => {
+                                            if (error) {
+                                                console.error('Failed to delete lap from original folder in Firebase:', error);
+                                            } else {
+                                                console.log('Lap deleted from original folder in Firebase:', deletedLap);
+                                            }
+                                        });
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                }
+            }).catch((error) => {
+                console.error('Error fetching data from Firebase:', error);
+            });
+
+            lapDeleted = true; // Set the flag to true
+            displayStats(); // Update statistics
+            openDeleteLapPopup(conveyor); // Update the lap list in the popup
+        }
     }
-}
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -698,7 +747,7 @@ function setIrregularsFlag() {
     }
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-    lapTimes1.slice(-50).reverse().forEach((lapData, idx, arr) => {
+    lapTimes1.slice(-10).reverse().forEach((lapData, idx, arr) => {
     const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
     const [date, time] = lapData.timeOfDay.split(' ');
     const isVeryLongLap = lapData.lapTime > 2 * averageTime1 * 1000; // Check if lap time is more than 2 times the average
@@ -770,7 +819,7 @@ function setIrregularsFlag() {
     }
     
     statsDiv.innerHTML += '<div style="line-height: 0.5;">&nbsp;</div>';
-    lapTimes2.slice(-50).reverse().forEach((lapData, idx, arr) => {
+    lapTimes2.slice(-10).reverse().forEach((lapData, idx, arr) => {
     const lapTimeStr = formatTime(Math.floor(lapData.lapTime / 1000));
     const [date, time] = lapData.timeOfDay.split(' ');
     const isVeryLongLap = lapData.lapTime > 2 * averageTime2 * 1000; // Check if lap time is more than 2 times the average
@@ -1351,7 +1400,7 @@ document.getElementById('setTime').addEventListener('click', () => {
 
 document.getElementById('pullLaps').addEventListener('click', () => {
     // Prompt the user to enter the number of laps to pull with a default value of 50
-    const lapCountInput = prompt("Enter the number of laps to pull:", "50");
+    const lapCountInput = prompt("Enter the number of laps to pull:", "10");
     if (lapCountInput !== null) { // Check if the user clicked OK or Cancel
         // Parse the input as an integer
         const lapCount = parseInt(lapCountInput);
